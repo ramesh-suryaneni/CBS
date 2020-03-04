@@ -1,8 +1,8 @@
 spring:
    datasource:
-      url:   jdbc:sqlserver://localhost;databaseName=springbootdb      
-      username:   sa
-      password:   Projects@123
+      url:   jdbc:sqlserver://imagination-cbs.database.windows.net:1433;database=imagination-cbs      
+      username:   yash@imagination-cbs
+      password:   test@123
    jpa:
       generate-ddl:   false
       properties:
