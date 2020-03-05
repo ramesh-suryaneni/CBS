@@ -1,7 +1,9 @@
 spring:
    profiles:
-      active:   ${APP_ENVIRONMENT}
+      active:   local
    servlet:
       multipart:
          max-file-size: 10MB
          max-request-size: 25MB
+         
+server:  port: 8093
