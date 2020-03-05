@@ -13,8 +13,7 @@ import java.sql.Timestamp;
 @Table(name="contractor_employee_role")
 @NamedQuery(name="ContractorEmployeeRole.findAll", query="SELECT c FROM ContractorEmployeeRole c")
 public class ContractorEmployeeRole implements Serializable {
-
-	private static final long serialVersionUID = -1696455793429344010L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="contractor_employee_role_id")
@@ -26,13 +25,21 @@ public class ContractorEmployeeRole implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="contractor_employee_id")
-	private long contractorEmployeeId;
-
-	@Column(name="role_id")
-	private long roleId;
-
 	private String status;
+
+	//bi-directional one-to-one association to BookingRevision
+	@OneToOne(mappedBy="contractorEmployeeRole")
+	private BookingRevision bookingRevision;
+
+	//bi-directional one-to-one association to RoleDm
+	@OneToOne
+	@JoinColumn(name="role_id")
+	private RoleDm roleDm;
+
+	//bi-directional one-to-one association to ContractorEmployee
+	@OneToOne
+	@JoinColumn(name="contractor_employee_id")
+	private ContractorEmployee contractorEmployee;
 
 	public ContractorEmployeeRole() {
 	}
@@ -61,28 +68,36 @@ public class ContractorEmployeeRole implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getContractorEmployeeId() {
-		return this.contractorEmployeeId;
-	}
-
-	public void setContractorEmployeeId(long contractorEmployeeId) {
-		this.contractorEmployeeId = contractorEmployeeId;
-	}
-
-	public long getRoleId() {
-		return this.roleId;
-	}
-
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
-	}
-
 	public String getStatus() {
 		return this.status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public BookingRevision getBookingRevision() {
+		return this.bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
+	}
+
+	public RoleDm getRoleDm() {
+		return this.roleDm;
+	}
+
+	public void setRoleDm(RoleDm roleDm) {
+		this.roleDm = roleDm;
+	}
+
+	public ContractorEmployee getContractorEmployee() {
+		return this.contractorEmployee;
+	}
+
+	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
+		this.contractorEmployee = contractorEmployee;
 	}
 
 }

@@ -12,8 +12,7 @@ import javax.persistence.*;
 @Table(name="discipline")
 @NamedQuery(name="Discipline.findAll", query="SELECT d FROM Discipline d")
 public class Discipline implements Serializable {
-	
-	private static final long serialVersionUID = 366417481431559168L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="discipline_id")

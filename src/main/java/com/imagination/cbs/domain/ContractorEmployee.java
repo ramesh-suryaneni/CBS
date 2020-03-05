@@ -13,8 +13,7 @@ import java.sql.Timestamp;
 @Table(name="contractor_employee")
 @NamedQuery(name="ContractorEmployee.findAll", query="SELECT c FROM ContractorEmployee c")
 public class ContractorEmployee implements Serializable {
-
-	private static final long serialVersionUID = 6973491865093487804L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="contractor_employee_id")
@@ -29,9 +28,6 @@ public class ContractorEmployee implements Serializable {
 	@Column(name="contact_details")
 	private String contactDetails;
 
-	@Column(name="contractor_id")
-	private long contractorId;
-
 	@Column(name="employee_id")
 	private long employeeId;
 
@@ -42,6 +38,25 @@ public class ContractorEmployee implements Serializable {
 	private String knownAs;
 
 	private String status;
+
+	//bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne(mappedBy="contractorEmployee")
+	private ContractorEmployeeRole contractorEmployeeRole;
+
+	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
+	@OneToOne
+	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
+
+	//bi-directional one-to-one association to ContractorEmployeeRating
+	@OneToOne
+	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	private ContractorEmployeeRating contractorEmployeeRating;
+
+	//bi-directional many-to-one association to Contractor
+	@ManyToOne
+	@JoinColumn(name="contractor_id")
+	private Contractor contractor;
 
 	public ContractorEmployee() {
 	}
@@ -78,14 +93,6 @@ public class ContractorEmployee implements Serializable {
 		this.contactDetails = contactDetails;
 	}
 
-	public long getContractorId() {
-		return this.contractorId;
-	}
-
-	public void setContractorId(long contractorId) {
-		this.contractorId = contractorId;
-	}
-
 	public long getEmployeeId() {
 		return this.employeeId;
 	}
@@ -116,6 +123,38 @@ public class ContractorEmployee implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public ContractorEmployeeRole getContractorEmployeeRole() {
+		return this.contractorEmployeeRole;
+	}
+
+	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
+		this.contractorEmployeeRole = contractorEmployeeRole;
+	}
+
+	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
+		return this.contractorEmployeeDefaultRate;
+	}
+
+	public void setContractorEmployeeDefaultRate(ContractorEmployeeDefaultRate contractorEmployeeDefaultRate) {
+		this.contractorEmployeeDefaultRate = contractorEmployeeDefaultRate;
+	}
+
+	public ContractorEmployeeRating getContractorEmployeeRating() {
+		return this.contractorEmployeeRating;
+	}
+
+	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
+		this.contractorEmployeeRating = contractorEmployeeRating;
+	}
+
+	public Contractor getContractor() {
+		return this.contractor;
+	}
+
+	public void setContractor(Contractor contractor) {
+		this.contractor = contractor;
 	}
 
 }

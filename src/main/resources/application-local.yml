@@ -7,7 +7,7 @@ spring:
       generate-ddl:   false
       properties:
          hibernate:
-            default_schema:   public
+            default_schema:   cbs
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false

@@ -12,8 +12,7 @@ import javax.persistence.*;
 @Table(name="approval_status_dm")
 @NamedQuery(name="ApprovalStatusDm.findAll", query="SELECT a FROM ApprovalStatusDm a")
 public class ApprovalStatusDm implements Serializable {
-
-	private static final long serialVersionUID = -4679925113436317122L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="approval_status_id")
@@ -24,6 +23,14 @@ public class ApprovalStatusDm implements Serializable {
 
 	@Column(name="approval_name")
 	private String approvalName;
+
+	//bi-directional one-to-one association to Booking
+	@OneToOne(mappedBy="approvalStatusDm")
+	private Booking booking;
+
+	//bi-directional one-to-one association to BookingRevision
+	@OneToOne(mappedBy="approvalStatusDm")
+	private BookingRevision bookingRevision;
 
 	public ApprovalStatusDm() {
 	}
@@ -50,6 +57,22 @@ public class ApprovalStatusDm implements Serializable {
 
 	public void setApprovalName(String approvalName) {
 		this.approvalName = approvalName;
+	}
+
+	public Booking getBooking() {
+		return this.booking;
+	}
+
+	public void setBooking(Booking booking) {
+		this.booking = booking;
+	}
+
+	public BookingRevision getBookingRevision() {
+		return this.bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
 	}
 
 }

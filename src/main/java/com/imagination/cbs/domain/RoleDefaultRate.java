@@ -14,8 +14,7 @@ import java.sql.Timestamp;
 @Table(name="role_default_rate")
 @NamedQuery(name="RoleDefaultRate.findAll", query="SELECT r FROM RoleDefaultRate r")
 public class RoleDefaultRate implements Serializable {
-
-	private static final long serialVersionUID = -8293538197114853226L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="default_rate_id")
@@ -29,8 +28,9 @@ public class RoleDefaultRate implements Serializable {
 
 	private BigDecimal rate;
 
-	@Column(name="role_id")
-	private long roleId;
+	//bi-directional one-to-one association to RoleDm
+	@OneToOne(mappedBy="roleDefaultRate")
+	private RoleDm roleDm;
 
 	public RoleDefaultRate() {
 	}
@@ -67,12 +67,12 @@ public class RoleDefaultRate implements Serializable {
 		this.rate = rate;
 	}
 
-	public long getRoleId() {
-		return this.roleId;
+	public RoleDm getRoleDm() {
+		return this.roleDm;
 	}
 
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
+	public void setRoleDm(RoleDm roleDm) {
+		this.roleDm = roleDm;
 	}
 
 }
