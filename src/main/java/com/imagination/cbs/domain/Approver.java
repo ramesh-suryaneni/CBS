@@ -4,40 +4,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the approver database table.
  * 
  */
 @Entity
-@Table(name="approver")
-@NamedQuery(name="Approver.findAll", query="SELECT a FROM Approver a")
+@Table(name = "approver")
+@NamedQuery(name = "Approver.findAll", query = "SELECT a FROM Approver a")
 public class Approver implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="approver_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "approver_id")
 	private long approverId;
-	
-	@Column(name="approver_number")
+
+	@Column(name = "approver_number")
 	private long approverNumber;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="team_id")
+	@Column(name = "team_id")
 	private long teamId;
 
-	//bi-directional many-to-one association to Team
+	// bi-directional many-to-one association to Team
 	@ManyToOne
-	@JoinColumn(name="team_id", insertable=false, updatable =false)
+	@JoinColumn(name = "team_id", insertable = false, updatable = false)
 	private Team team;
 
-	//bi-directional one-to-one association to EmployeeMapping
-	@OneToOne(mappedBy="approver")
+	// bi-directional one-to-one association to EmployeeMapping
+	@OneToOne(mappedBy = "approver")
 	private EmployeeMapping employeeMapping;
 
 	public Approver() {

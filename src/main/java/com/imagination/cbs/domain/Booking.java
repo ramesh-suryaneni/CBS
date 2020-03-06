@@ -5,42 +5,42 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 
-
 /**
  * The persistent class for the booking database table.
  * 
  */
 @Entity
-@Table(name="booking")
-@NamedQuery(name="Booking.findAll", query="SELECT b FROM Booking b")
+@Table(name = "booking")
+@NamedQuery(name = "Booking.findAll", query = "SELECT b FROM Booking b")
 public class Booking implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="booking_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "booking_id")
 	private long bookingId;
 
-	@Column(name="booking_description")
+	@Column(name = "booking_description")
 	private String bookingDescription;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	//bi-directional many-to-one association to Team
+	// bi-directional many-to-one association to Team
 	@ManyToOne
-	@JoinColumn(name="team_id")
+	@JoinColumn(name = "team_id")
 	private Team team;
 
-	//bi-directional one-to-one association to ApprovalStatusDm
+	// bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
-	@JoinColumn(name="status_id")
+	@JoinColumn(name = "status_id")
 	private ApprovalStatusDm approvalStatusDm;
 
-	//bi-directional many-to-one association to BookingRevision
-	@OneToMany(mappedBy="booking")
+	// bi-directional many-to-one association to BookingRevision
+	@OneToMany(mappedBy = "booking")
 	private List<BookingRevision> bookingRevisions;
 
 	public Booking() {
