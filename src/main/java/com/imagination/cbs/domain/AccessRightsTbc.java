@@ -12,8 +12,7 @@ import javax.persistence.*;
 @Table(name="access_rights_tbc")
 @NamedQuery(name="AccessRightsTbc.findAll", query="SELECT a FROM AccessRightsTbc a")
 public class AccessRightsTbc implements Serializable {
-
-	private static final long serialVersionUID = 535845536742218795L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="user_name")

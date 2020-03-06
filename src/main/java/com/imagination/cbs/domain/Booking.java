@@ -3,6 +3,7 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 /**
@@ -13,8 +14,7 @@ import java.sql.Timestamp;
 @Table(name="booking")
 @NamedQuery(name="Booking.findAll", query="SELECT b FROM Booking b")
 public class Booking implements Serializable {
-	
-	private static final long serialVersionUID = 7994482241189555535L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="booking_id")
@@ -29,11 +29,19 @@ public class Booking implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="status_id")
-	private long statusId;
+	//bi-directional many-to-one association to Team
+	@ManyToOne
+	@JoinColumn(name="team_id")
+	private Team team;
 
-	@Column(name="team_id")
-	private long teamId;
+	//bi-directional one-to-one association to ApprovalStatusDm
+	@OneToOne
+	@JoinColumn(name="status_id")
+	private ApprovalStatusDm approvalStatusDm;
+
+	//bi-directional many-to-one association to BookingRevision
+	@OneToMany(mappedBy="booking")
+	private List<BookingRevision> bookingRevisions;
 
 	public Booking() {
 	}
@@ -70,20 +78,42 @@ public class Booking implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getStatusId() {
-		return this.statusId;
+	public Team getTeam() {
+		return this.team;
 	}
 
-	public void setStatusId(long statusId) {
-		this.statusId = statusId;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
-	public long getTeamId() {
-		return this.teamId;
+	public ApprovalStatusDm getApprovalStatusDm() {
+		return this.approvalStatusDm;
 	}
 
-	public void setTeamId(long teamId) {
-		this.teamId = teamId;
+	public void setApprovalStatusDm(ApprovalStatusDm approvalStatusDm) {
+		this.approvalStatusDm = approvalStatusDm;
+	}
+
+	public List<BookingRevision> getBookingRevisions() {
+		return this.bookingRevisions;
+	}
+
+	public void setBookingRevisions(List<BookingRevision> bookingRevisions) {
+		this.bookingRevisions = bookingRevisions;
+	}
+
+	public BookingRevision addBookingRevision(BookingRevision bookingRevision) {
+		getBookingRevisions().add(bookingRevision);
+		bookingRevision.setBooking(this);
+
+		return bookingRevision;
+	}
+
+	public BookingRevision removeBookingRevision(BookingRevision bookingRevision) {
+		getBookingRevisions().remove(bookingRevision);
+		bookingRevision.setBooking(null);
+
+		return bookingRevision;
 	}
 
 }

@@ -13,13 +13,12 @@ import java.sql.Timestamp;
 @Table(name="approver")
 @NamedQuery(name="Approver.findAll", query="SELECT a FROM Approver a")
 public class Approver implements Serializable {
-
-	private static final long serialVersionUID = -2909393341628716142L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="approver_id")
 	private long approverId;
-
+	
 	@Column(name="approver_number")
 	private long approverNumber;
 
@@ -29,17 +28,23 @@ public class Approver implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="employe_id")
-	private long employeId;
-
 	@Column(name="team_id")
 	private long teamId;
+
+	//bi-directional many-to-one association to Team
+	@ManyToOne
+	@JoinColumn(name="team_id", insertable=false, updatable =false)
+	private Team team;
+
+	//bi-directional one-to-one association to EmployeeMapping
+	@OneToOne(mappedBy="approver")
+	private EmployeeMapping employeeMapping;
 
 	public Approver() {
 	}
 
 	public long getApproverId() {
-		return this.approverId;
+		return approverId;
 	}
 
 	public void setApproverId(long approverId) {
@@ -70,20 +75,28 @@ public class Approver implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getEmployeId() {
-		return this.employeId;
-	}
-
-	public void setEmployeId(long employeId) {
-		this.employeId = employeId;
-	}
-
 	public long getTeamId() {
 		return this.teamId;
 	}
 
 	public void setTeamId(long teamId) {
 		this.teamId = teamId;
+	}
+
+	public Team getTeam() {
+		return this.team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
+	public EmployeeMapping getEmployeeMapping() {
+		return this.employeeMapping;
+	}
+
+	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
+		this.employeeMapping = employeeMapping;
 	}
 
 }

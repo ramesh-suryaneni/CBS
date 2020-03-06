@@ -12,8 +12,7 @@ import javax.persistence.*;
 @Table(name="employee_mapping")
 @NamedQuery(name="EmployeeMapping.findAll", query="SELECT e FROM EmployeeMapping e")
 public class EmployeeMapping implements Serializable {
-
-	private static final long serialVersionUID = -1297784801573821761L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="employee_id")
@@ -24,6 +23,11 @@ public class EmployeeMapping implements Serializable {
 
 	@Column(name="ogle_account")
 	private String ogleAccount;
+
+	//bi-directional one-to-one association to Approver
+	@OneToOne
+	@JoinColumn(name="employee_id", referencedColumnName="employe_id")
+	private Approver approver;
 
 	public EmployeeMapping() {
 	}
@@ -50,6 +54,14 @@ public class EmployeeMapping implements Serializable {
 
 	public void setOgleAccount(String ogleAccount) {
 		this.ogleAccount = ogleAccount;
+	}
+
+	public Approver getApprover() {
+		return this.approver;
+	}
+
+	public void setApprover(Approver approver) {
+		this.approver = approver;
 	}
 
 }

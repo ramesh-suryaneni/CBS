@@ -14,15 +14,11 @@ import java.sql.Timestamp;
 @Table(name="contractor_employee_default_rate")
 @NamedQuery(name="ContractorEmployeeDefaultRate.findAll", query="SELECT c FROM ContractorEmployeeDefaultRate c")
 public class ContractorEmployeeDefaultRate implements Serializable {
-	
-	private static final long serialVersionUID = -2530135001767561726L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="rate_id")
 	private long rateId;
-
-	@Column(name="contractor_employee_id")
-	private long contractorEmployeeId;
 
 	@Column(name="currency_id")
 	private long currencyId;
@@ -31,6 +27,10 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 	private Timestamp dateFrom;
 
 	private BigDecimal rate;
+
+	//bi-directional one-to-one association to ContractorEmployee
+	@OneToOne(mappedBy="contractorEmployeeDefaultRate")
+	private ContractorEmployee contractorEmployee;
 
 	public ContractorEmployeeDefaultRate() {
 	}
@@ -41,14 +41,6 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 
 	public void setRateId(long rateId) {
 		this.rateId = rateId;
-	}
-
-	public long getContractorEmployeeId() {
-		return this.contractorEmployeeId;
-	}
-
-	public void setContractorEmployeeId(long contractorEmployeeId) {
-		this.contractorEmployeeId = contractorEmployeeId;
 	}
 
 	public long getCurrencyId() {
@@ -73,6 +65,14 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 
 	public void setRate(BigDecimal rate) {
 		this.rate = rate;
+	}
+
+	public ContractorEmployee getContractorEmployee() {
+		return this.contractorEmployee;
+	}
+
+	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
+		this.contractorEmployee = contractorEmployee;
 	}
 
 }

@@ -13,8 +13,7 @@ import java.sql.Timestamp;
 @Table(name="role_dm")
 @NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
-	
-	private static final long serialVersionUID = -138503642699009642L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="role_id")
@@ -34,6 +33,15 @@ public class RoleDm implements Serializable {
 
 	@Column(name="role_name")
 	private String roleName;
+
+	//bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne(mappedBy="roleDm")
+	private ContractorEmployeeRole contractorEmployeeRole;
+
+	//bi-directional one-to-one association to RoleDefaultRate
+	@OneToOne
+	@JoinColumn(name="role_id", referencedColumnName="role_id")
+	private RoleDefaultRate roleDefaultRate;
 
 	public RoleDm() {
 	}
@@ -66,8 +74,8 @@ public class RoleDm implements Serializable {
 		return this.disciplineId;
 	}
 
-	public void setDisciplineId(long discplineId) {
-		this.disciplineId = discplineId;
+	public void setDisciplineId(long disciplineId) {
+		this.disciplineId = disciplineId;
 	}
 
 	public String getRoleDescription() {
@@ -84,6 +92,22 @@ public class RoleDm implements Serializable {
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}
+
+	public ContractorEmployeeRole getContractorEmployeeRole() {
+		return this.contractorEmployeeRole;
+	}
+
+	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
+		this.contractorEmployeeRole = contractorEmployeeRole;
+	}
+
+	public RoleDefaultRate getRoleDefaultRate() {
+		return this.roleDefaultRate;
+	}
+
+	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
+		this.roleDefaultRate = roleDefaultRate;
 	}
 
 }

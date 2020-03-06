@@ -14,18 +14,11 @@ import java.sql.Timestamp;
 @Table(name="booking_revision")
 @NamedQuery(name="BookingRevision.findAll", query="SELECT b FROM BookingRevision b")
 public class BookingRevision implements Serializable {
-
-	private static final long serialVersionUID = -5990845334574111501L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="booking_revision_id")
 	private long bookingRevisionId;
-
-	@Column(name="approval_status_id")
-	private long approvalStatusId;
-
-	@Column(name="booking_id")
-	private long bookingId;
 
 	@Column(name="changed_by")
 	private String changedBy;
@@ -39,12 +32,6 @@ public class BookingRevision implements Serializable {
 	@Column(name="contracted_to_date")
 	private Timestamp contractedToDate;
 
-	@Column(name="contractor_employee_role_id")
-	private long contractorEmployeeRoleId;
-
-	@Column(name="currency_id")
-	private long currencyId;
-
 	@Column(name="job_number")
 	private long jobNumber;
 
@@ -52,6 +39,29 @@ public class BookingRevision implements Serializable {
 
 	@Column(name="revision_number")
 	private long revisionNumber;
+
+	//bi-directional many-to-one association to Booking
+	@ManyToOne
+	@JoinColumn(name="booking_id")
+	private Booking booking;
+
+	//bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne
+	@JoinColumn(name="contractor_employee_role_id")
+	private ContractorEmployeeRole contractorEmployeeRole;
+
+	//bi-directional one-to-one association to CurrencyDm
+	@OneToOne(mappedBy="bookingRevision")
+	private CurrencyDm currencyDm;
+
+	//bi-directional one-to-one association to ApprovalStatusDm
+	@OneToOne
+	@JoinColumn(name="approval_status_id")
+	private ApprovalStatusDm approvalStatusDm;
+
+	//bi-directional one-to-one association to ContractorEmployeeRating
+	@OneToOne(mappedBy="bookingRevision")
+	private ContractorEmployeeRating contractorEmployeeRating;
 
 	public BookingRevision() {
 	}
@@ -62,22 +72,6 @@ public class BookingRevision implements Serializable {
 
 	public void setBookingRevisionId(long bookingRevisionId) {
 		this.bookingRevisionId = bookingRevisionId;
-	}
-
-	public long getApprovalStatusId() {
-		return this.approvalStatusId;
-	}
-
-	public void setApprovalStatusId(long approvalStatusId) {
-		this.approvalStatusId = approvalStatusId;
-	}
-
-	public long getBookingId() {
-		return this.bookingId;
-	}
-
-	public void setBookingId(long bookingId) {
-		this.bookingId = bookingId;
 	}
 
 	public String getChangedBy() {
@@ -112,22 +106,6 @@ public class BookingRevision implements Serializable {
 		this.contractedToDate = contractedToDate;
 	}
 
-	public long getContractorEmployeeRoleId() {
-		return this.contractorEmployeeRoleId;
-	}
-
-	public void setContractorEmployeeRoleId(long contractorEmployeeRoleId) {
-		this.contractorEmployeeRoleId = contractorEmployeeRoleId;
-	}
-
-	public long getCurrencyId() {
-		return this.currencyId;
-	}
-
-	public void setCurrencyId(long currencyId) {
-		this.currencyId = currencyId;
-	}
-
 	public long getJobNumber() {
 		return this.jobNumber;
 	}
@@ -150,6 +128,46 @@ public class BookingRevision implements Serializable {
 
 	public void setRevisionNumber(long revisionNumber) {
 		this.revisionNumber = revisionNumber;
+	}
+
+	public Booking getBooking() {
+		return this.booking;
+	}
+
+	public void setBooking(Booking booking) {
+		this.booking = booking;
+	}
+
+	public ContractorEmployeeRole getContractorEmployeeRole() {
+		return this.contractorEmployeeRole;
+	}
+
+	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
+		this.contractorEmployeeRole = contractorEmployeeRole;
+	}
+
+	public CurrencyDm getCurrencyDm() {
+		return this.currencyDm;
+	}
+
+	public void setCurrencyDm(CurrencyDm currencyDm) {
+		this.currencyDm = currencyDm;
+	}
+
+	public ApprovalStatusDm getApprovalStatusDm() {
+		return this.approvalStatusDm;
+	}
+
+	public void setApprovalStatusDm(ApprovalStatusDm approvalStatusDm) {
+		this.approvalStatusDm = approvalStatusDm;
+	}
+
+	public ContractorEmployeeRating getContractorEmployeeRating() {
+		return this.contractorEmployeeRating;
+	}
+
+	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
+		this.contractorEmployeeRating = contractorEmployeeRating;
 	}
 
 }

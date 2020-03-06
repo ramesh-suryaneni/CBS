@@ -3,6 +3,7 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 /**
@@ -13,8 +14,7 @@ import java.sql.Timestamp;
 @Table(name="contractor")
 @NamedQuery(name="Contractor.findAll", query="SELECT c FROM Contractor c")
 public class Contractor implements Serializable {
-
-	private static final long serialVersionUID = 2179748515978628199L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="contractor_id")
@@ -36,6 +36,10 @@ public class Contractor implements Serializable {
 	private String contractorName;
 
 	private String status;
+
+	//bi-directional many-to-one association to ContractorEmployee
+	@OneToMany(mappedBy="contractor")
+	private List<ContractorEmployee> contractorEmployees;
 
 	public Contractor() {
 	}
@@ -94,6 +98,28 @@ public class Contractor implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public List<ContractorEmployee> getContractorEmployees() {
+		return this.contractorEmployees;
+	}
+
+	public void setContractorEmployees(List<ContractorEmployee> contractorEmployees) {
+		this.contractorEmployees = contractorEmployees;
+	}
+
+	public ContractorEmployee addContractorEmployee(ContractorEmployee contractorEmployee) {
+		getContractorEmployees().add(contractorEmployee);
+		contractorEmployee.setContractor(this);
+
+		return contractorEmployee;
+	}
+
+	public ContractorEmployee removeContractorEmployee(ContractorEmployee contractorEmployee) {
+		getContractorEmployees().remove(contractorEmployee);
+		contractorEmployee.setContractor(null);
+
+		return contractorEmployee;
 	}
 
 }

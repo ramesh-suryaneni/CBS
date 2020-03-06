@@ -12,8 +12,7 @@ import javax.persistence.*;
 @Table(name="currency_dm")
 @NamedQuery(name="CurrencyDm.findAll", query="SELECT c FROM CurrencyDm c")
 public class CurrencyDm implements Serializable {
-
-	private static final long serialVersionUID = -764839479930426509L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="currency_id")
@@ -24,6 +23,11 @@ public class CurrencyDm implements Serializable {
 
 	@Column(name="contractor_number")
 	private long contractorNumber;
+
+	//bi-directional one-to-one association to BookingRevision
+	@OneToOne
+	@JoinColumn(name="currency_id", referencedColumnName="currency_id")
+	private BookingRevision bookingRevision;
 
 	public CurrencyDm() {
 	}
@@ -50,6 +54,14 @@ public class CurrencyDm implements Serializable {
 
 	public void setContractorNumber(long contractorNumber) {
 		this.contractorNumber = contractorNumber;
+	}
+
+	public BookingRevision getBookingRevision() {
+		return this.bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
 	}
 
 }

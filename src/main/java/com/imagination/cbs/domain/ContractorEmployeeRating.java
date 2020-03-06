@@ -14,18 +14,11 @@ import java.sql.Timestamp;
 @Table(name="contractor_employee_ratings")
 @NamedQuery(name="ContractorEmployeeRating.findAll", query="SELECT c FROM ContractorEmployeeRating c")
 public class ContractorEmployeeRating implements Serializable {
-
-	private static final long serialVersionUID = -1319921357362178693L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="contractor_employee_ratings_id")
 	private long contractorEmployeeRatingsId;
-
-	@Column(name="booking_id")
-	private long bookingId;
-
-	@Column(name="contractor_employee_id")
-	private long contractorEmployeeId;
 
 	private String description;
 
@@ -40,6 +33,15 @@ public class ContractorEmployeeRating implements Serializable {
 
 	private String status;
 
+	//bi-directional one-to-one association to ContractorEmployee
+	@OneToOne(mappedBy="contractorEmployeeRating")
+	private ContractorEmployee contractorEmployee;
+
+	//bi-directional one-to-one association to BookingRevision
+	@OneToOne
+	@JoinColumn(name="booking_id", referencedColumnName="booking_id")
+	private BookingRevision bookingRevision;
+
 	public ContractorEmployeeRating() {
 	}
 
@@ -49,22 +51,6 @@ public class ContractorEmployeeRating implements Serializable {
 
 	public void setContractorEmployeeRatingsId(long contractorEmployeeRatingsId) {
 		this.contractorEmployeeRatingsId = contractorEmployeeRatingsId;
-	}
-
-	public long getBookingId() {
-		return this.bookingId;
-	}
-
-	public void setBookingId(long bookingId) {
-		this.bookingId = bookingId;
-	}
-
-	public long getContractorEmployeeId() {
-		return this.contractorEmployeeId;
-	}
-
-	public void setContractorEmployeeId(long contractorEmployeeId) {
-		this.contractorEmployeeId = contractorEmployeeId;
 	}
 
 	public String getDescription() {
@@ -105,6 +91,22 @@ public class ContractorEmployeeRating implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public ContractorEmployee getContractorEmployee() {
+		return this.contractorEmployee;
+	}
+
+	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
+		this.contractorEmployee = contractorEmployee;
+	}
+
+	public BookingRevision getBookingRevision() {
+		return this.bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
 	}
 
 }
