@@ -3,9 +3,9 @@
  */
 package com.imagination.cbs.service;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
 
-import com.imagination.cbs.model.Role;
+import com.imagination.cbs.dto.ContractorRoleDto;
 
 /**
  * @author Ramesh.Suryaneni
@@ -13,6 +13,9 @@ import com.imagination.cbs.model.Role;
  */
 public interface RoleService {
 	
-	public Page<Role> findAll(String sortColumn, String direction, int page, int size);
+	List<ContractorRoleDto> findAllContractorRoles(Long disciplineId);
+	
+	//public Page<Role> findAll(String sortColumn, String direction, int page, int size);
+	
 
 }

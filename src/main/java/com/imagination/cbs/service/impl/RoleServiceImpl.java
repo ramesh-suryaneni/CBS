@@ -3,11 +3,17 @@
  */
 package com.imagination.cbs.service.impl;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.imagination.cbs.model.Role;
+import com.imagination.cbs.dto.ContractorRoleDto;
+import com.imagination.cbs.mapper.RoleMapper;
+import com.imagination.cbs.repository.RoleRepository;
 import com.imagination.cbs.service.RoleService;
+
+
 
 /**
  * @author Ramesh.Suryaneni
@@ -15,11 +21,20 @@ import com.imagination.cbs.service.RoleService;
  */
 @Service("roleService")
 public class RoleServiceImpl implements RoleService {
-
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private RoleMapper roleMapper;
+	
 	@Override
-	public Page<Role> findAll(String sortColumn, String direction, int page, int size) {
-				
-		return null;
+	public List<ContractorRoleDto> findAllContractorRoles(Long disciplineId) {
+		
+		return roleMapper.toListContractorRoleDto(roleRepository.findByDisciplineId(disciplineId));
 	}
+
+
+	
 
 }

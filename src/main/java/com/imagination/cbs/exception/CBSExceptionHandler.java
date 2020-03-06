@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.imagination.cbs.model.ErrorResponse;
+import com.imagination.cbs.dto.ErrorResponse;
 
 /**
  * @author Ramesh.Suryaneni

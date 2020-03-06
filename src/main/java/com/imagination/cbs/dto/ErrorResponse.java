@@ -1,4 +1,4 @@
-package com.imagination.cbs.model;
+package com.imagination.cbs.dto;
 
 public class ErrorResponse {
 	

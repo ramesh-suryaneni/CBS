@@ -13,11 +13,12 @@ import java.sql.Timestamp;
 @Table(name="role_dm")
 @NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="role_id")
-	private long roleId;
+	private Long roleId;
 
 	@Column(name="changed_by")
 	private String changedBy;
@@ -26,7 +27,7 @@ public class RoleDm implements Serializable {
 	private Timestamp changedDate;
 
 	@Column(name="discipline_id")
-	private long disciplineId;
+	private Long disciplineId;
 
 	@Column(name="role_description")
 	private String roleDescription;
@@ -46,11 +47,11 @@ public class RoleDm implements Serializable {
 	public RoleDm() {
 	}
 
-	public long getRoleId() {
+	public Long getRoleId() {
 		return this.roleId;
 	}
 
-	public void setRoleId(long roleId) {
+	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
 	}
 
@@ -70,11 +71,11 @@ public class RoleDm implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getDisciplineId() {
+	public Long getDisciplineId() {
 		return this.disciplineId;
 	}
 
-	public void setDisciplineId(long disciplineId) {
+	public void setDisciplineId(Long disciplineId) {
 		this.disciplineId = disciplineId;
 	}
 
