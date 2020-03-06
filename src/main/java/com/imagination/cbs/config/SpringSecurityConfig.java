@@ -1,6 +1,6 @@
 /**
  * 
- */
+ *//*
 package com.imagination.cbs.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,10 +9,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 
-/**
+*//**
  * @author Ramesh.Suryaneni
  *
- */
+ *//*
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -34,10 +34,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	        http.cors().and().csrf().disable().
 	                authorizeRequests()
 	                
-	                /** BOTH ADMIN/USER CAN ACCESS **/
-	                /** ONLY ADMIN CAN ACCESS **/
+	                *//** BOTH ADMIN/USER CAN ACCESS **//*
+	                *//** ONLY ADMIN CAN ACCESS **//*
 	                .anyRequest().authenticated();
 	                
 	    }
 
 }
+*/

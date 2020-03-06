@@ -7,31 +7,16 @@ import lombok.Setter;
 
 @Data
 public class DisciplineDto {
-
 	
+	@Setter
+	@Getter
 	private long disciplineId;
 
-	
+	@Setter
+	@Getter
 	private String disciplineDescription;
 
-	
+	@Setter
+	@Getter
 	private String disciplineName;
-
-	/*
-	 * public long getDisciplineId() { return disciplineId; }
-	 * 
-	 * public void setDisciplineId(long disciplineId) { this.disciplineId =
-	 * disciplineId; }
-	 * 
-	 * public String getDisciplineDescription() { return disciplineDescription;
-	 * }
-	 * 
-	 * public void setDisciplineDescription(String disciplineDescription) {
-	 * this.disciplineDescription = disciplineDescription; }
-	 * 
-	 * public String getDisciplineName() { return disciplineName; }
-	 * 
-	 * public void setDisciplineName(String disciplineName) {
-	 * this.disciplineName = disciplineName; }
-	 */
 }

@@ -5,6 +5,7 @@ package com.imagination.cbs.service;
 
 import java.util.List;
 
+import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
 
 /**
@@ -14,5 +15,7 @@ import com.imagination.cbs.dto.DisciplineDto;
 public interface BookingService {
 
 	public List<DisciplineDto> getAllDisciplines();
+
+	public List<ContractorRoleDto> getAllContractorRoles(Long disciplineId);
 
 }
