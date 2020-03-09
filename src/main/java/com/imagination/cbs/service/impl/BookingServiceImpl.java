@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Booking;
+import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.service.BookingService;
 
 /**
@@ -24,5 +25,4 @@ public class BookingServiceImpl implements BookingService {
 	public Booking storeBookingDetails(Booking booking) {
 		return bookingRepository.save(booking);
 	}
-
 }

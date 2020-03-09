@@ -1,7 +1,5 @@
 package com.imagination.cbs.controller;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +21,8 @@ public class TeamController {
 	private TeamService teamService;
 
 	@PostMapping(value = "/store", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Team> saveTeamDetails(@Valid @RequestBody Team team) {
+	public ResponseEntity<Team> saveTeamDetails(@RequestBody Team team) {
 		Team storedTeam = teamService.storeTeamDetail(team);
 		return new ResponseEntity<Team>(storedTeam, HttpStatus.CREATED);
 	}
-
 }
