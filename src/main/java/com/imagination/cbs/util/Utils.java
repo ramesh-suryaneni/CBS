@@ -15,12 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Utils {
 
-	public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
-
 	public static boolean isExpired(String exp) throws ParseException {
 		boolean isExpired = false;
-
-		Date expireTime = addHoursToDate(DATE_FORMAT.parse(exp), 1);
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date expireTime = addHoursToDate(format.parse(exp), 1);
 
 		isExpired = (new Date().compareTo(expireTime) >= 0);
 		log.info("isExpired::: {}", isExpired);
