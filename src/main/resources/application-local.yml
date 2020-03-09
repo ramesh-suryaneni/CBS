@@ -11,3 +11,13 @@ spring:
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
+               
+   adobe:
+     baseUris : https://api.in1.echosign.com
+     grant_type: authorization_code
+     client_id: CBJCHBCAABAAVWRbJTmC9x0PxnkMHp9hgppMuDpHpJ5A
+     client_secret: miaYl4TrQHGd6fvQnPGzA_TscgV1MofE
+     redirect_uri: https://localhost:8080/auth/esignature
+     code: CBNCKBAAHBCAABAAGC_UjhiUHGbzesCaS6UNqbIWfr26MEyK
+    
+     spring.jpa.show-sql : true
