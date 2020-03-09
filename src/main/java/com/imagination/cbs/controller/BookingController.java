@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.domain.Booking;
+import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.service.BookingService;
 
 /**
@@ -28,7 +29,7 @@ public class BookingController {
 	private BookingService bookingServiceImpl;
 
 	@PostMapping(value = "/store", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Booking> saveBookingDetails(@RequestBody Booking booking) {
+	public ResponseEntity<Booking> saveBookingDetails(@RequestBody BookingDto booking) {
 		Booking storedBooking = bookingServiceImpl.storeBookingDetails(booking);
 		return new ResponseEntity<Booking>(storedBooking, HttpStatus.CREATED);
 	}

@@ -15,7 +15,7 @@ import com.imagination.cbs.domain.RoleDm;
  *
  */
 
-@Repository("bookingRepository")
+@Repository("roleRepository")
 public interface RoleRepository extends JpaRepository<RoleDm, Long> {
 	
 	List<RoleDm> findByDisciplineId(Long disciplineId);

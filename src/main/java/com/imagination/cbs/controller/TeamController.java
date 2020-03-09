@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.domain.Team;
+import com.imagination.cbs.dto.TeamDto;
 import com.imagination.cbs.service.TeamService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -21,7 +22,7 @@ public class TeamController {
 	private TeamService teamService;
 
 	@PostMapping(value = "/store", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Team> saveTeamDetails(@RequestBody Team team) {
+	public ResponseEntity<Team> saveTeamDetails(@RequestBody TeamDto team) {
 		Team storedTeam = teamService.storeTeamDetail(team);
 		return new ResponseEntity<Team>(storedTeam, HttpStatus.CREATED);
 	}
