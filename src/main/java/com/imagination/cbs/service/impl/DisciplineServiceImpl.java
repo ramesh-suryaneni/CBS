@@ -23,7 +23,9 @@ public class DisciplineServiceImpl implements DisciplineService{
     @Override
     public List<DisciplineDto> getAllDisciplines() {
 
-        return disciplineMapper.toListDisciplineDTO(disciplineRepository.findAll());
+        return disciplineMapper.toListOfDisciplineDTO(disciplineRepository.findAll());
+        
+        
 
     }
 

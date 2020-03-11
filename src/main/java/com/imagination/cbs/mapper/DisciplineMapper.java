@@ -13,6 +13,6 @@ public interface DisciplineMapper {
 	
 	DisciplineMapper INSTANCE = Mappers.getMapper( DisciplineMapper.class );
 	
-	public List<DisciplineDto> toListDisciplineDTO(List<Discipline> listOfDiscipline);
+	public List<DisciplineDto> toListOfDisciplineDTO(List<Discipline> listOfDiscipline);
 
 }

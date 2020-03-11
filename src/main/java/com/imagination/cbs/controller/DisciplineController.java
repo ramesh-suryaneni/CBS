@@ -22,11 +22,11 @@ import com.imagination.cbs.service.DisciplineService;
 public class DisciplineController {
 
 	@Autowired
-	private DisciplineService bookingService;
+	private DisciplineService disciplineServiceImpl;
 	
 	@GetMapping
 	public List<DisciplineDto> getAllDisciplines() {
-		return bookingService.getAllDisciplines();
+		return disciplineServiceImpl.getAllDisciplines();
 
 	}
 
