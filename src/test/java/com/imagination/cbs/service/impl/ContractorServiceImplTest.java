@@ -31,7 +31,7 @@ public class ContractorServiceImplTest {
 	ContractorServiceImpl serviceImpl;
 	
 	@Test
-	public void getContractorsContainingNamePositive() {
+	public void getContractorsContainingName_NameExists() {
 		List<Contractor> contractorList = new ArrayList<>();
 		
 		Contractor cntr1 = new Contractor();
@@ -63,7 +63,7 @@ public class ContractorServiceImplTest {
 	}
 	
 	@Test
-	public void getContractorsContainingNameNegative() {
+	public void getContractorsContainingName_NoNameExists() {
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
 
 		when(mapper.toListContractorDto(Mockito.any())).thenReturn(contractorDtoList);
