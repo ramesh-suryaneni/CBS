@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.service.ContractorService;
 
