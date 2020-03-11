@@ -4,35 +4,34 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the role_dm database table.
  * 
  */
 @Entity
-@Table(name="role_dm")
-@NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
+@Table(name = "role_dm")
+@NamedQuery(name = "RoleDm.findAll", query = "SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="role_id")
+	@Column(name = "role_id")
 	private Long roleId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="discipline_id")
+	@Column(name = "discipline_id")
 	private Long disciplineId;
 
-	@Column(name="role_description")
+	@Column(name = "role_description")
 	private String roleDescription;
 
-	@Column(name="role_name")
+	@Column(name = "role_name")
 	private String roleName;
 	
 	@Column(name="inside_ir35")
@@ -41,13 +40,13 @@ public class RoleDm implements Serializable {
 	@Column(name="status")
 	private String status;
 
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="roleDm")
+	// bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne(mappedBy = "roleDm")
 	private ContractorEmployeeRole contractorEmployeeRole;
 
-	//bi-directional one-to-one association to RoleDefaultRate
+	// bi-directional one-to-one association to RoleDefaultRate
 	@OneToOne
-	@JoinColumn(name="role_id", referencedColumnName="role_id")
+	@JoinColumn(name = "role_id", referencedColumnName = "role_id")
 	private RoleDefaultRate roleDefaultRate;
 
 	public RoleDm() {

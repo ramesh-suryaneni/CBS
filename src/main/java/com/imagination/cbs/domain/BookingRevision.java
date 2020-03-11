@@ -5,72 +5,73 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the booking_revision database table.
  * 
  */
 @Entity
-@Table(name="booking_revision")
-@NamedQuery(name="BookingRevision.findAll", query="SELECT b FROM BookingRevision b")
+@Table(name = "booking_revision")
+@NamedQuery(name = "BookingRevision.findAll", query = "SELECT b FROM BookingRevision b")
 public class BookingRevision implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="booking_revision_id")
-	private long bookingRevisionId;
+	@Column(name = "booking_revision_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long bookingRevisionId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="contracted_from_date")
+	@Column(name = "contracted_from_date")
 	private Timestamp contractedFromDate;
 
-	@Column(name="contracted_to_date")
+	@Column(name = "contracted_to_date")
 	private Timestamp contractedToDate;
 
-	@Column(name="job_number")
-	private long jobNumber;
+	@Column(name = "job_number")
+	private Long jobNumber;
 
+	@Column(name = "rate")
 	private BigDecimal rate;
 
-	@Column(name="revision_number")
-	private long revisionNumber;
+	@Column(name = "revision_number")
+	private Long revisionNumber;
 
-	//bi-directional many-to-one association to Booking
+	// bi-directional many-to-one association to Booking
 	@ManyToOne
-	@JoinColumn(name="booking_id")
+	@JoinColumn(name = "booking_id")
 	private Booking booking;
 
-	//bi-directional one-to-one association to ContractorEmployeeRole
+	// bi-directional one-to-one association to ContractorEmployeeRole
 	@OneToOne
-	@JoinColumn(name="contractor_employee_role_id")
+	@JoinColumn(name = "contractor_employee_role_id")
 	private ContractorEmployeeRole contractorEmployeeRole;
 
-	//bi-directional one-to-one association to CurrencyDm
-	@OneToOne(mappedBy="bookingRevision")
+	// bi-directional one-to-one association to CurrencyDm
+	@OneToOne(mappedBy = "bookingRevision")
 	private CurrencyDm currencyDm;
 
-	//bi-directional one-to-one association to ApprovalStatusDm
+	// bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
-	@JoinColumn(name="approval_status_id")
+	@JoinColumn(name = "approval_status_id")
 	private ApprovalStatusDm approvalStatusDm;
 
-	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne(mappedBy="bookingRevision")
+	// bi-directional one-to-one association to ContractorEmployeeRating
+	@OneToOne(mappedBy = "bookingRevision")
 	private ContractorEmployeeRating contractorEmployeeRating;
 
 	public BookingRevision() {
 	}
 
-	public long getBookingRevisionId() {
+	public Long getBookingRevisionId() {
 		return this.bookingRevisionId;
 	}
 
-	public void setBookingRevisionId(long bookingRevisionId) {
+	public void setBookingRevisionId(Long bookingRevisionId) {
 		this.bookingRevisionId = bookingRevisionId;
 	}
 
@@ -106,11 +107,11 @@ public class BookingRevision implements Serializable {
 		this.contractedToDate = contractedToDate;
 	}
 
-	public long getJobNumber() {
+	public Long getJobNumber() {
 		return this.jobNumber;
 	}
 
-	public void setJobNumber(long jobNumber) {
+	public void setJobNumber(Long jobNumber) {
 		this.jobNumber = jobNumber;
 	}
 
@@ -122,11 +123,11 @@ public class BookingRevision implements Serializable {
 		this.rate = rate;
 	}
 
-	public long getRevisionNumber() {
+	public Long getRevisionNumber() {
 		return this.revisionNumber;
 	}
 
-	public void setRevisionNumber(long revisionNumber) {
+	public void setRevisionNumber(Long revisionNumber) {
 		this.revisionNumber = revisionNumber;
 	}
 

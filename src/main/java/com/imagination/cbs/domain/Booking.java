@@ -1,9 +1,24 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * The persistent class for the booking database table.
@@ -40,7 +55,7 @@ public class Booking implements Serializable {
 	private ApprovalStatusDm approvalStatusDm;
 
 	// bi-directional many-to-one association to BookingRevision
-	@OneToMany(mappedBy = "booking")
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<BookingRevision> bookingRevisions;
 
 	public Booking() {
@@ -95,6 +110,9 @@ public class Booking implements Serializable {
 	}
 
 	public List<BookingRevision> getBookingRevisions() {
+		if (CollectionUtils.isEmpty(this.bookingRevisions)) {
+			return this.bookingRevisions = new ArrayList<BookingRevision>();
+		}
 		return this.bookingRevisions;
 	}
 
@@ -102,17 +120,13 @@ public class Booking implements Serializable {
 		this.bookingRevisions = bookingRevisions;
 	}
 
-	public BookingRevision addBookingRevision(BookingRevision bookingRevision) {
+	public void addBookingRevision(BookingRevision bookingRevision) {
 		getBookingRevisions().add(bookingRevision);
 		bookingRevision.setBooking(this);
-
-		return bookingRevision;
 	}
 
 	public BookingRevision removeBookingRevision(BookingRevision bookingRevision) {
 		getBookingRevisions().remove(bookingRevision);
-		bookingRevision.setBooking(null);
-
 		return bookingRevision;
 	}
 

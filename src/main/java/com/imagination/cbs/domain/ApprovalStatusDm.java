@@ -17,7 +17,7 @@ public class ApprovalStatusDm implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="approval_status_id")
-	private long approvalStatusId;
+	private Long approvalStatusId;
 
 	@Column(name="approval_description")
 	private String approvalDescription;
@@ -36,11 +36,11 @@ public class ApprovalStatusDm implements Serializable {
 	public ApprovalStatusDm() {
 	}
 
-	public long getApprovalStatusId() {
+	public Long getApprovalStatusId() {
 		return this.approvalStatusId;
 	}
 
-	public void setApprovalStatusId(long approvalStatusId) {
+	public void setApprovalStatusId(Long approvalStatusId) {
 		this.approvalStatusId = approvalStatusId;
 	}
 

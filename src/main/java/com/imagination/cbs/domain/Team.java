@@ -19,7 +19,7 @@ public class Team implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="team_id")
-	private long teamId;
+	private Long teamId;
 
 	@Column(name="changed_date")
 	private Timestamp changedDate;
@@ -41,11 +41,11 @@ public class Team implements Serializable {
 	public Team() {
 	}
 
-	public long getTeamId() {
+	public Long getTeamId() {
 		return this.teamId;
 	}
 
-	public void setTeamId(long teamId) {
+	public void setTeamId(Long teamId) {
 		this.teamId = teamId;
 	}
 
