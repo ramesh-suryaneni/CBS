@@ -11,6 +11,6 @@ import com.imagination.cbs.dto.BookingDto;
  *
  */
 public interface BookingService {
-	public Booking storeBookingDetails(BookingDto booking);
+	public Booking addBookingDetails(BookingDto booking);
 
 }

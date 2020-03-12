@@ -33,7 +33,7 @@ public class Booking implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "booking_id")
-	private long bookingId;
+	private Long bookingId;
 
 	@Column(name = "booking_description")
 	private String bookingDescription;
@@ -61,11 +61,11 @@ public class Booking implements Serializable {
 	public Booking() {
 	}
 
-	public long getBookingId() {
+	public Long getBookingId() {
 		return this.bookingId;
 	}
 
-	public void setBookingId(long bookingId) {
+	public void setBookingId(Long bookingId) {
 		this.bookingId = bookingId;
 	}
 

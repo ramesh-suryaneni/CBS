@@ -5,49 +5,49 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the contractor_employee_default_rate database table.
  * 
  */
 @Entity
-@Table(name="contractor_employee_default_rate")
-@NamedQuery(name="ContractorEmployeeDefaultRate.findAll", query="SELECT c FROM ContractorEmployeeDefaultRate c")
+@Table(name = "contractor_employee_default_rate")
+@NamedQuery(name = "ContractorEmployeeDefaultRate.findAll", query = "SELECT c FROM ContractorEmployeeDefaultRate c")
 public class ContractorEmployeeDefaultRate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="rate_id")
-	private long rateId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "rate_id")
+	private Long rateId;
 
-	@Column(name="currency_id")
-	private long currencyId;
+	@Column(name = "currency_id")
+	private Long currencyId;
 
-	@Column(name="date_from")
+	@Column(name = "date_from")
 	private Timestamp dateFrom;
 
 	private BigDecimal rate;
 
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne(mappedBy="contractorEmployeeDefaultRate")
+	// bi-directional one-to-one association to ContractorEmployee
+	@OneToOne(mappedBy = "contractorEmployeeDefaultRate")
 	private ContractorEmployee contractorEmployee;
 
 	public ContractorEmployeeDefaultRate() {
 	}
 
-	public long getRateId() {
+	public Long getRateId() {
 		return this.rateId;
 	}
 
-	public void setRateId(long rateId) {
+	public void setRateId(Long rateId) {
 		this.rateId = rateId;
 	}
 
-	public long getCurrencyId() {
+	public Long getCurrencyId() {
 		return this.currencyId;
 	}
 
-	public void setCurrencyId(long currencyId) {
+	public void setCurrencyId(Long currencyId) {
 		this.currencyId = currencyId;
 	}
 

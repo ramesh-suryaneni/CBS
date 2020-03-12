@@ -15,6 +15,7 @@ public class ContractorEmployeeRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contractor_employee_role_id")
 	private Long contractorEmployeeRoleId;
 

@@ -28,9 +28,9 @@ public class BookingController {
 	@Autowired
 	private BookingService bookingServiceImpl;
 
-	@PostMapping(value = "/store", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Booking> saveBookingDetails(@RequestBody BookingDto booking) {
-		Booking storedBooking = bookingServiceImpl.storeBookingDetails(booking);
+	@PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Booking> addBookingDetails(@RequestBody BookingDto booking) {
+		Booking storedBooking = bookingServiceImpl.addBookingDetails(booking);
 		return new ResponseEntity<Booking>(storedBooking, HttpStatus.CREATED);
 	}
 }

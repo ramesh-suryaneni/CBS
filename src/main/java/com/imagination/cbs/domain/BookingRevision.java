@@ -1,9 +1,20 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the booking_revision database table.
@@ -52,7 +63,7 @@ public class BookingRevision implements Serializable {
 	private ContractorEmployeeRole contractorEmployeeRole;
 
 	// bi-directional one-to-one association to CurrencyDm
-	@OneToOne(mappedBy = "bookingRevision")
+	@OneToOne(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
 	private CurrencyDm currencyDm;
 
 	// bi-directional one-to-one association to ApprovalStatusDm
@@ -61,10 +72,31 @@ public class BookingRevision implements Serializable {
 	private ApprovalStatusDm approvalStatusDm;
 
 	// bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne(mappedBy = "bookingRevision")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "booking_revision_id")
 	private ContractorEmployeeRating contractorEmployeeRating;
 
+	@Column(name = "contractor_signed_date")
+	private Timestamp contractorSignedDate;
+
+	@Column(name = "currency_id")
+	private Long currencyId;
+
+	@Column(name = "agreement_document_id")
+	private Long agreementDocumentId;
+
+	@Column(name = "agreement_id")
+	private Long agreementId;
+
 	public BookingRevision() {
+	}
+
+	public Long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
 	}
 
 	public Long getBookingRevisionId() {
@@ -169,6 +201,30 @@ public class BookingRevision implements Serializable {
 
 	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
 		this.contractorEmployeeRating = contractorEmployeeRating;
+	}
+
+	public Timestamp getContractorSignedDate() {
+		return contractorSignedDate;
+	}
+
+	public void setContractorSignedDate(Timestamp contractorSignedDate) {
+		this.contractorSignedDate = contractorSignedDate;
+	}
+
+	public Long getAgreementDocumentId() {
+		return agreementDocumentId;
+	}
+
+	public void setAgreementDocumentId(Long agreementDocumentId) {
+		this.agreementDocumentId = agreementDocumentId;
+	}
+
+	public Long getAgreementId() {
+		return agreementId;
+	}
+
+	public void setAgreementId(Long agreementId) {
+		this.agreementId = agreementId;
 	}
 
 }
