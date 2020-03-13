@@ -13,11 +13,13 @@ spring:
                use_jdbc_metadata_defaults:   false
                
    adobe:
-     baseUris : https://api.in1.echosign.com
      grant_type: authorization_code
      client_id: CBJCHBCAABAAVWRbJTmC9x0PxnkMHp9hgppMuDpHpJ5A
      client_secret: miaYl4TrQHGd6fvQnPGzA_TscgV1MofE
      redirect_uri: https://localhost:8080/auth/esignature
-     code: CBNCKBAAHBCAABAAGC_UjhiUHGbzesCaS6UNqbIWfr26MEyK
+     code: CBNCKBAAHBCAABAA-VWJG5GIbGSllRE6I3-Tnq5ZRa6AFaIj
+     base_uri: https://api.na1.echosign.com:443/api/rest/v6/baseUris
+     apiAccessPoint: https://api.in1.echosign.com/
+     webAccessPoint: https://secure.in1.echosign.com/
     
      spring.jpa.show-sql : true
