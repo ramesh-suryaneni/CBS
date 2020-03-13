@@ -26,6 +26,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.sources>src/main/java</sonar.sources>
+		<sonar.exclusions>**/domain/*.java, **/config/SpringSecurityConfig.java</sonar.exclusions>
 		<sonar.tests>src/test/java</sonar.tests>
 	</properties>
 

@@ -19,9 +19,9 @@ public class ContractorBookingSystemLoggerAdvice {
 	public Object logBefore(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
 		
 		
-		logger.info(" Started - : {} "+proceedingJoinPoint.getSignature());
+		logger.info(" Started - : {} ", proceedingJoinPoint.getSignature());
 		
-		logger.info(" Arguments - : {} "+proceedingJoinPoint.getArgs());
+		logger.info(" Arguments - : {} ", proceedingJoinPoint.getArgs());
 		
 		return proceedingJoinPoint.proceed();
 		
@@ -31,11 +31,11 @@ public class ContractorBookingSystemLoggerAdvice {
 	@AfterReturning(pointcut = "execution(* com.imagination.cbs.controller.* .*(..)) || execution(* com.imagination.cbs.service.impl.* .*(..)) || execution(* com.imagination.cbs.repository.* .*(..))", returning ="result")
 	public void logAfter(JoinPoint  joinPoint, Object result){
 		
-		logger.info(" End - : {} "+joinPoint.getSignature());
+		logger.info(" End - : {} ", joinPoint.getSignature());
 		
-		logger.info(" Arguments : - {} "+joinPoint.getArgs());
+		logger.info(" Arguments : - {} ", joinPoint.getArgs());
 		
-		logger.info(" Returned Value : - {} "+result);
+		logger.info(" Returned Value : - {} ", result);
 	}
 
 }

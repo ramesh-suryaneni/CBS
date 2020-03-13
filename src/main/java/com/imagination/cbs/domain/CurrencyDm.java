@@ -18,12 +18,6 @@ public class CurrencyDm implements Serializable {
 	@Column(name="currency_id")
 	private long currencyId;
 
-	@Column(name="company_name")
-	private String companyName;
-
-	@Column(name="contractor_number")
-	private long contractorNumber;
-
 	//bi-directional one-to-one association to BookingRevision
 	@OneToOne
 	@JoinColumn(name="currency_id", referencedColumnName="currency_id")
@@ -38,22 +32,6 @@ public class CurrencyDm implements Serializable {
 
 	public void setCurrencyId(long currencyId) {
 		this.currencyId = currencyId;
-	}
-
-	public String getCompanyName() {
-		return this.companyName;
-	}
-
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
-	}
-
-	public long getContractorNumber() {
-		return this.contractorNumber;
-	}
-
-	public void setContractorNumber(long contractorNumber) {
-		this.contractorNumber = contractorNumber;
 	}
 
 	public BookingRevision getBookingRevision() {
