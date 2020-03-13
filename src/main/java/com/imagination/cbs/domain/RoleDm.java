@@ -34,6 +34,12 @@ public class RoleDm implements Serializable {
 
 	@Column(name="role_name")
 	private String roleName;
+	
+	@Column(name="inside_ir35")
+	private String insideIr35;
+	
+	@Column(name="status")
+	private String status;
 
 	//bi-directional one-to-one association to ContractorEmployeeRole
 	@OneToOne(mappedBy="roleDm")
@@ -111,4 +117,21 @@ public class RoleDm implements Serializable {
 		this.roleDefaultRate = roleDefaultRate;
 	}
 
+	public String getInsideIr35() {
+		return insideIr35;
+	}
+
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	
 }
