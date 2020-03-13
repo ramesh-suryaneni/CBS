@@ -1,17 +1,18 @@
 package com.imagination.cbs.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import static com.imagination.cbs.util.AdobeConstant.*;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.model.AdobeOAuth;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.OAuthService;
-import com.imagination.cbs.util.Utils;
+import com.imagination.cbs.util.AdobeUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,84 +23,63 @@ public class OAuthServiceImpl implements OAuthService {
 	@Autowired
 	private ConfigRepository configRepository;
 
-	@Override
-	public boolean saveOrUpdateAccessToken(Map<String, Config> keys, AdobeOAuth oAuth) {
-		log.info("keys check:::{keys,oAuth}", keys,oAuth);
-		
-		List<?> result =new ArrayList<>();
-		
-		if (isNullOrEmptyMap(keys)) {
-			
-			log.info("access token inserted:::{}");
-			
-			List<Config> list = new ArrayList<>();
-			Config c1 = new Config();
-			c1.setKeyName("ADOBE_ACCESS_TOKEN");
-			c1.setKeyValue(oAuth.getAccess_token());
-			c1.setKeyDescription("Adobe Access token");
-			list.add(c1);
+	public boolean saveOrUpdateAccessToken(AdobeOAuth oAuth) {
+		Map<String, Config> result = new HashMap<>();
 
-			Config c2 = new Config();
-			c2.setKeyName("ADOBE_REFRESH_TOKEN");
-			c2.setKeyValue(oAuth.getRefresh_token());
-			c2.setKeyDescription("Adobe refresh token");
-			list.add(c2);
+		try {
+			Config c1 = configRepository.findByKeyName(ADOBE_ACCESS_TOKEN).map(c -> {
+				c.setKeyValue(oAuth.getAccessToken());
+				return configRepository.save(c);
+			}).orElseGet(() -> {
+				Config con = new Config();
+				con.setKeyName(ADOBE_ACCESS_TOKEN);
+				con.setKeyValue(oAuth.getAccessToken());
+				con.setKeyDescription("Adobe access token");
+				return configRepository.save(con);
+			});
+			result.put(ADOBE_ACCESS_TOKEN, c1);
 
-			Config c3 = new Config();
-			c3.setKeyName("ADOBE_TOKEN_TYPE");
-			c3.setKeyValue(oAuth.getToken_type());
-			c3.setKeyDescription("Adobe token type");
-			list.add(c3);
+			Config c2 = configRepository.findByKeyName(ADOBE_REFRESH_TOKEN).map(c -> {
+				c.setKeyValue(oAuth.getRefreshToken());
+				return configRepository.save(c);
+			}).orElseGet(() -> {
+				Config con = new Config();
+				con.setKeyName(ADOBE_REFRESH_TOKEN);
+				con.setKeyValue(oAuth.getRefreshToken());
+				con.setKeyDescription("Adobe refresh token");
+				return configRepository.save(con);
+			});
+			result.put(ADOBE_REFRESH_TOKEN, c2);
 
-			Config c4 = new Config();
-			c4.setKeyName("ADOBE_ACCESS_TOKEN_EXP_TIME");
-			c4.setKeyValue(Utils.getCurrentDateTime());
-			c4.setKeyDescription("Adobe Access token Exp time");
-			list.add(c4);
+			Config c3 = configRepository.findByKeyName(ADOBE_TOKEN_TYPE).map(c -> {
+				c.setKeyValue(oAuth.getTokenType());
+				return configRepository.save(c);
+			}).orElseGet(() -> {
+				Config con = new Config();
+				con.setKeyName(ADOBE_TOKEN_TYPE);
+				con.setKeyValue(oAuth.getTokenType());
+				con.setKeyDescription("Adobe access token type");
+				return configRepository.save(con);
+			});
+			result.put("ADOBE_TOKEN_TYPE", c3);
 
-			result=configRepository.saveAll(list);
+			Config c4 = configRepository.findByKeyName(ADOBE_ACCESS_TOKEN_EXP_TIME).map(c -> {
+				c.setKeyValue(AdobeUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				return configRepository.save(c);
+			}).orElseGet(() -> {
+				Config con = new Config();
+				con.setKeyName(ADOBE_ACCESS_TOKEN_EXP_TIME);
+				con.setKeyValue(AdobeUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				con.setKeyDescription("Adobe access token expired in next one hours");
+				return configRepository.save(con);
+			});
+			result.put(ADOBE_ACCESS_TOKEN_EXP_TIME, c4);
+			log.info("result:::{}", new ObjectMapper().writeValueAsString(result));
 
-		} else {
-
-			List<Config> list = new ArrayList<>();
-			log.info("access token updated:::{}");
-			Config c1 = new Config();
-			c1.setConfigId(keys.get("ADOBE_ACCESS_TOKEN").getConfigId());
-			c1.setKeyName("ADOBE_ACCESS_TOKEN");
-			c1.setKeyValue(oAuth.getAccess_token());
-			c1.setKeyDescription("Adobe Access token");
-			list.add(c1);
-
-			Config c2 = new Config();
-			c2.setConfigId(keys.get("ADOBE_REFRESH_TOKEN").getConfigId());
-			c2.setKeyName("ADOBE_REFRESH_TOKEN");
-			c2.setKeyValue(oAuth.getRefresh_token());
-			c2.setKeyDescription("Adobe refresh token");
-			list.add(c2);
-
-			Config c3 = new Config();
-			c3.setConfigId(keys.get("ADOBE_TOKEN_TYPE").getConfigId());
-			c3.setKeyName("ADOBE_TOKEN_TYPE");
-			c3.setKeyValue(oAuth.getToken_type());
-			c3.setKeyDescription("Adobe token type");
-			list.add(c3);
-
-			Config c4 = new Config();
-			c4.setConfigId(keys.get("ADOBE_ACCESS_TOKEN_EXP_TIME").getConfigId());
-			c4.setKeyName("ADOBE_ACCESS_TOKEN_EXP_TIME");
-			c4.setKeyValue(Utils.getCurrentDateTime());
-			c4.setKeyDescription("Adobe Access token Exp time");
-			list.add(c4);
-			
-			result=configRepository.saveAll(list);
-
+		} catch (Exception e) {
+			log.info("Exception inside saveOrUpdate()::: {}", e);
+			return false;
 		}
-		return (result == null || result.size() == 0) ? false : true;
+		return true;
 	}
-
-	public static boolean isNullOrEmptyMap(Map<?, ?> map) {
-
-		return (map == null || map.isEmpty());
-	}
-
 }

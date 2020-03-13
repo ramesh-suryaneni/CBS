@@ -4,8 +4,10 @@ import lombok.Data;
 
 @Data
 public class AdobeOAuth {
-	private String access_token;
-	private String refresh_token;
-	private String token_type;
-	private String expires_in;
+	
+	private String accessToken;
+	private String refreshToken;
+	private String tokenType;
+	private int expiresIn;
+	
 }

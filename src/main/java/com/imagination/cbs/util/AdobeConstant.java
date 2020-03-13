@@ -2,42 +2,57 @@ package com.imagination.cbs.util;
 
 public class AdobeConstant {
 
-	public static String OAUTH_ACCESS_TOKEN_ENDPOINT = "/token";
-	public static String OAUTH_REFRESH_TOKEN_ENDPOINT = "/refresh";
-	public static String BEARER = "Bearer ";
-	public static String SERVICES_BASE_URL = "https://api.na1.echosign.com:443/api/rest/v6/baseUris";
-	public static String OAUTH_BASE_URL = "https://secure.echosign.com/oauth";
+	private AdobeConstant() {
+		//default constructor ignored
+	}
 	
-	public static String ADOBE_CODE="adobe.code";
-	public static String ADOBE_CLIENT_ID="adobe.client_id";
-	public static String ADOBE_CLIENT_SECRET="adobe.client_secret";
-	public static String ADOBE_REDIRECT_URI="adobe.redirect_uri";
-	public static String ADOBE_GRANT_TYPE="adobe.grant_type";
-	
-	
-	public static String IMAGE = "yashlogo.png";
-	public static String FILENAME = "Employee-eSign.pdf";
-	public static String ACCESS_TOKEN_URL = "access.token.url";
-	public static String GRANT_TYPE = "grant_type";
-	public static String CLIENT_ID = "client_id";
-    public static String CLIENT_SECRET = "client_secret";
-	public static String REDIRECT_URI = "redirect_uri";
-	public static String CODE = "code";
-	
-	public static String CONTENT_TYPE = "Content-Type";
-	public static String TYPE = "application/x-www-form-urlencoded";
+	public static final String ADOBE = "ADOBE";
+	public static final String ADOBE_ACCESS_TOKEN = "ADOBE_ACCESS_TOKEN";
+	public static final String ADOBE_REFRESH_TOKEN = "ADOBE_REFRESH_TOKEN";
+	public static final String ADOBE_TOKEN_TYPE = "ADOBE_TOKEN_TYPE";
+	public static final String ADOBE_ACCESS_TOKEN_EXP_TIME = "ADOBE_ACCESS_TOKEN_EXP_TIME";
 
-	public static String sendAgreementJSONFileName = "SendAgreement.json";
-	public static String FILETOBEUPLOADED = "Sample.pdf";
-	public static String uploadedFileName = "UploadedSample.pdf";
+	public static final String OAUTH_ACCESS_TOKEN_ENDPOINT = "/token";
+	public static final String OAUTH_REFRESH_TOKEN_ENDPOINT = "/refresh";
+	public static final String BEARER = "Bearer ";
+	public static final String ADOBE_API_ACCESSPOINT = "adobe.apiAccessPoint";
+	public static final String OAUTH_BASE_URL = "https://secure.echosign.com/oauth";
+	public static final String ADOBE_BASE_URIS = "adobe.baseUris";
+	public static final String ACCESS_TOKEN = "access_token";
+	public static final String REFRESH_TOKEN = "refresh_token";
+	public static final String TOKEN_TYPE = "token_type";
+	public static final String EXPIRES_IN = "expires_in";
 
-	public static String AGREEMENTS_ENDPOINT = "/agreements";
-	public static String AUDIT_ENDPOINT = "/auditTrail";
-	public static String DOCUMENTS_ENDPOINT = "/documents";
-	public static String COMBINEDDOC_ENDPOINT = "/combinedDocument";
-	public static String MEMBERS_ENDPOINT = "/members";
-	public static String REMINDERS_ENDPOINT = "/reminders";
-	public static String SIGNING_URLS_ENDPOINT = "/signingUrls";
-	public static String TRANSIENT_DOCUMENTS_ENDPOINT = "/transientDocuments";
+	public static final String ADOBE_CODE = "adobe.code";
+	public static final String ADOBE_CLIENT_ID = "adobe.client_id";
+	public static final String ADOBE_CLIENT_SECRET = "adobe.client_secret";
+	public static final String ADOBE_REDIRECT_URI = "adobe.redirect_uri";
+	public static final String ADOBE_GRANT_TYPE = "adobe.grant_type";
+	public static final String ADOBE_BASE_URI = "adobe.base_uri";
+
+	public static final String IMAGE = "yashlogo.png";
+	public static final String FILENAME = "eSign.pdf";
+	public static final String ACCESS_TOKEN_URL = "access.token.url";
+	public static final String GRANT_TYPE = "grant_type";
+	public static final String CLIENT_ID = "client_id";
+	public static final String CLIENT_SECRET = "client_secret";
+	public static final String REDIRECT_URI = "redirect_uri";
+	public static final String CODE = "code";
+
+	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String TYPE = "application/x-www-form-urlencoded";
+
+	public static final String SEND_AGREEMENT_JSON_FILENAME = "SendAgreement.json";
+	public static final String FILETOBEUPLOADED = "Sample.pdf";
+	public static final String UPLOADED_FILENAME = "UploadedSample.pdf";
+
+	public static final String AGREEMENTS_ENDPOINT = "/agreements";
+	public static final String AUDIT_ENDPOINT = "/auditTrail";
+	public static final String DOCUMENTS_ENDPOINT = "/documents";
+	public static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";
+	public static final String MEMBERS_ENDPOINT = "/members";
+	public static final String REMINDERS_ENDPOINT = "/reminders";
+	public static final String SIGNING_URLS_ENDPOINT = "/signingUrls";
+	public static final String TRANSIENT_DOCUMENTS_ENDPOINT = "/transientDocuments";
 
 }

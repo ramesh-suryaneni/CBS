@@ -4,5 +4,5 @@ import org.springframework.core.io.FileSystemResource;
 
 public interface UploadDocumentService {
 
-	String uploadDocUsingTransientDocument(FileSystemResource file) throws Exception;
+	String uploadDocUsingTransientDocument(FileSystemResource file);
 }

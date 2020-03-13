@@ -13,15 +13,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class Utils {
+public class AdobeUtils {
 
-	public static boolean isExpired(String exp) throws ParseException {
+	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	private AdobeUtils() {
+		//default constructor ignored
+	}
+	
+	public static boolean isExpired(String exp) {
 		boolean isExpired = false;
-		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date expireTime = addHoursToDate(format.parse(exp), 1);
-
-		isExpired = (new Date().compareTo(expireTime) >= 0);
+		try {
+			isExpired = (new Date().compareTo(format.parse(exp)) >= 0);
+		} catch (ParseException e) {
+			log.info("Exception inside::: {}", e);
+		}
 		log.info("isExpired::: {}", isExpired);
 
 		return !isExpired;
@@ -34,20 +41,29 @@ public class Utils {
 		return calendar.getTime();
 	}
 
-	public static String getCurrentDateTime() {
+	public static String getCurrentDateTime(int seconds) {
+		
+		LocalDateTime currentTime = LocalDateTime.now().plusHours(secondsToHours(seconds));
 
-		LocalDateTime now = LocalDateTime.now();
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-		String formatDateTime = now.format(formatter);
+		String formatDateTime = currentTime.format(dateFormat);
 
 		log.info("FormatDateTime::: {}", formatDateTime);
 
 		return formatDateTime;
 	}
 
-	public static enum HttpHeaderField {
+	public static int secondsToHours(int seconds) {
+
+		int sec = seconds % 60;
+		int hours = seconds / 60;
+		int mintue = hours % 60;
+		hours = hours / 60;
+		log.info("HH:MM:SS={} seconds={}", hours + ":" + mintue + ":" + sec, seconds);
+
+		return hours;
+	}
+
+	public  enum HttpHeaderField {
 		CONTENT_TYPE("Content-Type"), AUTHORIZATION("Authorization"), FILE_NAME("File-Name"), FILE("File"),
 		MIME_TYPE("Mime-Type"), USER_EMAIL("X-User-Email"), ACCEPT("ACCEPT");
 
@@ -63,7 +79,7 @@ public class Utils {
 		}
 	}
 
-	public static enum DocumentIdentifierName {
+	public  enum DocumentIdentifierName {
 		TRANSIENT_DOCUMENT_ID("transientDocumentId"), LIBRARY_DOCUMENT_ID("libraryDocumentId"),
 		DOCUMENT_URL("documentURL");
 

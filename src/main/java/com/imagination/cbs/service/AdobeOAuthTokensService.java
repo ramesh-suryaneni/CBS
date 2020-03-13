@@ -2,7 +2,7 @@ package com.imagination.cbs.service;
 
 public interface AdobeOAuthTokensService {
 
-	 String getOauthAccessToken() throws Exception;
+	 String getOauthAccessToken();
 	
-	 String getBaseURIForRestAPI(String accessToken) throws Exception;
+	 String getBaseURIForRestAPI(String accessToken);
 }
