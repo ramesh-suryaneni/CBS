@@ -25,8 +25,6 @@ public class DisciplineServiceImpl implements DisciplineService{
 
         return disciplineMapper.toListOfDisciplineDTO(disciplineRepository.findAll());
         
-        
-
     }
 
 }

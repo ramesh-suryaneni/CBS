@@ -22,7 +22,7 @@ public class OfficeDm implements Serializable {
 
 	@Id
 	@Column(name="office_id")
-	private long officeId;
+	private Long officeId;
 
 	@Column(name="office_name")
 	private String officeName;
@@ -40,11 +40,11 @@ public class OfficeDm implements Serializable {
 	@JoinColumn(name="country_id")
 	private CountryDm countryDm;
 
-	public long getOfficeId() {
+	public Long getOfficeId() {
 		return officeId;
 	}
 
-	public void setOfficeId(long officeId) {
+	public void setOfficeId(Long officeId) {
 		this.officeId = officeId;
 	}
 

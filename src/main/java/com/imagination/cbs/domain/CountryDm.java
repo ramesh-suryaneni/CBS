@@ -3,7 +3,6 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +18,7 @@ public class CountryDm implements Serializable{
 
 	@Id
 	@Column(name="country_id")
-	private long countryId;
+	private Long countryId;
 
 	@Column(name="country_name")
 	private String countryName;
@@ -37,11 +36,11 @@ public class CountryDm implements Serializable{
 	private List<OfficeDm> officeDms;
 	
 	
-	public long getCountryId() {
+	public Long getCountryId() {
 		return countryId;
 	}
 
-	public void setCountryId(long countryId) {
+	public void setCountryId(Long countryId) {
 		this.countryId = countryId;
 	}
 
