@@ -12,6 +12,7 @@ import com.imagination.cbs.service.impl.AdobeOAuthTokensServiceImpl;
 public class ContractorBookingSystemApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(ContractorBookingSystemApplication.class, args);
 	}
 

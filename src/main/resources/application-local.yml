@@ -1,25 +1,24 @@
 spring:
-   datasource:
-      url:   jdbc:sqlserver://imagination-cbs.database.windows.net:1433;database=imagination-cbs      
-      username:   yash@imagination-cbs
-      password:   test@123
-   jpa:
-      generate-ddl:   false
-      properties:
-         hibernate:
-            default_schema:   cbs
-            dialect:   org.hibernate.dialect.SQLServer2012Dialect
-            temp:
-               use_jdbc_metadata_defaults:   false
-               
-   adobe:
-     grant_type: authorization_code
-     client_id: CBJCHBCAABAAVWRbJTmC9x0PxnkMHp9hgppMuDpHpJ5A
-     client_secret: miaYl4TrQHGd6fvQnPGzA_TscgV1MofE
-     redirect_uri: https://localhost:8080/auth/esignature
-     code: CBNCKBAAHBCAABAA-VWJG5GIbGSllRE6I3-Tnq5ZRa6AFaIj
-     base_uri: https://api.na1.echosign.com:443/api/rest/v6/baseUris
-     apiAccessPoint: https://api.in1.echosign.com/
-     webAccessPoint: https://secure.in1.echosign.com/
+  datasource:
+    url: jdbc:sqlserver://imagination-cbs.database.windows.net:1433;database=imagination-cbs
+    username: yash@imagination-cbs
+    password: test@123
+  jpa:
+    generate-ddl: false
+    properties:
+      hibernate:
+        default_schema: cbs
+        dialect: org.hibernate.dialect.SQLServer2012Dialect
+        temp:
+          use_jdbc_metadata_defaults: false
+adobe:
+    grant_type: authorization_code
+    client_id: CBJCHBCAABAAVWRbJTmC9x0PxnkMHp9hgppMuDpHpJ5A
+    client_secret: miaYl4TrQHGd6fvQnPGzA_TscgV1MofE
+    redirect_uri: https://localhost:8080/auth/esignature
+    code: CBNCKBAAHBCAABAA1LFeKQRk_zfhZGFZ3K3Se2F4kPTVWfPu
+    base_uri: https://api.na1.echosign.com:443/api/rest/v6/baseUris
+    apiAccessPoint: https://api.in1.echosign.com/
+    webAccessPoint: https://secure.in1.echosign.com/
     
-     spring.jpa.show-sql : true
+spring.jpa.show-sql: true

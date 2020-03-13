@@ -35,9 +35,9 @@ public class Config implements Serializable {
 	@Column(name = "key_value")
 	private String keyValue;
 
-	@Column(name = "created_date")
+	@Column(name = "changed_date")
 	@CreationTimestamp
-	private LocalDateTime createdDate;
+	private LocalDateTime changedDate;
 
 	public long getConfigId() {
 		return this.configId;
@@ -73,8 +73,8 @@ public class Config implements Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("Config [configId=%s, keyDescription=%s, keyName=%s, keyValue=%s, createdDate=%s]",
-				configId, keyDescription, keyName, keyValue, createdDate);
+		return String.format("Config [configId=%s, keyDescription=%s, keyName=%s, keyValue=%s, changedDate=%s]",
+				configId, keyDescription, keyName, keyValue, changedDate);
 	}
 
 }

@@ -171,7 +171,6 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		HttpEntity<?> httpEntity = new HttpEntity<>(getRequestBody(), headers);
 
 		try {
-			log.info("AdobeOAuth:::String URL: {}", url);
 			results = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
 			log.info("AdobeOAuth:::results: {}", results);
 			oAuths = convertJsonToObj(results.getBody());
