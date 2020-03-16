@@ -17,8 +17,15 @@ public class BookingRevision implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="booking_revision_id")
 	private long bookingRevisionId;
+
+	@Column(name="agreement_document_id")
+	private String agreementDocumentId;
+
+	@Column(name="agreement_id")
+	private String agreementId;
 
 	@Column(name="changed_by")
 	private String changedBy;
@@ -26,14 +33,62 @@ public class BookingRevision implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
+	@Column(name="contract_amount_aftertax")
+	private BigDecimal contractAmountAftertax;
+
+	@Column(name="contract_amount_beforetax")
+	private BigDecimal contractAmountBeforetax;
+
 	@Column(name="contracted_from_date")
 	private Timestamp contractedFromDate;
 
 	@Column(name="contracted_to_date")
 	private Timestamp contractedToDate;
 
+	@Column(name="contractor_contact_details")
+	private String contractorContactDetails;
+
+	@Column(name="contractor_employee_name")
+	private String contractorEmployeeName;
+
+	@Column(name="contractor_id")
+	private long contractorId;
+
+	@Column(name="contractor_name")
+	private String contractorName;
+
+	@Column(name="contractor_signed_date")
+	private Timestamp contractorSignedDate;
+
+	@Column(name="contractor_total_available_days")
+	private long contractorTotalAvailableDays;
+
+	@Column(name="contractor_total_working_days")
+	private long contractorTotalWorkingDays;
+
+	@Column(name="contractor_type")
+	private String contractorType;
+
+	@Column(name="employee_contact_details")
+	private String employeeContactDetails;
+
+	@Column(name="employer_tax_percent")
+	private BigDecimal employerTaxPercent;
+
+	@Column(name="inside_ir35")
+	private String insideIr35;
+
 	@Column(name="job_number")
-	private long jobNumber;
+	private String jobNumber;
+
+	@Column(name="known_as")
+	private String knownAs;
+
+	@Column(name="office_description")
+	private String officeDescription;
+
+	@Column(name="office_id")
+	private String officeId;
 
 	private BigDecimal rate;
 
@@ -51,17 +106,14 @@ public class BookingRevision implements Serializable {
 	private ContractorEmployeeRole contractorEmployeeRole;
 
 	//bi-directional one-to-one association to CurrencyDm
-	@OneToOne(mappedBy="bookingRevision")
+	@OneToOne
+	@JoinColumn(name="currency_id")
 	private CurrencyDm currencyDm;
 
 	//bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
 	@JoinColumn(name="approval_status_id")
 	private ApprovalStatusDm approvalStatusDm;
-
-	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne(mappedBy="bookingRevision")
-	private ContractorEmployeeRating contractorEmployeeRating;
 
 	public BookingRevision() {
 	}
@@ -72,6 +124,22 @@ public class BookingRevision implements Serializable {
 
 	public void setBookingRevisionId(long bookingRevisionId) {
 		this.bookingRevisionId = bookingRevisionId;
+	}
+
+	public String getAgreementDocumentId() {
+		return this.agreementDocumentId;
+	}
+
+	public void setAgreementDocumentId(String agreementDocumentId) {
+		this.agreementDocumentId = agreementDocumentId;
+	}
+
+	public String getAgreementId() {
+		return this.agreementId;
+	}
+
+	public void setAgreementId(String agreementId) {
+		this.agreementId = agreementId;
 	}
 
 	public String getChangedBy() {
@@ -90,6 +158,22 @@ public class BookingRevision implements Serializable {
 		this.changedDate = changedDate;
 	}
 
+	public BigDecimal getContractAmountAftertax() {
+		return this.contractAmountAftertax;
+	}
+
+	public void setContractAmountAftertax(BigDecimal contractAmountAftertax) {
+		this.contractAmountAftertax = contractAmountAftertax;
+	}
+
+	public BigDecimal getContractAmountBeforetax() {
+		return this.contractAmountBeforetax;
+	}
+
+	public void setContractAmountBeforetax(BigDecimal contractAmountBeforetax) {
+		this.contractAmountBeforetax = contractAmountBeforetax;
+	}
+
 	public Timestamp getContractedFromDate() {
 		return this.contractedFromDate;
 	}
@@ -106,12 +190,124 @@ public class BookingRevision implements Serializable {
 		this.contractedToDate = contractedToDate;
 	}
 
-	public long getJobNumber() {
+	public String getContractorContactDetails() {
+		return this.contractorContactDetails;
+	}
+
+	public void setContractorContactDetails(String contractorContactDetails) {
+		this.contractorContactDetails = contractorContactDetails;
+	}
+
+	public String getContractorEmployeeName() {
+		return this.contractorEmployeeName;
+	}
+
+	public void setContractorEmployeeName(String contractorEmployeeName) {
+		this.contractorEmployeeName = contractorEmployeeName;
+	}
+
+	public long getContractorId() {
+		return this.contractorId;
+	}
+
+	public void setContractorId(long contractorId) {
+		this.contractorId = contractorId;
+	}
+
+	public String getContractorName() {
+		return this.contractorName;
+	}
+
+	public void setContractorName(String contractorName) {
+		this.contractorName = contractorName;
+	}
+
+	public Timestamp getContractorSignedDate() {
+		return this.contractorSignedDate;
+	}
+
+	public void setContractorSignedDate(Timestamp contractorSignedDate) {
+		this.contractorSignedDate = contractorSignedDate;
+	}
+
+	public long getContractorTotalAvailableDays() {
+		return this.contractorTotalAvailableDays;
+	}
+
+	public void setContractorTotalAvailableDays(long contractorTotalAvailableDays) {
+		this.contractorTotalAvailableDays = contractorTotalAvailableDays;
+	}
+
+	public long getContractorTotalWorkingDays() {
+		return this.contractorTotalWorkingDays;
+	}
+
+	public void setContractorTotalWorkingDays(long contractorTotalWorkingDays) {
+		this.contractorTotalWorkingDays = contractorTotalWorkingDays;
+	}
+
+	public String getContractorType() {
+		return this.contractorType;
+	}
+
+	public void setContractorType(String contractorType) {
+		this.contractorType = contractorType;
+	}
+
+	public String getEmployeeContactDetails() {
+		return this.employeeContactDetails;
+	}
+
+	public void setEmployeeContactDetails(String employeeContactDetails) {
+		this.employeeContactDetails = employeeContactDetails;
+	}
+
+	public BigDecimal getEmployerTaxPercent() {
+		return this.employerTaxPercent;
+	}
+
+	public void setEmployerTaxPercent(BigDecimal employerTaxPercent) {
+		this.employerTaxPercent = employerTaxPercent;
+	}
+
+	public String getInsideIr35() {
+		return this.insideIr35;
+	}
+
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
+	}
+
+	public String getJobNumber() {
 		return this.jobNumber;
 	}
 
-	public void setJobNumber(long jobNumber) {
+	public void setJobNumber(String jobNumber) {
 		this.jobNumber = jobNumber;
+	}
+
+	public String getKnownAs() {
+		return this.knownAs;
+	}
+
+	public void setKnownAs(String knownAs) {
+		this.knownAs = knownAs;
+	}
+
+	public String getOfficeDescription() {
+		return this.officeDescription;
+	}
+
+	public void setOfficeDescription(String officeDescription) {
+		this.officeDescription = officeDescription;
+	}
+
+	public String getOfficeId() {
+		return this.officeId;
+	}
+
+	public void setOfficeId(String officeId) {
+		this.officeId = officeId;
 	}
 
 	public BigDecimal getRate() {
@@ -160,14 +356,6 @@ public class BookingRevision implements Serializable {
 
 	public void setApprovalStatusDm(ApprovalStatusDm approvalStatusDm) {
 		this.approvalStatusDm = approvalStatusDm;
-	}
-
-	public ContractorEmployeeRating getContractorEmployeeRating() {
-		return this.contractorEmployeeRating;
-	}
-
-	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
-		this.contractorEmployeeRating = contractorEmployeeRating;
 	}
 
 }

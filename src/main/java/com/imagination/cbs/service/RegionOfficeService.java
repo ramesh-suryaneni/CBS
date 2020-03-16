@@ -1,12 +1,12 @@
 package com.imagination.cbs.service;
 
 import java.util.List;
-import com.imagination.cbs.dto.CountryDto;
+import com.imagination.cbs.dto.RegionDto;
 import com.imagination.cbs.dto.OfficeDto;
 
-public interface CountryOfficeService {
+public interface RegionOfficeService {
 
-	public List<CountryDto> getAllCountries();
+	public List<RegionDto> getAllCountries();
 
 	public List<OfficeDto> getAllOfficesInCountry(Long countryId);
 }

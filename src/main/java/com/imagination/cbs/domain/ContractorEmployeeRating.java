@@ -17,6 +17,7 @@ public class ContractorEmployeeRating implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="contractor_employee_ratings_id")
 	private long contractorEmployeeRatingsId;
 
@@ -34,13 +35,14 @@ public class ContractorEmployeeRating implements Serializable {
 	private String status;
 
 	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne(mappedBy="contractorEmployeeRating")
+	@OneToOne
+	@JoinColumn(name="contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 
-	//bi-directional one-to-one association to BookingRevision
+	//bi-directional one-to-one association to Booking
 	@OneToOne
-	@JoinColumn(name="booking_id", referencedColumnName="booking_id")
-	private BookingRevision bookingRevision;
+	@JoinColumn(name="booking_id")
+	private Booking booking;
 
 	public ContractorEmployeeRating() {
 	}
@@ -101,12 +103,12 @@ public class ContractorEmployeeRating implements Serializable {
 		this.contractorEmployee = contractorEmployee;
 	}
 
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
+	public Booking getBooking() {
+		return this.booking;
 	}
 
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
+	public void setBooking(Booking booking) {
+		this.booking = booking;
 	}
 
 }

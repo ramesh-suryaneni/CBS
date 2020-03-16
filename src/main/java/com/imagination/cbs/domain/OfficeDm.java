@@ -5,48 +5,27 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+/**
+ * The persistent class for the office_dm database table.
+ * 
+ */
 @Entity
-@Table(name="office_dm")
-@NamedQuery(name="OfficeDm.findAll", query="SELECT o FROM OfficeDm o")
+@Table(name = "office_dm")
+@NamedQuery(name = "OfficeDm.findAll", query = "SELECT o FROM OfficeDm o")
 public class OfficeDm implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name="office_id")
-	private Long officeId;
-
-	@Column(name="office_name")
+	@Column(name = "office_name")
 	private String officeName;
-
-	@Column(name="office_description")
-	private String officeDescription;
-	
-	@Column(name="created_by")
-	private String createdBy;
-
-	@Column(name="created_date")
-	private Timestamp createdDate;
-	
-	@ManyToOne
-	@JoinColumn(name="country_id")
-	private CountryDm countryDm;
-
-	public Long getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(Long officeId) {
-		this.officeId = officeId;
-	}
 
 	public String getOfficeName() {
 		return officeName;
@@ -62,6 +41,14 @@ public class OfficeDm implements Serializable {
 
 	public void setOfficeDescription(String officeDescription) {
 		this.officeDescription = officeDescription;
+	}
+
+	public Long getOfficeId() {
+		return officeId;
+	}
+
+	public void setOfficeId(Long officeId) {
+		this.officeId = officeId;
 	}
 
 	public String getCreatedBy() {
@@ -80,12 +67,17 @@ public class OfficeDm implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public CountryDm getCountryDm() {
-		return countryDm;
-	}
+	@Column(name = "office_description")
+	private String officeDescription;
 
-	public void setCountryDm(CountryDm countryDm) {
-		this.countryDm = countryDm;
-	}
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "office_id")
+	private Long officeId;
 
+	@Column(name = "created_by")
+	private String createdBy;
+
+	@Column(name = "created_date")
+	private Timestamp createdDate;
 }

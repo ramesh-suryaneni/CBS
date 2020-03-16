@@ -6,19 +6,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.imagination.cbs.dto.CountryDto;
+import com.imagination.cbs.dto.RegionDto;
 import com.imagination.cbs.dto.OfficeDto;
-import com.imagination.cbs.service.CountryOfficeService;
+import com.imagination.cbs.service.RegionOfficeService;
 
 @RestController
 @RequestMapping("/countries")
 public class CountryOfficeController {
 
 	@Autowired
-	private CountryOfficeService countryOfficeServiceImpl;
+	private RegionOfficeService countryOfficeServiceImpl;
 	
 	@GetMapping
-	public List<CountryDto> findAllCountries()
+	public List<RegionDto> findAllCountries()
 	{
 		return countryOfficeServiceImpl.getAllCountries();
 	}
