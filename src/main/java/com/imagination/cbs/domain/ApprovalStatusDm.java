@@ -2,6 +2,7 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 
 /**
@@ -17,7 +18,7 @@ public class ApprovalStatusDm implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="approval_status_id")
-	private Long approvalStatusId;
+	private long approvalStatusId;
 
 	@Column(name="approval_description")
 	private String approvalDescription;
@@ -25,22 +26,28 @@ public class ApprovalStatusDm implements Serializable {
 	@Column(name="approval_name")
 	private String approvalName;
 
-	//bi-directional one-to-one association to Booking
-	@OneToOne(mappedBy="approvalStatusDm")
-	private Booking booking;
+	@Column(name="changed_by")
+	private String changedBy;
 
-	//bi-directional one-to-one association to BookingRevision
-	@OneToOne(mappedBy="approvalStatusDm")
-	private BookingRevision bookingRevision;
+	@Column(name="changed_date")
+	private Timestamp changedDate;
+
+//	//bi-directional one-to-one association to Booking
+//	@OneToOne(mappedBy="approvalStatusDm")
+//	private Booking booking;
+
+//	//bi-directional one-to-one association to BookingRevision
+//	@OneToOne(mappedBy="approvalStatusDm")
+//	private BookingRevision bookingRevision;
 
 	public ApprovalStatusDm() {
 	}
 
-	public Long getApprovalStatusId() {
+	public long getApprovalStatusId() {
 		return this.approvalStatusId;
 	}
 
-	public void setApprovalStatusId(Long approvalStatusId) {
+	public void setApprovalStatusId(long approvalStatusId) {
 		this.approvalStatusId = approvalStatusId;
 	}
 
@@ -60,20 +67,36 @@ public class ApprovalStatusDm implements Serializable {
 		this.approvalName = approvalName;
 	}
 
-	public Booking getBooking() {
-		return this.booking;
+	public String getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setBooking(Booking booking) {
-		this.booking = booking;
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
 	}
 
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
+	public Timestamp getChangedDate() {
+		return this.changedDate;
 	}
 
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
+	public void setChangedDate(Timestamp changedDate) {
+		this.changedDate = changedDate;
 	}
+	//
+	// public Booking getBooking() {
+	// return this.booking;
+	// }
+	//
+	// public void setBooking(Booking booking) {
+	// this.booking = booking;
+	// }
+	//
+	// public BookingRevision getBookingRevision() {
+	// return this.bookingRevision;
+	// }
+	//
+	// public void setBookingRevision(BookingRevision bookingRevision) {
+	// this.bookingRevision = bookingRevision;
+	// }
 
 }

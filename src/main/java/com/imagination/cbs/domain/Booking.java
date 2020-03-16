@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -44,20 +43,17 @@ public class Booking implements Serializable {
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	// bi-directional many-to-one association to Team
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	// bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
 	@JoinColumn(name = "status_id")
 	private ApprovalStatusDm approvalStatusDm;
 
-	// bi-directional many-to-one association to BookingRevision
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<BookingRevision> bookingRevisions;
-	
+
 	public Booking() {
 	}
 

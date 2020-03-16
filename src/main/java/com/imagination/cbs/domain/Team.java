@@ -3,7 +3,6 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 
 
 /**
@@ -19,34 +18,42 @@ public class Team implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="team_id")
-	private Long teamId;
+	private long teamId;
+
+	@Column(name="changed_by")
+	private String changedBy;
 
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="changed_by")
-	private String changedBy;
-	
 	@Column(name="team_name")
 	private String teamName;
+//
+//	//bi-directional one-to-one association to Booking
+//	@OneToOne(mappedBy="team")
+//	private Booking booking;
 
-	//bi-directional many-to-one association to Approver
-	@OneToMany(mappedBy="team")
-	private List<Approver> approvers;
-
-	//bi-directional many-to-one association to Booking
-	@OneToMany(mappedBy="team")
-	private List<Booking> bookings;
+	//bi-directional one-to-one association to Approver
+	@OneToOne(mappedBy="team")
+	private Approver approver;
 
 	public Team() {
 	}
 
-	public Long getTeamId() {
+	public long getTeamId() {
 		return this.teamId;
 	}
 
-	public void setTeamId(Long teamId) {
+	public void setTeamId(long teamId) {
 		this.teamId = teamId;
+	}
+
+	public String getChangedBy() {
+		return this.changedBy;
+	}
+
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
 	}
 
 	public Timestamp getChangedDate() {
@@ -55,14 +62,6 @@ public class Team implements Serializable {
 
 	public void setChangedDate(Timestamp changedDate) {
 		this.changedDate = changedDate;
-	}
-	
-	public String getChangedBy() {
-		return changedBy;
-	}
-
-	public void setChangedBy(String changedBy) {
-		this.changedBy = changedBy;
 	}
 
 	public String getTeamName() {
@@ -73,48 +72,20 @@ public class Team implements Serializable {
 		this.teamName = teamName;
 	}
 
-	public List<Approver> getApprovers() {
-		return this.approvers;
+	// public Booking getBooking() {
+	// return this.booking;
+	// }
+	//
+	// public void setBooking(Booking booking) {
+	// this.booking = booking;
+	// }
+
+	public Approver getApprover() {
+		return this.approver;
 	}
 
-	public void setApprovers(List<Approver> approvers) {
-		this.approvers = approvers;
-	}
-
-	public Approver addApprover(Approver approver) {
-		getApprovers().add(approver);
-		approver.setTeam(this);
-
-		return approver;
-	}
-
-	public Approver removeApprover(Approver approver) {
-		getApprovers().remove(approver);
-		approver.setTeam(null);
-
-		return approver;
-	}
-
-	public List<Booking> getBookings() {
-		return this.bookings;
-	}
-
-	public void setBookings(List<Booking> bookings) {
-		this.bookings = bookings;
-	}
-
-	public Booking addBooking(Booking booking) {
-		getBookings().add(booking);
-		booking.setTeam(this);
-
-		return booking;
-	}
-
-	public Booking removeBooking(Booking booking) {
-		getBookings().remove(booking);
-		booking.setTeam(null);
-
-		return booking;
+	public void setApprover(Approver approver) {
+		this.approver = approver;
 	}
 
 }

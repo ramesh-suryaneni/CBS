@@ -1,8 +1,17 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the role_dm database table.
@@ -12,12 +21,12 @@ import java.sql.Timestamp;
 @Table(name = "role_dm")
 @NamedQuery(name = "RoleDm.findAll", query = "SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "role_id")
-	private Long roleId;
+	private long roleId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -25,38 +34,49 @@ public class RoleDm implements Serializable {
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name = "discipline_id")
-	private Long disciplineId;
+	@Column(name = "inside_ir35")
+	private String insideIr35;
 
 	@Column(name = "role_description")
 	private String roleDescription;
 
 	@Column(name = "role_name")
 	private String roleName;
-	
-	@Column(name="inside_ir35")
-	private String insideIr35;
-	
-	@Column(name="status")
+
+	@Column(name = "status")
 	private String status;
+	//
+	// @Column(name = "discipline_id")
+	// private Long disciplineId;
 
-	// bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy = "roleDm")
-	private ContractorEmployeeRole contractorEmployeeRole;
+	@ManyToOne
+	@JoinColumn(name = "discipline_id")
+	private Discipline discipline;
 
-	// bi-directional one-to-one association to RoleDefaultRate
-	@OneToOne
-	@JoinColumn(name = "role_id", referencedColumnName = "role_id")
-	private RoleDefaultRate roleDefaultRate;
+	public Discipline getDiscipline() {
+		return discipline;
+	}
+
+	public void setDiscipline(Discipline discipline) {
+		this.discipline = discipline;
+	}
+
+	// public Long getDisciplineId() {
+	// return disciplineId;
+	// }
+	//
+	// public void setDisciplineId(Long disciplineId) {
+	// this.disciplineId = disciplineId;
+	// }
 
 	public RoleDm() {
 	}
 
-	public Long getRoleId() {
+	public long getRoleId() {
 		return this.roleId;
 	}
 
-	public void setRoleId(Long roleId) {
+	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
 
@@ -76,12 +96,12 @@ public class RoleDm implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public Long getDisciplineId() {
-		return this.disciplineId;
+	public String getInsideIr35() {
+		return this.insideIr35;
 	}
 
-	public void setDisciplineId(Long disciplineId) {
-		this.disciplineId = disciplineId;
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
 	}
 
 	public String getRoleDescription() {
@@ -100,37 +120,11 @@ public class RoleDm implements Serializable {
 		this.roleName = roleName;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole() {
-		return this.contractorEmployeeRole;
-	}
-
-	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
-		this.contractorEmployeeRole = contractorEmployeeRole;
-	}
-
-	public RoleDefaultRate getRoleDefaultRate() {
-		return this.roleDefaultRate;
-	}
-
-	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
-		this.roleDefaultRate = roleDefaultRate;
-	}
-
-	public String getInsideIr35() {
-		return insideIr35;
-	}
-
-	public void setInsideIr35(String insideIr35) {
-		this.insideIr35 = insideIr35;
-	}
-
 	public String getStatus() {
-		return status;
+		return this.status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	
 }

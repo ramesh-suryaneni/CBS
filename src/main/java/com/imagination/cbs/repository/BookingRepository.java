@@ -9,5 +9,5 @@ import com.imagination.cbs.domain.Booking;
  *
  */
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-	public Booking save(Booking booking);
+
 }
