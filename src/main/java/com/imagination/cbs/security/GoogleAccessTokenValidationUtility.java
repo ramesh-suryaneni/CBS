@@ -35,7 +35,7 @@ public class GoogleAccessTokenValidationUtility {
 		
 		final GoogleIdToken idToken=verifier.verify(idTokenString);
 		
-		if(idToken==null){
+		if(idToken!=null){
 			
 			final Payload payload=idToken.getPayload();
 			
