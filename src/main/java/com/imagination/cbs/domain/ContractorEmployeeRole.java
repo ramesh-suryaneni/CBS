@@ -16,6 +16,7 @@ public class ContractorEmployeeRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="contractor_employee_role_id")
 	private long contractorEmployeeRoleId;
 
@@ -26,6 +27,11 @@ public class ContractorEmployeeRole implements Serializable {
 	private Timestamp changedDate;
 
 	private String status;
+
+	//bi-directional one-to-one association to ContractorEmployee
+	@OneToOne
+	@JoinColumn(name="contractor_employee_id")
+	private ContractorEmployee contractorEmployee1;
 
 	//bi-directional one-to-one association to BookingRevision
 	@OneToOne(mappedBy="contractorEmployeeRole")
@@ -39,7 +45,7 @@ public class ContractorEmployeeRole implements Serializable {
 	//bi-directional one-to-one association to ContractorEmployee
 	@OneToOne
 	@JoinColumn(name="contractor_employee_id")
-	private ContractorEmployee contractorEmployee;
+	private ContractorEmployee contractorEmployee2;
 
 	public ContractorEmployeeRole() {
 	}
@@ -76,6 +82,14 @@ public class ContractorEmployeeRole implements Serializable {
 		this.status = status;
 	}
 
+	public ContractorEmployee getContractorEmployee1() {
+		return this.contractorEmployee1;
+	}
+
+	public void setContractorEmployee1(ContractorEmployee contractorEmployee1) {
+		this.contractorEmployee1 = contractorEmployee1;
+	}
+
 	public BookingRevision getBookingRevision() {
 		return this.bookingRevision;
 	}
@@ -92,12 +106,12 @@ public class ContractorEmployeeRole implements Serializable {
 		this.roleDm = roleDm;
 	}
 
-	public ContractorEmployee getContractorEmployee() {
-		return this.contractorEmployee;
+	public ContractorEmployee getContractorEmployee2() {
+		return this.contractorEmployee2;
 	}
 
-	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
-		this.contractorEmployee = contractorEmployee;
+	public void setContractorEmployee2(ContractorEmployee contractorEmployee2) {
+		this.contractorEmployee2 = contractorEmployee2;
 	}
 
 }

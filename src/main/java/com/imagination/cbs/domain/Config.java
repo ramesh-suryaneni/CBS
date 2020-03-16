@@ -2,6 +2,7 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 
 /**
@@ -15,8 +16,15 @@ public class Config implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="config_id")
 	private long configId;
+
+	@Column(name="changed_by")
+	private String changedBy;
+
+	@Column(name="changed_date")
+	private Timestamp changedDate;
 
 	@Column(name="key_description")
 	private String keyDescription;
@@ -36,6 +44,22 @@ public class Config implements Serializable {
 
 	public void setConfigId(long configId) {
 		this.configId = configId;
+	}
+
+	public String getChangedBy() {
+		return this.changedBy;
+	}
+
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public Timestamp getChangedDate() {
+		return this.changedDate;
+	}
+
+	public void setChangedDate(Timestamp changedDate) {
+		this.changedDate = changedDate;
 	}
 
 	public String getKeyDescription() {

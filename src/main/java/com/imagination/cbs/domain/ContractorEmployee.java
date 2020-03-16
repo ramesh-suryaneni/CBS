@@ -16,6 +16,7 @@ public class ContractorEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="contractor_employee_id")
 	private long contractorEmployeeId;
 
@@ -40,23 +41,25 @@ public class ContractorEmployee implements Serializable {
 	private String status;
 
 	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="contractorEmployee")
-	private ContractorEmployeeRole contractorEmployeeRole;
+	@OneToOne(mappedBy="contractorEmployee1")
+	private ContractorEmployeeRole contractorEmployeeRole1;
+
+	//bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne(mappedBy="contractorEmployee2")
+	private ContractorEmployeeRole contractorEmployeeRole2;
+
+	//bi-directional one-to-one association to Contractor
+	@OneToOne
+	@JoinColumn(name="contractor_id")
+	private Contractor contractor;
 
 	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne
-	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	@OneToOne(mappedBy="contractorEmployee")
 	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
 
 	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne
-	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	@OneToOne(mappedBy="contractorEmployee")
 	private ContractorEmployeeRating contractorEmployeeRating;
-
-	//bi-directional many-to-one association to Contractor
-	@ManyToOne
-	@JoinColumn(name="contractor_id")
-	private Contractor contractor;
 
 	public ContractorEmployee() {
 	}
@@ -125,12 +128,28 @@ public class ContractorEmployee implements Serializable {
 		this.status = status;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole() {
-		return this.contractorEmployeeRole;
+	public ContractorEmployeeRole getContractorEmployeeRole1() {
+		return this.contractorEmployeeRole1;
 	}
 
-	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
-		this.contractorEmployeeRole = contractorEmployeeRole;
+	public void setContractorEmployeeRole1(ContractorEmployeeRole contractorEmployeeRole1) {
+		this.contractorEmployeeRole1 = contractorEmployeeRole1;
+	}
+
+	public ContractorEmployeeRole getContractorEmployeeRole2() {
+		return this.contractorEmployeeRole2;
+	}
+
+	public void setContractorEmployeeRole2(ContractorEmployeeRole contractorEmployeeRole2) {
+		this.contractorEmployeeRole2 = contractorEmployeeRole2;
+	}
+
+	public Contractor getContractor() {
+		return this.contractor;
+	}
+
+	public void setContractor(Contractor contractor) {
+		this.contractor = contractor;
 	}
 
 	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
@@ -147,14 +166,6 @@ public class ContractorEmployee implements Serializable {
 
 	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
 		this.contractorEmployeeRating = contractorEmployeeRating;
-	}
-
-	public Contractor getContractor() {
-		return this.contractor;
-	}
-
-	public void setContractor(Contractor contractor) {
-		this.contractor = contractor;
 	}
 
 }

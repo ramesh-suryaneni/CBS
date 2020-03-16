@@ -16,11 +16,12 @@ public class Approver implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="approver_id")
 	private long approverId;
-	
-	@Column(name="approver_number")
-	private long approverNumber;
+
+	@Column(name="approver_order")
+	private long approverOrder;
 
 	@Column(name="changed_by")
 	private String changedBy;
@@ -28,35 +29,29 @@ public class Approver implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
+	@Column(name="employe_id")
+	private long employeId;
+
 	@Column(name="team_id")
 	private long teamId;
-
-	//bi-directional many-to-one association to Team
-	@ManyToOne
-	@JoinColumn(name="team_id", insertable=false, updatable =false)
-	private Team team;
-
-	//bi-directional one-to-one association to EmployeeMapping
-	@OneToOne(mappedBy="approver")
-	private EmployeeMapping employeeMapping;
 
 	public Approver() {
 	}
 
 	public long getApproverId() {
-		return approverId;
+		return this.approverId;
 	}
 
 	public void setApproverId(long approverId) {
 		this.approverId = approverId;
 	}
 
-	public long getApproverNumber() {
-		return this.approverNumber;
+	public long getApproverOrder() {
+		return this.approverOrder;
 	}
 
-	public void setApproverNumber(long approverNumber) {
-		this.approverNumber = approverNumber;
+	public void setApproverOrder(long approverOrder) {
+		this.approverOrder = approverOrder;
 	}
 
 	public String getChangedBy() {
@@ -75,28 +70,20 @@ public class Approver implements Serializable {
 		this.changedDate = changedDate;
 	}
 
+	public long getEmployeId() {
+		return this.employeId;
+	}
+
+	public void setEmployeId(long employeId) {
+		this.employeId = employeId;
+	}
+
 	public long getTeamId() {
 		return this.teamId;
 	}
 
 	public void setTeamId(long teamId) {
 		this.teamId = teamId;
-	}
-
-	public Team getTeam() {
-		return this.team;
-	}
-
-	public void setTeam(Team team) {
-		this.team = team;
-	}
-
-	public EmployeeMapping getEmployeeMapping() {
-		return this.employeeMapping;
-	}
-
-	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
-		this.employeeMapping = employeeMapping;
 	}
 
 }

@@ -17,11 +17,15 @@ public class RoleDefaultRate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="default_rate_id")
 	private long defaultRateId;
 
-	@Column(name="currency_id")
-	private long currencyId;
+	@Column(name="changed_by")
+	private String changedBy;
+
+	@Column(name="changed_date")
+	private Timestamp changedDate;
 
 	@Column(name="date_from")
 	private Timestamp dateFrom;
@@ -29,8 +33,14 @@ public class RoleDefaultRate implements Serializable {
 	private BigDecimal rate;
 
 	//bi-directional one-to-one association to RoleDm
-	@OneToOne(mappedBy="roleDefaultRate")
+	@OneToOne
+	@JoinColumn(name="role_id")
 	private RoleDm roleDm;
+
+	//bi-directional one-to-one association to CurrencyDm
+	@OneToOne
+	@JoinColumn(name="currency_id")
+	private CurrencyDm currencyDm;
 
 	public RoleDefaultRate() {
 	}
@@ -43,12 +53,20 @@ public class RoleDefaultRate implements Serializable {
 		this.defaultRateId = defaultRateId;
 	}
 
-	public long getCurrencyId() {
-		return this.currencyId;
+	public String getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setCurrencyId(long currencyId) {
-		this.currencyId = currencyId;
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public Timestamp getChangedDate() {
+		return this.changedDate;
+	}
+
+	public void setChangedDate(Timestamp changedDate) {
+		this.changedDate = changedDate;
 	}
 
 	public Timestamp getDateFrom() {
@@ -73,6 +91,14 @@ public class RoleDefaultRate implements Serializable {
 
 	public void setRoleDm(RoleDm roleDm) {
 		this.roleDm = roleDm;
+	}
+
+	public CurrencyDm getCurrencyDm() {
+		return this.currencyDm;
+	}
+
+	public void setCurrencyDm(CurrencyDm currencyDm) {
+		this.currencyDm = currencyDm;
 	}
 
 }

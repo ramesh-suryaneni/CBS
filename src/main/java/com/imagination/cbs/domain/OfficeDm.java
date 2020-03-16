@@ -1,71 +1,53 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 
+/**
+ * The persistent class for the office_dm database table.
+ * 
+ */
 @Entity
 @Table(name="office_dm")
 @NamedQuery(name="OfficeDm.findAll", query="SELECT o FROM OfficeDm o")
 public class OfficeDm implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="office_id")
-	private Long officeId;
+	private long officeId;
 
-	@Column(name="office_name")
-	private String officeName;
-
-	@Column(name="office_description")
-	private String officeDescription;
-	
 	@Column(name="created_by")
 	private String createdBy;
 
 	@Column(name="created_date")
 	private Timestamp createdDate;
-	
-	@ManyToOne
-	@JoinColumn(name="country_id")
-	private CountryDm countryDm;
 
-	public Long getOfficeId() {
-		return officeId;
+	@Column(name="inside_ir35")
+	private String insideIr35;
+
+	@Column(name="office_description")
+	private String officeDescription;
+
+	@Column(name="office_name")
+	private String officeName;
+
+	public OfficeDm() {
 	}
 
-	public void setOfficeId(Long officeId) {
+	public long getOfficeId() {
+		return this.officeId;
+	}
+
+	public void setOfficeId(long officeId) {
 		this.officeId = officeId;
 	}
 
-	public String getOfficeName() {
-		return officeName;
-	}
-
-	public void setOfficeName(String officeName) {
-		this.officeName = officeName;
-	}
-
-	public String getOfficeDescription() {
-		return officeDescription;
-	}
-
-	public void setOfficeDescription(String officeDescription) {
-		this.officeDescription = officeDescription;
-	}
-
 	public String getCreatedBy() {
-		return createdBy;
+		return this.createdBy;
 	}
 
 	public void setCreatedBy(String createdBy) {
@@ -73,19 +55,35 @@ public class OfficeDm implements Serializable {
 	}
 
 	public Timestamp getCreatedDate() {
-		return createdDate;
+		return this.createdDate;
 	}
 
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}
 
-	public CountryDm getCountryDm() {
-		return countryDm;
+	public String getInsideIr35() {
+		return this.insideIr35;
 	}
 
-	public void setCountryDm(CountryDm countryDm) {
-		this.countryDm = countryDm;
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
+	}
+
+	public String getOfficeDescription() {
+		return this.officeDescription;
+	}
+
+	public void setOfficeDescription(String officeDescription) {
+		this.officeDescription = officeDescription;
+	}
+
+	public String getOfficeName() {
+		return this.officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
 	}
 
 }

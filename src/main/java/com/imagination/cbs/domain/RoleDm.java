@@ -13,12 +13,12 @@ import java.sql.Timestamp;
 @Table(name="role_dm")
 @NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="role_id")
-	private Long roleId;
+	private long roleId;
 
 	@Column(name="changed_by")
 	private String changedBy;
@@ -26,8 +26,8 @@ public class RoleDm implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="discipline_id")
-	private Long disciplineId;
+	@Column(name="inside_ir35")
+	private String insideIr35;
 
 	@Column(name="role_description")
 	private String roleDescription;
@@ -35,23 +35,29 @@ public class RoleDm implements Serializable {
 	@Column(name="role_name")
 	private String roleName;
 
+	private String status;
+
 	//bi-directional one-to-one association to ContractorEmployeeRole
 	@OneToOne(mappedBy="roleDm")
 	private ContractorEmployeeRole contractorEmployeeRole;
 
-	//bi-directional one-to-one association to RoleDefaultRate
+	//bi-directional one-to-one association to Discipline
 	@OneToOne
-	@JoinColumn(name="role_id", referencedColumnName="role_id")
+	@JoinColumn(name="discipline_id")
+	private Discipline discipline;
+
+	//bi-directional one-to-one association to RoleDefaultRate
+	@OneToOne(mappedBy="roleDm")
 	private RoleDefaultRate roleDefaultRate;
 
 	public RoleDm() {
 	}
 
-	public Long getRoleId() {
+	public long getRoleId() {
 		return this.roleId;
 	}
 
-	public void setRoleId(Long roleId) {
+	public void setRoleId(long roleId) {
 		this.roleId = roleId;
 	}
 
@@ -71,12 +77,12 @@ public class RoleDm implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public Long getDisciplineId() {
-		return this.disciplineId;
+	public String getInsideIr35() {
+		return this.insideIr35;
 	}
 
-	public void setDisciplineId(Long disciplineId) {
-		this.disciplineId = disciplineId;
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
 	}
 
 	public String getRoleDescription() {
@@ -95,12 +101,28 @@ public class RoleDm implements Serializable {
 		this.roleName = roleName;
 	}
 
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public ContractorEmployeeRole getContractorEmployeeRole() {
 		return this.contractorEmployeeRole;
 	}
 
 	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
 		this.contractorEmployeeRole = contractorEmployeeRole;
+	}
+
+	public Discipline getDiscipline() {
+		return this.discipline;
+	}
+
+	public void setDiscipline(Discipline discipline) {
+		this.discipline = discipline;
 	}
 
 	public RoleDefaultRate getRoleDefaultRate() {
