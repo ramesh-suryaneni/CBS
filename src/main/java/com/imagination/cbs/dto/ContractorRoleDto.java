@@ -18,6 +18,10 @@ public class ContractorRoleDto {
 	private String roleDescription;
 	
 	private String roleName;
+	
+	private String cestDownloadLink;
+	
+	private boolean insideIr35;
 
 	@Override
 	public String toString() {
