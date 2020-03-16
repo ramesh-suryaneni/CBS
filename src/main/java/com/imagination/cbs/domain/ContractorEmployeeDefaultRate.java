@@ -32,8 +32,14 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 
 	private BigDecimal rate;
 
+	@Column(name="contractor_employee_id")
+	private long contractorEmployeeId;
+	
+	@Column(name="currency_id")
+	private long currencyId;
+	
 	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne
+	/*@OneToOne
 	@JoinColumn(name="contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 
@@ -41,7 +47,8 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 	@OneToOne
 	@JoinColumn(name="currency_id")
 	private CurrencyDm currencyDm;
-
+	*/
+	
 	public ContractorEmployeeDefaultRate() {
 	}
 
@@ -85,7 +92,23 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 		this.rate = rate;
 	}
 
-	public ContractorEmployee getContractorEmployee() {
+	public long getContractorEmployeeId() {
+		return contractorEmployeeId;
+	}
+
+	public void setContractorEmployeeId(long contractorEmployeeId) {
+		this.contractorEmployeeId = contractorEmployeeId;
+	}
+
+	public long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(long currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	/*public ContractorEmployee getContractorEmployee() {
 		return this.contractorEmployee;
 	}
 
@@ -99,6 +122,7 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 
 	public void setCurrencyDm(CurrencyDm currencyDm) {
 		this.currencyDm = currencyDm;
-	}
+	}*/
 
+	
 }

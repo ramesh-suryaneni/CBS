@@ -32,6 +32,13 @@ public class RoleDefaultRate implements Serializable {
 
 	private BigDecimal rate;
 
+	@Column(name="role_id")
+	private long roleId;
+	
+	@Column(name="currency_id")
+	private long currencyId;
+	
+	/*
 	//bi-directional one-to-one association to RoleDm
 	@OneToOne
 	@JoinColumn(name="role_id")
@@ -41,7 +48,8 @@ public class RoleDefaultRate implements Serializable {
 	@OneToOne
 	@JoinColumn(name="currency_id")
 	private CurrencyDm currencyDm;
-
+	 */
+	
 	public RoleDefaultRate() {
 	}
 
@@ -85,7 +93,24 @@ public class RoleDefaultRate implements Serializable {
 		this.rate = rate;
 	}
 
-	public RoleDm getRoleDm() {
+	public long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
+	}
+
+	public long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(long currencyId) {
+		this.currencyId = currencyId;
+	}
+
+/*
+ 	public RoleDm getRoleDm() {
 		return this.roleDm;
 	}
 
@@ -100,5 +125,5 @@ public class RoleDefaultRate implements Serializable {
 	public void setCurrencyDm(CurrencyDm currencyDm) {
 		this.currencyDm = currencyDm;
 	}
-
+*/
 }

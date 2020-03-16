@@ -34,8 +34,14 @@ public class ContractorEmployeeRating implements Serializable {
 
 	private String status;
 
+	@Column(name="contractor_employee_id")
+	private long contractorEmployeeId;
+	
+	@Column(name="booking_id")
+	private long bookingId;
+	
 	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne
+	/*@OneToOne
 	@JoinColumn(name="contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 
@@ -43,7 +49,8 @@ public class ContractorEmployeeRating implements Serializable {
 	@OneToOne
 	@JoinColumn(name="booking_id")
 	private Booking booking;
-
+	*/
+	
 	public ContractorEmployeeRating() {
 	}
 
@@ -95,7 +102,23 @@ public class ContractorEmployeeRating implements Serializable {
 		this.status = status;
 	}
 
-	public ContractorEmployee getContractorEmployee() {
+	public long getContractorEmployeeId() {
+		return contractorEmployeeId;
+	}
+
+	public void setContractorEmployeeId(long contractorEmployeeId) {
+		this.contractorEmployeeId = contractorEmployeeId;
+	}
+
+	public long getBookingId() {
+		return bookingId;
+	}
+
+	public void setBookingId(long bookingId) {
+		this.bookingId = bookingId;
+	}
+
+	/*public ContractorEmployee getContractorEmployee() {
 		return this.contractorEmployee;
 	}
 
@@ -109,6 +132,6 @@ public class ContractorEmployeeRating implements Serializable {
 
 	public void setBooking(Booking booking) {
 		this.booking = booking;
-	}
+	}*/
 
 }

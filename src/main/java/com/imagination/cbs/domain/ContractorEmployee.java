@@ -40,27 +40,14 @@ public class ContractorEmployee implements Serializable {
 
 	private String status;
 
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="contractorEmployee1")
-	private ContractorEmployeeRole contractorEmployeeRole1;
-
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="contractorEmployee2")
-	private ContractorEmployeeRole contractorEmployeeRole2;
-
+	@Column(name="contractor_id")
+	private long contractorId;
+	
 	//bi-directional one-to-one association to Contractor
-	@OneToOne
+	/*@OneToOne
 	@JoinColumn(name="contractor_id")
 	private Contractor contractor;
-
-	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne(mappedBy="contractorEmployee")
-	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
-
-	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne(mappedBy="contractorEmployee")
-	private ContractorEmployeeRating contractorEmployeeRating;
-
+	*/
 	public ContractorEmployee() {
 	}
 
@@ -128,44 +115,20 @@ public class ContractorEmployee implements Serializable {
 		this.status = status;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole1() {
-		return this.contractorEmployeeRole1;
+	public long getContractorId() {
+		return contractorId;
 	}
 
-	public void setContractorEmployeeRole1(ContractorEmployeeRole contractorEmployeeRole1) {
-		this.contractorEmployeeRole1 = contractorEmployeeRole1;
+	public void setContractorId(long contractorId) {
+		this.contractorId = contractorId;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole2() {
-		return this.contractorEmployeeRole2;
-	}
-
-	public void setContractorEmployeeRole2(ContractorEmployeeRole contractorEmployeeRole2) {
-		this.contractorEmployeeRole2 = contractorEmployeeRole2;
-	}
-
-	public Contractor getContractor() {
+	/*public Contractor getContractor() {
 		return this.contractor;
 	}
 
 	public void setContractor(Contractor contractor) {
 		this.contractor = contractor;
-	}
-
-	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
-		return this.contractorEmployeeDefaultRate;
-	}
-
-	public void setContractorEmployeeDefaultRate(ContractorEmployeeDefaultRate contractorEmployeeDefaultRate) {
-		this.contractorEmployeeDefaultRate = contractorEmployeeDefaultRate;
-	}
-
-	public ContractorEmployeeRating getContractorEmployeeRating() {
-		return this.contractorEmployeeRating;
-	}
-
-	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
-		this.contractorEmployeeRating = contractorEmployeeRating;
-	}
-
+	}*/
+	
 }

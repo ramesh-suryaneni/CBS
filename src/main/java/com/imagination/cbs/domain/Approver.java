@@ -29,11 +29,13 @@ public class Approver implements Serializable {
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="employe_id")
-	private long employeId;
+	@OneToOne
+	@JoinColumn(name="employe_id")
+	private EmployeeMapping employeeMapping;
 
-	@Column(name="team_id")
-	private long teamId;
+	@OneToOne
+	@JoinColumn(name="team_id")
+	private Team team;
 
 	public Approver() {
 	}
@@ -70,20 +72,20 @@ public class Approver implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getEmployeId() {
-		return this.employeId;
+	public EmployeeMapping getEmployeeMapping() {
+		return employeeMapping;
 	}
 
-	public void setEmployeId(long employeId) {
-		this.employeId = employeId;
+	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
+		this.employeeMapping = employeeMapping;
 	}
 
-	public long getTeamId() {
-		return this.teamId;
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setTeamId(long teamId) {
-		this.teamId = teamId;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
 }

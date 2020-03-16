@@ -27,26 +27,26 @@ public class ContractorEmployeeRole implements Serializable {
 	private Timestamp changedDate;
 
 	private String status;
-
+	
+	@Column(name="contractor_employee_id")
+	private long contractorEmployeeId;
+	
+	@Column(name="role_id")
+	private long roleId;
+	
+	/*
 	//bi-directional one-to-one association to ContractorEmployee
 	@OneToOne
 	@JoinColumn(name="contractor_employee_id")
-	private ContractorEmployee contractorEmployee1;
-
-	//bi-directional one-to-one association to BookingRevision
-	@OneToOne(mappedBy="contractorEmployeeRole")
-	private BookingRevision bookingRevision;
+	private ContractorEmployee contractorEmployee;
 
 	//bi-directional one-to-one association to RoleDm
 	@OneToOne
 	@JoinColumn(name="role_id")
 	private RoleDm roleDm;
 
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne
-	@JoinColumn(name="contractor_employee_id")
-	private ContractorEmployee contractorEmployee2;
-
+	 */
+	
 	public ContractorEmployeeRole() {
 	}
 
@@ -82,20 +82,28 @@ public class ContractorEmployeeRole implements Serializable {
 		this.status = status;
 	}
 
-	public ContractorEmployee getContractorEmployee1() {
-		return this.contractorEmployee1;
+	public long getContractorEmployeeId() {
+		return contractorEmployeeId;
 	}
 
-	public void setContractorEmployee1(ContractorEmployee contractorEmployee1) {
-		this.contractorEmployee1 = contractorEmployee1;
+	public void setContractorEmployeeId(long contractorEmployeeId) {
+		this.contractorEmployeeId = contractorEmployeeId;
 	}
 
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
+	public long getRoleId() {
+		return roleId;
 	}
 
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
+	}
+
+/*	public ContractorEmployee getContractorEmployee() {
+		return this.contractorEmployee;
+	}
+
+	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
+		this.contractorEmployee = contractorEmployee;
 	}
 
 	public RoleDm getRoleDm() {
@@ -105,13 +113,6 @@ public class ContractorEmployeeRole implements Serializable {
 	public void setRoleDm(RoleDm roleDm) {
 		this.roleDm = roleDm;
 	}
-
-	public ContractorEmployee getContractorEmployee2() {
-		return this.contractorEmployee2;
-	}
-
-	public void setContractorEmployee2(ContractorEmployee contractorEmployee2) {
-		this.contractorEmployee2 = contractorEmployee2;
-	}
-
+*/
+	
 }

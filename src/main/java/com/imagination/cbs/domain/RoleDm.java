@@ -1,54 +1,73 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the role_dm database table.
  * 
  */
 @Entity
-@Table(name="role_dm")
-@NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
+@Table(name = "role_dm")
+@NamedQuery(name = "RoleDm.findAll", query = "SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "role_id")
 	private long roleId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="inside_ir35")
+	@Column(name = "inside_ir35")
 	private String insideIr35;
 
-	@Column(name="role_description")
+	@Column(name = "role_description")
 	private String roleDescription;
 
-	@Column(name="role_name")
+	@Column(name = "role_name")
 	private String roleName;
 
+	@Column(name = "status")
 	private String status;
+	//
+	// @Column(name = "discipline_id")
+	// private Long disciplineId;
 
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="roleDm")
-	private ContractorEmployeeRole contractorEmployeeRole;
-
-	//bi-directional one-to-one association to Discipline
-	@OneToOne
-	@JoinColumn(name="discipline_id")
+	@ManyToOne
+	@JoinColumn(name = "discipline_id")
 	private Discipline discipline;
 
-	//bi-directional one-to-one association to RoleDefaultRate
-	@OneToOne(mappedBy="roleDm")
-	private RoleDefaultRate roleDefaultRate;
+	public Discipline getDiscipline() {
+		return discipline;
+	}
+
+	public void setDiscipline(Discipline discipline) {
+		this.discipline = discipline;
+	}
+
+	// public Long getDisciplineId() {
+	// return disciplineId;
+	// }
+	//
+	// public void setDisciplineId(Long disciplineId) {
+	// this.disciplineId = disciplineId;
+	// }
 
 	public RoleDm() {
 	}
@@ -108,29 +127,4 @@ public class RoleDm implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	public ContractorEmployeeRole getContractorEmployeeRole() {
-		return this.contractorEmployeeRole;
-	}
-
-	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
-		this.contractorEmployeeRole = contractorEmployeeRole;
-	}
-
-	public Discipline getDiscipline() {
-		return this.discipline;
-	}
-
-	public void setDiscipline(Discipline discipline) {
-		this.discipline = discipline;
-	}
-
-	public RoleDefaultRate getRoleDefaultRate() {
-		return this.roleDefaultRate;
-	}
-
-	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
-		this.roleDefaultRate = roleDefaultRate;
-	}
-
 }

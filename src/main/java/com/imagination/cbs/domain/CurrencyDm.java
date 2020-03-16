@@ -32,18 +32,6 @@ public class CurrencyDm implements Serializable {
 	@Column(name="currency_name")
 	private String currencyName;
 
-	//bi-directional one-to-one association to BookingRevision
-	@OneToOne(mappedBy="currencyDm")
-	private BookingRevision bookingRevision;
-
-	//bi-directional one-to-one association to RoleDefaultRate
-	@OneToOne(mappedBy="currencyDm")
-	private RoleDefaultRate roleDefaultRate;
-
-	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne(mappedBy="currencyDm")
-	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
-
 	public CurrencyDm() {
 	}
 
@@ -85,30 +73,6 @@ public class CurrencyDm implements Serializable {
 
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
-	}
-
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
-	}
-
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
-	}
-
-	public RoleDefaultRate getRoleDefaultRate() {
-		return this.roleDefaultRate;
-	}
-
-	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
-		this.roleDefaultRate = roleDefaultRate;
-	}
-
-	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
-		return this.contractorEmployeeDefaultRate;
-	}
-
-	public void setContractorEmployeeDefaultRate(ContractorEmployeeDefaultRate contractorEmployeeDefaultRate) {
-		this.contractorEmployeeDefaultRate = contractorEmployeeDefaultRate;
 	}
 
 }

@@ -53,7 +53,7 @@ public class DisciplineServiceImplTest {
 		List<Discipline> listOfDiscipline = new ArrayList<>();
 
 		Discipline discipline = new Discipline();
-		discipline.setDisciplineId(8000);
+		discipline.setDisciplineId(8000L);
 		discipline.setDisciplineDescription("Client Services");
 		discipline.setDisciplineName("Creative");
 

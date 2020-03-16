@@ -37,10 +37,6 @@ public class Contractor implements Serializable {
 
 	private String status;
 
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne(mappedBy="contractor")
-	private ContractorEmployee contractorEmployee;
-
 	public Contractor() {
 	}
 
@@ -98,14 +94,6 @@ public class Contractor implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public ContractorEmployee getContractorEmployee() {
-		return this.contractorEmployee;
-	}
-
-	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
-		this.contractorEmployee = contractorEmployee;
 	}
 
 }
