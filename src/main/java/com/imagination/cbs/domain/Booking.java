@@ -57,7 +57,7 @@ public class Booking implements Serializable {
 	// bi-directional many-to-one association to BookingRevision
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<BookingRevision> bookingRevisions;
-
+	
 	public Booking() {
 	}
 

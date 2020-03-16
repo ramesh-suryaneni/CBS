@@ -31,11 +31,18 @@ public class BookingRevision implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long bookingRevisionId;
 
-	@Column(name = "changed_by")
-	private String changedBy;
+	// bi-directional many-to-one association to Booking
+	@ManyToOne
+	@JoinColumn(name = "booking_id")
+	private Booking booking;
 
-	@Column(name = "changed_date")
-	private Timestamp changedDate;
+	@Column(name = "revision_number")
+	private Long revisionNumber;
+
+	// bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne
+	@JoinColumn(name = "contractor_employee_role_id")
+	private ContractorEmployeeRole contractorEmployeeRole;
 
 	@Column(name = "contracted_from_date")
 	private Timestamp contractedFromDate;
@@ -43,28 +50,21 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contracted_to_date")
 	private Timestamp contractedToDate;
 
-	@Column(name = "job_number")
-	private Long jobNumber;
-
-	@Column(name = "rate")
-	private BigDecimal rate;
-
-	@Column(name = "revision_number")
-	private Long revisionNumber;
-
-	// bi-directional many-to-one association to Booking
-	@ManyToOne
-	@JoinColumn(name = "booking_id")
-	private Booking booking;
-
-	// bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne
-	@JoinColumn(name = "contractor_employee_role_id")
-	private ContractorEmployeeRole contractorEmployeeRole;
+	@Column(name = "changed_by")
+	private String changedBy;
 
 	// bi-directional one-to-one association to CurrencyDm
 	@OneToOne(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
 	private CurrencyDm currencyDm;
+
+	@Column(name = "job_number")
+	private Long jobNumber;
+
+	@Column(name = "changed_date")
+	private Timestamp changedDate;
+
+	@Column(name = "rate")
+	private BigDecimal rate;
 
 	// bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
