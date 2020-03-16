@@ -26,6 +26,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.service.UploadDocumentService;
 import com.imagination.cbs.util.AdobeUtils;
 
@@ -88,36 +89,38 @@ public class UploadDocumentServiceImpl implements UploadDocumentService {
 		JSONParser parser = new JSONParser();
 
 		String accessToken = oAuth.getOauthAccessToken();
-
-		Object obj = null;
+		log.info("AccessToken::: {} ",accessToken);
+		
 		try {
-			obj = parser.parse(new FileReader("SendAgreement.json"));
-		} catch (IOException |ParseException e) {
-			e.printStackTrace();
+			
+			Object obj = parser.parse(new FileReader("SendAgreement.json"));
+
+			JSONObject jsonBody = (JSONObject) obj;
+
+			ArrayList<JSONObject> fileInfos = new ArrayList<>();
+			JSONObject fileInfo = new JSONObject();
+			fileInfo.put("transientDocumentId", transientDocId);
+			fileInfos.add(fileInfo);
+			jsonBody.put("fileInfos", fileInfos);
+			log.info("Body::: {}" + jsonBody.toString());
+
+			String agreementsUrl = env.getProperty("baseUris") + "/api/rest/v6" + AGREEMENTS_ENDPOINT;
+
+			ResponseEntity<JsonNode> response = null;
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+			header.add(HttpHeaders.AUTHORIZATION, accessToken);
+
+			HttpEntity<?> httpentity = new HttpEntity<>(jsonBody.toString(), header);
+			response = restTemplate.exchange(agreementsUrl, HttpMethod.POST, httpentity, JsonNode.class);
+
+			log.info("After File Upload Agreements send to User:::: {}" + response.getBody());
+
+			return response.getBody().path("id").asText();
+
+		} catch (IOException | ParseException e) {
+			throw new CBSApplicationException(e.getLocalizedMessage());
 		}
-		JSONObject jsonBody = (JSONObject) obj;
-
-		ArrayList<JSONObject> fileInfos = new ArrayList<>();
-		JSONObject fileInfo = new JSONObject();
-		fileInfo.put("transientDocumentId", transientDocId);
-		fileInfos.add(fileInfo);
-		jsonBody.put("fileInfos", fileInfos);
-		log.info("Body::: {}" + jsonBody.toString());
-
-		String agreementsUrl = env.getProperty("baseUris") + "/api/rest/v6" + AGREEMENTS_ENDPOINT;
-
-		ResponseEntity<JsonNode> response = null;
-		HttpHeaders header = new HttpHeaders();
-		header.setContentType(MediaType.APPLICATION_JSON);
-		header.add(HttpHeaders.AUTHORIZATION, accessToken);
-
-		HttpEntity<?> httpentity = new HttpEntity<>(jsonBody.toString(), header);
-		response = restTemplate.exchange(agreementsUrl, HttpMethod.POST, httpentity, JsonNode.class);
-
-		log.info("After File Upload Agreements send to User:::: {}" + response.getBody());
-
-		return response.getBody().path("id").asText();
-
 	}
 
 }

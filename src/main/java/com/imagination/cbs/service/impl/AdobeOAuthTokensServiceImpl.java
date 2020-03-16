@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.imagination.cbs.domain.Config;
+import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.model.AdobeOAuth;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeOAuthTokensService;
@@ -53,8 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
-	@Autowired
-	private Environment env;
 
 	@Autowired
 	private ConfigRepository configRepository;
@@ -68,34 +66,38 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 	public String getOauthAccessToken() {
 		String oauthAccessToken = "";
 		String oauthRefreshToken = "";
+		try {
+			Map<String, Config> keys = getAdobeKeyDetails(ADOBE);
+			keys.forEach((k, v) -> log.info("DB KeyName= {} KeyValue= {}", k, v.getKeyValue()));
 
-		Map<String, Config> keys = getAdobeKeyDetails(ADOBE);
-		keys.forEach((k, v) -> log.info("DB KeyName= {} KeyValue= {}", k, v.getKeyValue()));
+			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
 
-		if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
+				if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
 
-			if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
+					oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
+					return BEARER + oauthAccessToken;
 
-				oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
-				return BEARER + oauthAccessToken;
+				} else {
+					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+					oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
+					return BEARER + oauthAccessToken;
+				}
 
 			} else {
-				oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
-				oauthAccessToken = getNewAccessToken(oauthRefreshToken);
-				return BEARER + oauthAccessToken;
+
+				if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
+					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+
+				oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
 			}
 
-		} else {
+			log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
 
-			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
-				oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
-
-			oauthAccessToken = getNewAccessToken(oauthRefreshToken);
+			return BEARER + oauthAccessToken;
+		
+		} catch (Exception e) {
+			throw new CBSApplicationException("Adobe Keys not found inside Config table");
 		}
-
-		log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
-
-		return BEARER + oauthAccessToken;
 	}
 
 	public AdobeOAuth getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken) {
@@ -171,8 +173,8 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		return oAuth;
 	}
 
-	public String getNewAccessToken(String oauthRefreshToken) {
-
+	public AdobeOAuth getNewAccessToken(String oauthRefreshToken) {
+		log.info("AdobeOAuth:::OAuthRefreshToken:: {}", oauthRefreshToken);
 		ResponseEntity<JsonNode> results = null;
 		AdobeOAuth oAuths = null;
 
@@ -198,10 +200,11 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 		} catch (Exception e) {
 			log.info("Exception insdie the:::{}", e);
+			throw new CBSApplicationException(e.getLocalizedMessage());
 		}
 
 		saveOrUpdateAdobeKeys(oAuths);
-		return oAuths.getAccessToken();
+		return oAuths;
 
 	}
 
@@ -267,12 +270,12 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 	public static boolean isNullOrEmptyMap(Map<?, ?> map) {
 
-		return ((map == null || map.isEmpty()));
+		return (map == null || map.isEmpty());
 	}
 
 	public static boolean isMapKeyValueEmptyOrNull(Map<?, ?> map, String key) {
 
-		if ((map == null || map.isEmpty()))
+		if (map == null || map.isEmpty())
 			return true;
 
 		if (key == null || key.isEmpty())

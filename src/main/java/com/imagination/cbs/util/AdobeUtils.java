@@ -16,16 +16,17 @@ import lombok.extern.slf4j.Slf4j;
 public class AdobeUtils {
 
 	private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private AdobeUtils() {
-		//default constructor ignored
+		// default constructor ignored
 	}
-	
+
 	public static boolean isExpired(String exp) {
+		SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		boolean isExpired = false;
+
 		try {
-			isExpired = (new Date().compareTo(format.parse(exp)) >= 0);
+			isExpired = (new Date().compareTo(simpleFormat.parse(exp)) >= 0);
 		} catch (ParseException e) {
 			log.info("Exception inside::: {}", e);
 		}
@@ -42,7 +43,7 @@ public class AdobeUtils {
 	}
 
 	public static String getCurrentDateTime(int seconds) {
-		
+
 		LocalDateTime currentTime = LocalDateTime.now().plusHours(secondsToHours(seconds));
 
 		String formatDateTime = currentTime.format(dateFormat);
@@ -63,7 +64,7 @@ public class AdobeUtils {
 		return hours;
 	}
 
-	public  enum HttpHeaderField {
+	public enum HttpHeaderField {
 		CONTENT_TYPE("Content-Type"), AUTHORIZATION("Authorization"), FILE_NAME("File-Name"), FILE("File"),
 		MIME_TYPE("Mime-Type"), USER_EMAIL("X-User-Email"), ACCEPT("ACCEPT");
 
@@ -79,7 +80,7 @@ public class AdobeUtils {
 		}
 	}
 
-	public  enum DocumentIdentifierName {
+	public enum DocumentIdentifierName {
 		TRANSIENT_DOCUMENT_ID("transientDocumentId"), LIBRARY_DOCUMENT_ID("libraryDocumentId"),
 		DOCUMENT_URL("documentURL");
 
