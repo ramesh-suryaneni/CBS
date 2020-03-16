@@ -8,8 +8,6 @@ import lombok.Data;
 public class BookingDto {
 	private String bookingDescription;
 	private String changedBy;
-
-	@NotNull(message = "Changed Date cannot be null")
 	private String changedDate;
 
 	@NotNull(message = "Role Id cannot be null")
@@ -25,5 +23,5 @@ public class BookingDto {
 	private String endDate;
 
 	@NotNull(message = "Job Number cannot be null")
-	private Long jobNumber;
+	private String jobNumber;
 }

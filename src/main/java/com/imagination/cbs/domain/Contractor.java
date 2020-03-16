@@ -4,42 +4,37 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the contractor database table.
  * 
  */
 @Entity
-@Table(name="contractor")
-@NamedQuery(name="Contractor.findAll", query="SELECT c FROM Contractor c")
+@Table(name = "contractor")
+@NamedQuery(name = "Contractor.findAll", query = "SELECT c FROM Contractor c")
 public class Contractor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="contractor_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "contractor_id")
 	private long contractorId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="company_type")
+	@Column(name = "company_type")
 	private String companyType;
 
-	@Column(name="contact_details")
+	@Column(name = "contact_details")
 	private String contactDetails;
 
-	@Column(name="contractor_name")
+	@Column(name = "contractor_name")
 	private String contractorName;
 
 	private String status;
-
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne(mappedBy="contractor")
-	private ContractorEmployee contractorEmployee;
 
 	public Contractor() {
 	}
@@ -98,14 +93,6 @@ public class Contractor implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public ContractorEmployee getContractorEmployee() {
-		return this.contractorEmployee;
-	}
-
-	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
-		this.contractorEmployee = contractorEmployee;
 	}
 
 }

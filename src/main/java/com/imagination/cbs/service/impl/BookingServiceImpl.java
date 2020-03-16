@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
-import com.imagination.cbs.domain.ContractorEmployeeRole;
-import com.imagination.cbs.domain.CurrencyDm;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.mapper.BookingMapper;
@@ -36,18 +34,12 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public Booking addBookingDetails(BookingDto booking) {
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
-		ContractorEmployeeRole contractorEmployeeRole = new ContractorEmployeeRole();
 		BookingRevision bookingRevision = new BookingRevision();
 		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
 		Team team = new Team();
 
 		team.setTeamId(1001L);// Need to check how to find
 		approvalStatusDm.setApprovalStatusId(1000L);// Need to check how to find
-
-		// contractorEmployeeRating.setBookingId(1234L);
-		contractorEmployeeRole.setContractorEmployeeRoleId(booking.getRoleId());
-		bookingRevision.setApprovalStatusDm(approvalStatusDm);
-		bookingRevision.setContractorEmployeeRole(contractorEmployeeRole);
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
 		bookingRevision.setJobNumber("1111L");// Need to check how to find
@@ -57,10 +49,6 @@ public class BookingServiceImpl implements BookingService {
 		BigDecimal bg = new BigDecimal(13.0);
 		bookingRevision.setRate(bg);
 		bookingRevision.setRevisionNumber(1L);
-		CurrencyDm currencyDm = new CurrencyDm();
-		// currencyDm.setCompanyName("Imagination");
-		// currencyDm.setContractorNumber(987L);
-		bookingRevision.setCurrencyDm(currencyDm);
 
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);

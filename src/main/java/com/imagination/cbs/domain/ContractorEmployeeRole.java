@@ -1,46 +1,52 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the contractor_employee_role database table.
  * 
  */
 @Entity
-@Table(name="contractor_employee_role")
-@NamedQuery(name="ContractorEmployeeRole.findAll", query="SELECT c FROM ContractorEmployeeRole c")
+@Table(name = "contractor_employee_role")
+@NamedQuery(name = "ContractorEmployeeRole.findAll", query = "SELECT c FROM ContractorEmployeeRole c")
 public class ContractorEmployeeRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="contractor_employee_role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "contractor_employee_role_id")
 	private long contractorEmployeeRoleId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
 	private String status;
 
-	//bi-directional one-to-one association to BookingRevision
-	@OneToOne(mappedBy="contractorEmployeeRole")
-	private BookingRevision bookingRevision;
-
-	//bi-directional one-to-one association to RoleDm
-	@OneToOne
-	@JoinColumn(name="role_id")
-	private RoleDm roleDm;
-
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne
-	@JoinColumn(name="contractor_employee_id")
-	private ContractorEmployee contractorEmployee;
+	// //bi-directional one-to-one association to BookingRevision
+	// @OneToOne(mappedBy="contractorEmployeeRole")
+	// private BookingRevision bookingRevision;
+	//
+	// //bi-directional one-to-one association to RoleDm
+	// @OneToOne
+	// @JoinColumn(name="role_id")
+	// private RoleDm roleDm;
+	//
+	// //bi-directional one-to-one association to ContractorEmployee
+	// @OneToOne
+	// @JoinColumn(name="contractor_employee_id")
+	// private ContractorEmployee contractorEmployee;
 
 	public ContractorEmployeeRole() {
 	}
@@ -77,28 +83,29 @@ public class ContractorEmployeeRole implements Serializable {
 		this.status = status;
 	}
 
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
-	}
-
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
-	}
-
-	public RoleDm getRoleDm() {
-		return this.roleDm;
-	}
-
-	public void setRoleDm(RoleDm roleDm) {
-		this.roleDm = roleDm;
-	}
-
-	public ContractorEmployee getContractorEmployee() {
-		return this.contractorEmployee;
-	}
-
-	public void setContractorEmployee(ContractorEmployee contractorEmployee) {
-		this.contractorEmployee = contractorEmployee;
-	}
+	// public BookingRevision getBookingRevision() {
+	// return this.bookingRevision;
+	// }
+	//
+	// public void setBookingRevision(BookingRevision bookingRevision) {
+	// this.bookingRevision = bookingRevision;
+	// }
+	//
+	// public RoleDm getRoleDm() {
+	// return this.roleDm;
+	// }
+	//
+	// public void setRoleDm(RoleDm roleDm) {
+	// this.roleDm = roleDm;
+	// }
+	//
+	// public ContractorEmployee getContractorEmployee() {
+	// return this.contractorEmployee;
+	// }
+	//
+	// public void setContractorEmployee(ContractorEmployee contractorEmployee)
+	// {
+	// this.contractorEmployee = contractorEmployee;
+	// }
 
 }
