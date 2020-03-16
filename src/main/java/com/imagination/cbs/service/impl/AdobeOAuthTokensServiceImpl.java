@@ -1,20 +1,27 @@
 package com.imagination.cbs.service.impl;
 
-import static com.imagination.cbs.util.AdobeConstant.*;
+import static com.imagination.cbs.util.AdobeConstant.ACCESS_TOKEN;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN_EXP_TIME;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_AUTH_CODE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_CLIENT_ID;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_CLIENT_SECRET;
-import static com.imagination.cbs.util.AdobeConstant.ADOBE_CODE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_GRANT_TYPE;
-import static com.imagination.cbs.util.AdobeConstant.ADOBE_REDIRECT_URI;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_REDIRECT_URL;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_REFRESH_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.BEARER;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_ID;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_SECRET;
 import static com.imagination.cbs.util.AdobeConstant.CODE;
+import static com.imagination.cbs.util.AdobeConstant.EXPIRES_IN;
 import static com.imagination.cbs.util.AdobeConstant.GRANT_TYPE;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_ACCESS_TOKEN_ENDPOINT;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_BASE_URL;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_REFRESH_TOKEN_ENDPOINT;
 import static com.imagination.cbs.util.AdobeConstant.REDIRECT_URI;
+import static com.imagination.cbs.util.AdobeConstant.REFRESH_TOKEN;
+import static com.imagination.cbs.util.AdobeConstant.TOKEN_TYPE;
 
 import java.util.List;
 import java.util.Map;
@@ -63,11 +70,12 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		String oauthRefreshToken = "";
 
 		Map<String, Config> keys = getAdobeKeyDetails(ADOBE);
-		log.info("DB Keys:: {}", keys);
+		keys.forEach((k, v) -> log.info("DB KeyName= {} KeyValue= {}", k, v.getKeyValue()));
 
-		if (!isNullOrEmptyMap(keys)) {
+		if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
 
 			if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
+
 				oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
 				return BEARER + oauthAccessToken;
 
@@ -78,6 +86,10 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 			}
 
 		} else {
+
+			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
+				oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+
 			oauthAccessToken = getNewAccessToken(oauthRefreshToken);
 		}
 
@@ -95,10 +107,10 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		HttpHeaders headers = new HttpHeaders();
 
 		try {
-			
+
 			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
-			String requestBody = getRequestBody(oAuthRefreshToken);
+			MultiValueMap<String, String> requestBody = getRequestBody(oAuthRefreshToken);
 			HttpEntity<?> httpEntity = new HttpEntity<>(requestBody, headers);
 
 			response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, JsonNode.class).getBody();
@@ -132,7 +144,7 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 			HttpEntity<String> httpEntity = new HttpEntity<>(head);
 
-			res = restTemplate.exchange(env.getProperty(ADOBE_BASE_URI), HttpMethod.GET, httpEntity, JsonNode.class);
+			res = restTemplate.exchange(servicesBaseUrl, HttpMethod.GET, httpEntity, JsonNode.class);
 
 			servicesBaseUrl = res.getBody().path("apiAccessPoint").asText() + "api/rest/v6";
 			log.info("ApiAccessPoint BaseUris:::{}", servicesBaseUrl);
@@ -171,15 +183,21 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		HttpEntity<?> httpEntity = new HttpEntity<>(getRequestBody(), headers);
 
 		try {
-			results = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
-			log.info("AdobeOAuth:::results: {}", results);
-			oAuths = convertJsonToObj(results.getBody());
-			log.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
+
+			if (oauthRefreshToken.isEmpty()) {
+
+				results = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
+				log.info("AdobeOAuth:::results: {}", results);
+				oAuths = convertJsonToObj(results.getBody());
+				log.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
+
+			} else {
+				oAuths = getOauthAccessTokenFromRefreshToken(oauthRefreshToken);
+				log.info("Get Access Token Used by Refresh Token :::{}", oAuths);
+			}
 
 		} catch (Exception e) {
-
-			oAuths = getOauthAccessTokenFromRefreshToken(oauthRefreshToken);
-			log.info("Exception insdie the:::{}", oAuths);
+			log.info("Exception insdie the:::{}", e);
 		}
 
 		saveOrUpdateAdobeKeys(oAuths);
@@ -194,20 +212,34 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 	}
 
-	public String getRequestBody(String refreshToken) {
-		return "refresh_token=" + refreshToken + "&client_id=" + env.getProperty(ADOBE_CLIENT_ID) + "&client_secret="
-				+ env.getProperty(ADOBE_CLIENT_SECRET) + "&grant_type=refresh_token";
+	public MultiValueMap<String, String> getRequestBody(String refreshToken) {
+
+		Map<String, Config> adobeKeys = getAdobeKeyDetails(ADOBE);
+
+		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+
+		body.add(REFRESH_TOKEN, refreshToken);
+		body.add(CLIENT_ID, adobeKeys.get(ADOBE_CLIENT_ID).getKeyValue());
+		body.add(CLIENT_SECRET, adobeKeys.get(ADOBE_CLIENT_SECRET).getKeyValue());
+		body.add(GRANT_TYPE, REFRESH_TOKEN);
+
+		log.info("Refresh Token Body ::: {} ", body);
+		return body;
 	}
 
 	public MultiValueMap<String, String> getRequestBody() {
 
+		Map<String, Config> adobeKeys = getAdobeKeyDetails(ADOBE);
+
 		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-		body.add(CODE, env.getProperty(ADOBE_CODE));
-		body.add(CLIENT_ID, env.getProperty(ADOBE_CLIENT_ID));
-		body.add(CLIENT_SECRET, env.getProperty(ADOBE_CLIENT_SECRET));
-		body.add(REDIRECT_URI, env.getProperty(ADOBE_REDIRECT_URI));
-		body.add(GRANT_TYPE, env.getProperty(ADOBE_GRANT_TYPE));
-		log.info("body:::{}", body);
+
+		body.add(CODE, adobeKeys.get(ADOBE_AUTH_CODE).getKeyValue());
+		body.add(CLIENT_ID, adobeKeys.get(ADOBE_CLIENT_ID).getKeyValue());
+		body.add(CLIENT_SECRET, adobeKeys.get(ADOBE_CLIENT_SECRET).getKeyValue());
+		body.add(REDIRECT_URI, adobeKeys.get(ADOBE_REDIRECT_URL).getKeyValue());
+		body.add(GRANT_TYPE, adobeKeys.get(ADOBE_GRANT_TYPE).getKeyValue());
+
+		log.info("Access Token Body:::{}", body);
 
 		return body;
 	}
@@ -224,7 +256,8 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		if (keysList == null || keysList.isEmpty())
 			return null;
 
-		map = keysList.stream().collect(Collectors.toMap(Config::getKeyName, config -> config));
+		map = keysList.stream().filter(key -> key.getKeyValue() != null || !key.getKeyValue().isEmpty())
+				.collect(Collectors.toMap(Config::getKeyName, config -> config));
 
 		if (isNullOrEmptyMap(map))
 			return null;
@@ -234,7 +267,22 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 	public static boolean isNullOrEmptyMap(Map<?, ?> map) {
 
-		return (map == null || map.isEmpty());
+		return ((map == null || map.isEmpty()));
+	}
+
+	public static boolean isMapKeyValueEmptyOrNull(Map<?, ?> map, String key) {
+
+		if ((map == null || map.isEmpty()))
+			return true;
+
+		if (key == null || key.isEmpty())
+			return true;
+
+		Config config = (Config) map.get(key);
+		log.info("Config object config= {} key= {}" + config);
+
+		return (config == null || config.getKeyValue().isEmpty());
+
 	}
 
 }

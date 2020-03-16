@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.NoArgsConstructor;
+
 /**
  * The persistent class for the config database table.
  * 
@@ -14,12 +16,9 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Table(name = "config")
 @NamedQuery(name = "Config.findAll", query = "SELECT c FROM Config c")
+@NoArgsConstructor
 public class Config implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	public Config() {
-		// default constructor ignored
-	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
