@@ -9,7 +9,7 @@ import com.imagination.cbs.dto.ReasonsForRecruitingDto;
 import com.imagination.cbs.service.impl.ReasonsForRecruitingServiceImpl;
 
 @RestController
-@RequestMapping("/reasonsForRecruting")
+@RequestMapping("/reasonsForRecruiting")
 public class ReasonsForRecruitingController {
 	
 	@Autowired

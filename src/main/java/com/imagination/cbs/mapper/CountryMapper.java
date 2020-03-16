@@ -9,8 +9,6 @@ import com.imagination.cbs.dto.CountryDto;
 
 @Mapper(componentModel = "spring")
 public interface CountryMapper {
-	
-	CountryMapper INSTANCE = Mappers.getMapper( CountryMapper.class );
-	
+
 	public List<CountryDto> toListOfCountryDTO(List<CountryDm> listOfCountry);
 }
