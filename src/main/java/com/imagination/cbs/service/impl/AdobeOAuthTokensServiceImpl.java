@@ -66,34 +66,38 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 	public String getOauthAccessToken() {
 		String oauthAccessToken = "";
 		String oauthRefreshToken = "";
+		try {
+			Map<String, Config> keys = getAdobeKeyDetails(ADOBE);
+			keys.forEach((k, v) -> log.info("DB KeyName= {} KeyValue= {}", k, v.getKeyValue()));
 
-		Map<String, Config> keys = getAdobeKeyDetails(ADOBE);
-		keys.forEach((k, v) -> log.info("DB KeyName= {} KeyValue= {}", k, v.getKeyValue()));
+			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
 
-		if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
+				if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
 
-			if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
+					oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
+					return BEARER + oauthAccessToken;
 
-				oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
-				return BEARER + oauthAccessToken;
+				} else {
+					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+					oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
+					return BEARER + oauthAccessToken;
+				}
 
 			} else {
-				oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+
+				if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
+					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+
 				oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
-				return BEARER + oauthAccessToken;
 			}
 
-		} else {
+			log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
 
-			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
-				oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
-
-			oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
+			return BEARER + oauthAccessToken;
+		
+		} catch (Exception e) {
+			throw new CBSApplicationException("Adobe Keys not found inside Config table");
 		}
-
-		log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
-
-		return BEARER + oauthAccessToken;
 	}
 
 	public AdobeOAuth getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken) {
@@ -170,7 +174,7 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 	}
 
 	public AdobeOAuth getNewAccessToken(String oauthRefreshToken) {
-
+		log.info("AdobeOAuth:::OAuthRefreshToken:: {}", oauthRefreshToken);
 		ResponseEntity<JsonNode> results = null;
 		AdobeOAuth oAuths = null;
 
