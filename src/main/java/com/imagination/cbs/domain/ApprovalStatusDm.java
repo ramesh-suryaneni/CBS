@@ -1,53 +1,57 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the approval_status_dm database table.
  * 
  */
 @Entity
-@Table(name="approval_status_dm")
-@NamedQuery(name="ApprovalStatusDm.findAll", query="SELECT a FROM ApprovalStatusDm a")
+@Table(name = "approval_status_dm")
 public class ApprovalStatusDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="approval_status_id")
-	private long approvalStatusId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "approval_status_id")
+	private Long approvalStatusId;
 
-	@Column(name="approval_description")
+	@Column(name = "approval_description")
 	private String approvalDescription;
 
-	@Column(name="approval_name")
+	@Column(name = "approval_name")
 	private String approvalName;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-//	//bi-directional one-to-one association to Booking
-//	@OneToOne(mappedBy="approvalStatusDm")
-//	private Booking booking;
+	// //bi-directional one-to-one association to Booking
+	// @OneToOne(mappedBy="approvalStatusDm")
+	// private Booking booking;
 
-//	//bi-directional one-to-one association to BookingRevision
-//	@OneToOne(mappedBy="approvalStatusDm")
-//	private BookingRevision bookingRevision;
+	// //bi-directional one-to-one association to BookingRevision
+	// @OneToOne(mappedBy="approvalStatusDm")
+	// private BookingRevision bookingRevision;
 
 	public ApprovalStatusDm() {
 	}
 
-	public long getApprovalStatusId() {
+	public Long getApprovalStatusId() {
 		return this.approvalStatusId;
 	}
 
-	public void setApprovalStatusId(long approvalStatusId) {
+	public void setApprovalStatusId(Long approvalStatusId) {
 		this.approvalStatusId = approvalStatusId;
 	}
 

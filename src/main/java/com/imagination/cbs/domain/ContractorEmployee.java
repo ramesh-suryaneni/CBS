@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -17,14 +16,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "contractor_employee")
-@NamedQuery(name = "ContractorEmployee.findAll", query = "SELECT c FROM ContractorEmployee c")
 public class ContractorEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contractor_employee_id")
-	private long contractorEmployeeId;
+	private Long contractorEmployeeId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -46,11 +44,11 @@ public class ContractorEmployee implements Serializable {
 	public ContractorEmployee() {
 	}
 
-	public long getContractorEmployeeId() {
+	public Long getContractorEmployeeId() {
 		return this.contractorEmployeeId;
 	}
 
-	public void setContractorEmployeeId(long contractorEmployeeId) {
+	public void setContractorEmployeeId(Long contractorEmployeeId) {
 		this.contractorEmployeeId = contractorEmployeeId;
 	}
 

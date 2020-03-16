@@ -4,42 +4,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the region database table.
  * 
  */
 @Entity
-@Table(name="region")
-@NamedQuery(name="Region.findAll", query="SELECT r FROM Region r")
+@Table(name = "region")
 public class Region implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="region_id")
-	private long regionId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "region_id")
+	private Long regionId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="region_description")
+	@Column(name = "region_description")
 	private String regionDescription;
 
-	@Column(name="region_name")
+	@Column(name = "region_name")
 	private String regionName;
 
 	public Region() {
 	}
 
-	public long getRegionId() {
+	public Long getRegionId() {
 		return this.regionId;
 	}
 
-	public void setRegionId(long regionId) {
+	public void setRegionId(Long regionId) {
 		this.regionId = regionId;
 	}
 

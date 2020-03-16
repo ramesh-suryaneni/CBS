@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -17,14 +16,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "contractor_employee_role")
-@NamedQuery(name = "ContractorEmployeeRole.findAll", query = "SELECT c FROM ContractorEmployeeRole c")
 public class ContractorEmployeeRole implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contractor_employee_role_id")
-	private long contractorEmployeeRoleId;
+	private Long contractorEmployeeRoleId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -34,28 +32,14 @@ public class ContractorEmployeeRole implements Serializable {
 
 	private String status;
 
-	// //bi-directional one-to-one association to BookingRevision
-	// @OneToOne(mappedBy="contractorEmployeeRole")
-	// private BookingRevision bookingRevision;
-	//
-	// //bi-directional one-to-one association to RoleDm
-	// @OneToOne
-	// @JoinColumn(name="role_id")
-	// private RoleDm roleDm;
-	//
-	// //bi-directional one-to-one association to ContractorEmployee
-	// @OneToOne
-	// @JoinColumn(name="contractor_employee_id")
-	// private ContractorEmployee contractorEmployee;
-
 	public ContractorEmployeeRole() {
 	}
 
-	public long getContractorEmployeeRoleId() {
+	public Long getContractorEmployeeRoleId() {
 		return this.contractorEmployeeRoleId;
 	}
 
-	public void setContractorEmployeeRoleId(long contractorEmployeeRoleId) {
+	public void setContractorEmployeeRoleId(Long contractorEmployeeRoleId) {
 		this.contractorEmployeeRoleId = contractorEmployeeRoleId;
 	}
 
@@ -82,30 +66,4 @@ public class ContractorEmployeeRole implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	// public BookingRevision getBookingRevision() {
-	// return this.bookingRevision;
-	// }
-	//
-	// public void setBookingRevision(BookingRevision bookingRevision) {
-	// this.bookingRevision = bookingRevision;
-	// }
-	//
-	// public RoleDm getRoleDm() {
-	// return this.roleDm;
-	// }
-	//
-	// public void setRoleDm(RoleDm roleDm) {
-	// this.roleDm = roleDm;
-	// }
-	//
-	// public ContractorEmployee getContractorEmployee() {
-	// return this.contractorEmployee;
-	// }
-	//
-	// public void setContractorEmployee(ContractorEmployee contractorEmployee)
-	// {
-	// this.contractorEmployee = contractorEmployee;
-	// }
-
 }

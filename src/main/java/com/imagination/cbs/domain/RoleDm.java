@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -19,14 +18,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "role_dm")
-@NamedQuery(name = "RoleDm.findAll", query = "SELECT r FROM RoleDm r")
 public class RoleDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "role_id")
-	private long roleId;
+	private Long roleId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -45,9 +43,6 @@ public class RoleDm implements Serializable {
 
 	@Column(name = "status")
 	private String status;
-	//
-	// @Column(name = "discipline_id")
-	// private Long disciplineId;
 
 	@ManyToOne
 	@JoinColumn(name = "discipline_id")
@@ -61,22 +56,14 @@ public class RoleDm implements Serializable {
 		this.discipline = discipline;
 	}
 
-	// public Long getDisciplineId() {
-	// return disciplineId;
-	// }
-	//
-	// public void setDisciplineId(Long disciplineId) {
-	// this.disciplineId = disciplineId;
-	// }
-
 	public RoleDm() {
 	}
 
-	public long getRoleId() {
+	public Long getRoleId() {
 		return this.roleId;
 	}
 
-	public void setRoleId(long roleId) {
+	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
 	}
 

@@ -4,42 +4,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the permission database table.
  * 
  */
 @Entity
-@Table(name="permission")
-@NamedQuery(name="Permission.findAll", query="SELECT p FROM Permission p")
+@Table(name = "permission")
 public class Permission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="permission_id")
-	private long permissionId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "permission_id")
+	private Long permissionId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="permission_description")
+	@Column(name = "permission_description")
 	private String permissionDescription;
 
-	@Column(name="permission_name")
+	@Column(name = "permission_name")
 	private String permissionName;
 
 	public Permission() {
 	}
 
-	public long getPermissionId() {
+	public Long getPermissionId() {
 		return this.permissionId;
 	}
 
-	public void setPermissionId(long permissionId) {
+	public void setPermissionId(Long permissionId) {
 		this.permissionId = permissionId;
 	}
 

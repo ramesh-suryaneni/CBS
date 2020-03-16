@@ -1,8 +1,15 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the contractor database table.
@@ -17,7 +24,7 @@ public class Contractor implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "contractor_id")
-	private long contractorId;
+	private Long contractorId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -39,11 +46,11 @@ public class Contractor implements Serializable {
 	public Contractor() {
 	}
 
-	public long getContractorId() {
+	public Long getContractorId() {
 		return this.contractorId;
 	}
 
-	public void setContractorId(long contractorId) {
+	public void setContractorId(Long contractorId) {
 		this.contractorId = contractorId;
 	}
 

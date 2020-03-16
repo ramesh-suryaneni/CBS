@@ -8,11 +8,11 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -25,7 +25,6 @@ import org.springframework.util.CollectionUtils;
  */
 @Entity
 @Table(name = "booking")
-@NamedQuery(name = "Booking.findAll", query = "SELECT b FROM Booking b")
 public class Booking implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -51,7 +50,7 @@ public class Booking implements Serializable {
 	@JoinColumn(name = "status_id")
 	private ApprovalStatusDm approvalStatusDm;
 
-	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<BookingRevision> bookingRevisions;
 
 	public Booking() {

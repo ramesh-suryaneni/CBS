@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -17,7 +16,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "office_dm")
-@NamedQuery(name = "OfficeDm.findAll", query = "SELECT o FROM OfficeDm o")
 public class OfficeDm implements Serializable {
 	/**
 	 * 

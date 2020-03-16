@@ -1,7 +1,12 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the supplier_type_dm database table.
@@ -9,13 +14,12 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "supplier_type_dm")
-@NamedQuery(name = "SupplierTypeDm.findAll", query = "SELECT s FROM SupplierTypeDm s")
 public class SupplierTypeDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	private String description;
 
@@ -24,11 +28,11 @@ public class SupplierTypeDm implements Serializable {
 	public SupplierTypeDm() {
 	}
 
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

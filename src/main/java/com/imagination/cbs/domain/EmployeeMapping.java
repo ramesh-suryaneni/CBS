@@ -1,8 +1,14 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the employee_mapping database table.
@@ -10,14 +16,13 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "employee_mapping")
-@NamedQuery(name = "EmployeeMapping.findAll", query = "SELECT e FROM EmployeeMapping e")
 public class EmployeeMapping implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "employee_id")
-	private long employeeId;
+	private Long employeeId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -26,7 +31,7 @@ public class EmployeeMapping implements Serializable {
 	private Timestamp changedDate;
 
 	@Column(name = "employee_number_maconomy")
-	private long employeeNumberMaconomy;
+	private Long employeeNumberMaconomy;
 
 	@Column(name = "ogle_account")
 	private String ogleAccount;
@@ -34,11 +39,11 @@ public class EmployeeMapping implements Serializable {
 	public EmployeeMapping() {
 	}
 
-	public long getEmployeeId() {
+	public Long getEmployeeId() {
 		return this.employeeId;
 	}
 
-	public void setEmployeeId(long employeeId) {
+	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
 	}
 
@@ -58,11 +63,11 @@ public class EmployeeMapping implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public long getEmployeeNumberMaconomy() {
+	public Long getEmployeeNumberMaconomy() {
 		return this.employeeNumberMaconomy;
 	}
 
-	public void setEmployeeNumberMaconomy(long employeeNumberMaconomy) {
+	public void setEmployeeNumberMaconomy(Long employeeNumberMaconomy) {
 		this.employeeNumberMaconomy = employeeNumberMaconomy;
 	}
 

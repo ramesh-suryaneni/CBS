@@ -5,51 +5,49 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the role_default_rate database table.
  * 
  */
 @Entity
-@Table(name="role_default_rate")
-@NamedQuery(name="RoleDefaultRate.findAll", query="SELECT r FROM RoleDefaultRate r")
+@Table(name = "role_default_rate")
 public class RoleDefaultRate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="default_rate_id")
-	private long defaultRateId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "default_rate_id")
+	private Long defaultRateId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="date_from")
+	@Column(name = "date_from")
 	private Timestamp dateFrom;
 
 	private BigDecimal rate;
 
-	//bi-directional one-to-one association to RoleDm
+	// bi-directional one-to-one association to RoleDm
 	@OneToOne
-	@JoinColumn(name="role_id")
+	@JoinColumn(name = "role_id")
 	private RoleDm roleDm;
 
-	//bi-directional one-to-one association to CurrencyDm
+	// bi-directional one-to-one association to CurrencyDm
 	@OneToOne
-	@JoinColumn(name="currency_id")
+	@JoinColumn(name = "currency_id")
 	private CurrencyDm currencyDm;
 
 	public RoleDefaultRate() {
 	}
 
-	public long getDefaultRateId() {
+	public Long getDefaultRateId() {
 		return this.defaultRateId;
 	}
 
-	public void setDefaultRateId(long defaultRateId) {
+	public void setDefaultRateId(Long defaultRateId) {
 		this.defaultRateId = defaultRateId;
 	}
 

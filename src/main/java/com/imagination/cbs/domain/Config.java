@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -17,7 +16,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "config")
-@NamedQuery(name = "Config.findAll", query = "SELECT c FROM Config c")
 public class Config implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -41,11 +39,11 @@ public class Config implements Serializable {
 	@Column(name = "key_value")
 	private String keyValue;
 
-	public long getConfigId() {
+	public Long getConfigId() {
 		return this.configId;
 	}
 
-	public void setConfigId(long configId) {
+	public void setConfigId(Long configId) {
 		this.configId = configId;
 	}
 

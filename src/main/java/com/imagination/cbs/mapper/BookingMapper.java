@@ -17,12 +17,14 @@ import com.imagination.cbs.dto.DisciplineDto;
 @Mapper(componentModel = "spring")
 public interface BookingMapper {
 
-public List<DisciplineDto> toListDisciplineDTO(List<Discipline> listOfDiscipline);
-	
+	public List<DisciplineDto> toListDisciplineDTO(List<Discipline> listOfDiscipline);
+
 	public List<ContractorRoleDto> toListContractorRoleDto(List<RoleDm> listOfRoles);
-	
+
 	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp")
 	public Booking toBookingDomainFromBookingDto(BookingDto bookingDto);
+
+	public BookingDto toBookingDtoFromBooking(Booking bookingDto);
 
 	@Named("stringToTimeStamp")
 	public static Timestamp stringToTimeStampConverter(String date) {

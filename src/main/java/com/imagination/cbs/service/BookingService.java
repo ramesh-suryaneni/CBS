@@ -3,7 +3,6 @@
  */
 package com.imagination.cbs.service;
 
-import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.dto.BookingDto;
 
 /**
@@ -11,6 +10,9 @@ import com.imagination.cbs.dto.BookingDto;
  *
  */
 public interface BookingService {
-	public Booking addBookingDetails(BookingDto booking);
+	public BookingDto addBookingDetails(BookingDto booking);
 
+	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking);
+
+	public BookingDto processBookingDetails(Long bookingId, BookingDto booking);
 }

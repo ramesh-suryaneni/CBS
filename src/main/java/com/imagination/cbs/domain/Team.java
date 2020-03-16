@@ -1,50 +1,50 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the team database table.
  * 
  */
 @Entity
-@Table(name="team")
-@NamedQuery(name="Team.findAll", query="SELECT t FROM Team t")
+@Table(name = "team")
 public class Team implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="team_id")
-	private long teamId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "team_id")
+	private Long teamId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="team_name")
+	@Column(name = "team_name")
 	private String teamName;
-//
-//	//bi-directional one-to-one association to Booking
-//	@OneToOne(mappedBy="team")
-//	private Booking booking;
 
-	//bi-directional one-to-one association to Approver
-	@OneToOne(mappedBy="team")
+	@OneToOne(mappedBy = "team")
 	private Approver approver;
 
 	public Team() {
 	}
 
-	public long getTeamId() {
+	public Long getTeamId() {
 		return this.teamId;
 	}
 
-	public void setTeamId(long teamId) {
+	public void setTeamId(Long teamId) {
 		this.teamId = teamId;
 	}
 
@@ -71,14 +71,6 @@ public class Team implements Serializable {
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
 	}
-
-	// public Booking getBooking() {
-	// return this.booking;
-	// }
-	//
-	// public void setBooking(Booking booking) {
-	// this.booking = booking;
-	// }
 
 	public Approver getApprover() {
 		return this.approver;

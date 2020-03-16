@@ -3,8 +3,6 @@
  */
 package com.imagination.cbs.service.impl;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
 	private BookingMapper bookingMapper;
 
 	@Override
-	public Booking addBookingDetails(BookingDto booking) {
+	public BookingDto addBookingDetails(BookingDto booking) {
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
 		BookingRevision bookingRevision = new BookingRevision();
 		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
@@ -42,18 +40,25 @@ public class BookingServiceImpl implements BookingService {
 		approvalStatusDm.setApprovalStatusId(1000L);// Need to check how to find
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
-		bookingRevision.setJobNumber("1111L");// Need to check how to find
+		bookingRevision.setJobNumber(booking.getJobNumber());
 		bookingRevision.setChangedBy(booking.getChangedBy());
 		bookingRevision.setChangedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
 		bookingRevision.setContractorSignedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
-		BigDecimal bg = new BigDecimal(13.0);
-		bookingRevision.setRate(bg);
-		bookingRevision.setRevisionNumber(1L);
-
+		bookingRevision.setRevisionNumber(Long.parseLong(booking.getRevisionNumber()));
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);
 		bookingDomain.setTeam(team);
 
-		return bookingRepository.save(bookingDomain);
+		return bookingMapper.toBookingDtoFromBooking(bookingRepository.save(bookingDomain));
+	}
+
+	@Override
+	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking) {
+		return bookingMapper.toBookingDtoFromBooking(bookingRepository.findById(bookingId).get());
+	}
+
+	@Override
+	public BookingDto processBookingDetails(Long bookingId, BookingDto booking) {
+		return null;
 	}
 }

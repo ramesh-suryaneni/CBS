@@ -1,8 +1,14 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the currency_dm database table.
@@ -10,14 +16,13 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "currency_dm")
-@NamedQuery(name = "CurrencyDm.findAll", query = "SELECT c FROM CurrencyDm c")
 public class CurrencyDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "currency_id")
-	private long currencyId;
+	private Long currencyId;
 
 	@Column(name = "changed_by")
 	private String changedBy;
@@ -34,11 +39,11 @@ public class CurrencyDm implements Serializable {
 	public CurrencyDm() {
 	}
 
-	public long getCurrencyId() {
+	public Long getCurrencyId() {
 		return this.currencyId;
 	}
 
-	public void setCurrencyId(long currencyId) {
+	public void setCurrencyId(Long currencyId) {
 		this.currencyId = currencyId;
 	}
 

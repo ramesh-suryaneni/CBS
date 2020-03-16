@@ -35,12 +35,11 @@ public class DisciplineServiceImpl implements DisciplineService {
 
 	@Override
 	public List<ContractorRoleDto> findAllContractorRoles(Long disciplineId) {
-		
-		Optional<Discipline> findById = disciplineRepository.findById(disciplineId);
-		
-		Discipline discipline = findById.get();
-		
-		
+
+		Optional<Discipline> discpline = disciplineRepository.findById(disciplineId);
+
+		Discipline discipline = discpline.get();
+
 		return roleMapper.toListContractorRoleDto(discipline.getRoles());
 	}
 

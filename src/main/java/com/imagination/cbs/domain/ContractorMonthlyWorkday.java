@@ -1,56 +1,60 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the contractor_monthly_workdays database table.
  * 
  */
 @Entity
-@Table(name="contractor_monthly_workdays")
-@NamedQuery(name="ContractorMonthlyWorkday.findAll", query="SELECT c FROM ContractorMonthlyWorkday c")
+@Table(name = "contractor_monthly_workdays")
 public class ContractorMonthlyWorkday implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="work_days_id")
-	private long workDaysId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "work_days_id")
+	private Long workDaysId;
 
-	@Column(name="booking_revision_id")
-	private long bookingRevisionId;
+	@Column(name = "booking_revision_id")
+	private Long bookingRevisionId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_datetime")
+	@Column(name = "changed_datetime")
 	private Timestamp changedDatetime;
 
-	@Column(name="month_name")
+	@Column(name = "month_name")
 	private String monthName;
 
-	@Column(name="month_working_days")
-	private long monthWorkingDays;
+	@Column(name = "month_working_days")
+	private Long monthWorkingDays;
 
 	public ContractorMonthlyWorkday() {
 	}
 
-	public long getWorkDaysId() {
+	public Long getWorkDaysId() {
 		return this.workDaysId;
 	}
 
-	public void setWorkDaysId(long workDaysId) {
+	public void setWorkDaysId(Long workDaysId) {
 		this.workDaysId = workDaysId;
 	}
 
-	public long getBookingRevisionId() {
+	public Long getBookingRevisionId() {
 		return this.bookingRevisionId;
 	}
 
-	public void setBookingRevisionId(long bookingRevisionId) {
+	public void setBookingRevisionId(Long bookingRevisionId) {
 		this.bookingRevisionId = bookingRevisionId;
 	}
 
@@ -78,11 +82,11 @@ public class ContractorMonthlyWorkday implements Serializable {
 		this.monthName = monthName;
 	}
 
-	public long getMonthWorkingDays() {
+	public Long getMonthWorkingDays() {
 		return this.monthWorkingDays;
 	}
 
-	public void setMonthWorkingDays(long monthWorkingDays) {
+	public void setMonthWorkingDays(Long monthWorkingDays) {
 		this.monthWorkingDays = monthWorkingDays;
 	}
 

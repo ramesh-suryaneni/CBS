@@ -1,45 +1,49 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the country_dm database table.
  * 
  */
 @Entity
-@Table(name="country_dm")
-@NamedQuery(name="CountryDm.findAll", query="SELECT c FROM CountryDm c")
+@Table(name = "country_dm")
 public class CountryDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="country_id")
-	private long countryId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "country_id")
+	private Long countryId;
 
-	@Column(name="country_description")
+	@Column(name = "country_description")
 	private String countryDescription;
 
-	@Column(name="country_name")
+	@Column(name = "country_name")
 	private String countryName;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private String createdBy;
 
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Timestamp createdDate;
 
 	public CountryDm() {
 	}
 
-	public long getCountryId() {
+	public Long getCountryId() {
 		return this.countryId;
 	}
 
-	public void setCountryId(long countryId) {
+	public void setCountryId(Long countryId) {
 		this.countryId = countryId;
 	}
 
