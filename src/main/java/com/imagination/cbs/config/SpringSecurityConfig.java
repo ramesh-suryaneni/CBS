@@ -40,7 +40,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
-	        http.cors().and().csrf().disable().
+	        http.cors().and().csrf().disable().httpBasic().and().antMatcher("/**").
 	                authorizeRequests().antMatchers("/", "/index.html").permitAll()
 	                
 	                //** BOTH ADMIN/USER CAN ACCESS **//*
