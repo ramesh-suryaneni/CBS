@@ -26,7 +26,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.sources>src/main/java</sonar.sources>
-		<sonar.exclusions>**/domain/*.java, **/config/SpringSecurityConfig.java</sonar.exclusions>
+		<sonar.exclusions>**/domain/*.java, **/dto/*.java, **/config/SpringSecurityConfig.java, **/cbs/ContractorBookingSystemApplication.java</sonar.exclusions>
 		<sonar.tests>src/test/java</sonar.tests>
 	</properties>
 
@@ -70,7 +70,8 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<!-- <scope>test</scope> <exclusions> <exclusion> <groupId>org.junit.vintage</groupId> 
+			<scope>test</scope> 
+			<!-- <exclusions> <exclusion> <groupId>org.junit.vintage</groupId> 
 				<artifactId>junit-vintage-engine</artifactId> </exclusion> </exclusions> -->
 		</dependency>
 		<dependency>
@@ -135,7 +136,7 @@
 
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.7.201606060606</version>
+				<version>0.8.5</version>
 				<configuration>
 					<destFile>${sonar.jacoco.reportPath}</destFile>
 					<append>true</append>

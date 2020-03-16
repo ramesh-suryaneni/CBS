@@ -22,13 +22,13 @@ import com.imagination.cbs.repository.ContractorRepository;
 public class ContractorServiceImplTest {
 
 	@Mock
-	ContractorRepository repository;
+	private ContractorRepository repository;
 	
 	@Mock
-	ContractorMapper mapper;
+	private ContractorMapper mapper;
 	
 	@InjectMocks
-	ContractorServiceImpl serviceImpl;
+	private ContractorServiceImpl serviceImpl;
 	
 	@Test
 	public void getContractorsContainingName_NameExists() {
