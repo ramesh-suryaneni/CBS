@@ -4,45 +4,32 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the currency_dm database table.
  * 
  */
 @Entity
-@Table(name="currency_dm")
-@NamedQuery(name="CurrencyDm.findAll", query="SELECT c FROM CurrencyDm c")
+@Table(name = "currency_dm")
+@NamedQuery(name = "CurrencyDm.findAll", query = "SELECT c FROM CurrencyDm c")
 public class CurrencyDm implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="currency_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "currency_id")
 	private long currencyId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="currency_code")
+	@Column(name = "currency_code")
 	private String currencyCode;
 
-	@Column(name="currency_name")
+	@Column(name = "currency_name")
 	private String currencyName;
-
-	//bi-directional one-to-one association to BookingRevision
-	@OneToOne(mappedBy="currencyDm")
-	private BookingRevision bookingRevision;
-
-	//bi-directional one-to-one association to RoleDefaultRate
-	@OneToOne(mappedBy="currencyDm")
-	private RoleDefaultRate roleDefaultRate;
-
-	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne(mappedBy="currencyDm")
-	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
 
 	public CurrencyDm() {
 	}
@@ -86,29 +73,4 @@ public class CurrencyDm implements Serializable {
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
 	}
-
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
-	}
-
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
-	}
-
-	public RoleDefaultRate getRoleDefaultRate() {
-		return this.roleDefaultRate;
-	}
-
-	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
-		this.roleDefaultRate = roleDefaultRate;
-	}
-
-	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
-		return this.contractorEmployeeDefaultRate;
-	}
-
-	public void setContractorEmployeeDefaultRate(ContractorEmployeeDefaultRate contractorEmployeeDefaultRate) {
-		this.contractorEmployeeDefaultRate = contractorEmployeeDefaultRate;
-	}
-
 }

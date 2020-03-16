@@ -1,133 +1,127 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the booking_revision database table.
  * 
  */
 @Entity
-@Table(name="booking_revision")
-@NamedQuery(name="BookingRevision.findAll", query="SELECT b FROM BookingRevision b")
+@Table(name = "booking_revision")
+@NamedQuery(name = "BookingRevision.findAll", query = "SELECT b FROM BookingRevision b")
 public class BookingRevision implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="booking_revision_id")
-	private long bookingRevisionId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "booking_revision_id")
+	private Long bookingRevisionId;
 
-	@Column(name="agreement_document_id")
+	@Column(name = "agreement_document_id")
 	private String agreementDocumentId;
 
-	@Column(name="agreement_id")
+	@Column(name = "agreement_id")
 	private String agreementId;
 
-	@Column(name="changed_by")
+	@Column(name = "approval_status_id")
+	private Long approvalStatusId;
+
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="contract_amount_aftertax")
+	@Column(name = "contract_amount_aftertax")
 	private BigDecimal contractAmountAftertax;
 
-	@Column(name="contract_amount_beforetax")
+	@Column(name = "contract_amount_beforetax")
 	private BigDecimal contractAmountBeforetax;
 
-	@Column(name="contracted_from_date")
+	@Column(name = "contracted_from_date")
 	private Timestamp contractedFromDate;
 
-	@Column(name="contracted_to_date")
+	@Column(name = "contracted_to_date")
 	private Timestamp contractedToDate;
 
-	@Column(name="contractor_contact_details")
+	@Column(name = "contractor_contact_details")
 	private String contractorContactDetails;
 
-	@Column(name="contractor_employee_name")
+	@Column(name = "contractor_employee_name")
 	private String contractorEmployeeName;
 
-	@Column(name="contractor_id")
-	private long contractorId;
+	@Column(name = "contractor_employee_role_id")
+	private Long contractorEmployeeRoleId;
 
-	@Column(name="contractor_name")
+	@Column(name = "contractor_id")
+	private Long contractorId;
+
+	@Column(name = "contractor_name")
 	private String contractorName;
 
-	@Column(name="contractor_signed_date")
+	@Column(name = "contractor_signed_date")
 	private Timestamp contractorSignedDate;
 
-	@Column(name="contractor_total_available_days")
-	private long contractorTotalAvailableDays;
+	@Column(name = "contractor_total_available_days")
+	private Long contractorTotalAvailableDays;
 
-	@Column(name="contractor_total_working_days")
-	private long contractorTotalWorkingDays;
+	@Column(name = "contractor_total_working_days")
+	private Long contractorTotalWorkingDays;
 
-	@Column(name="contractor_type")
+	@Column(name = "contractor_type")
 	private String contractorType;
 
-	@Column(name="employee_contact_details")
+	@Column(name = "currency_id")
+	private Long currencyId;
+
+	@Column(name = "employee_contact_details")
 	private String employeeContactDetails;
 
-	@Column(name="employer_tax_percent")
+	@Column(name = "employer_tax_percent")
 	private BigDecimal employerTaxPercent;
 
-	@Column(name="inside_ir35")
+	@Column(name = "inside_ir35")
 	private String insideIr35;
 
-	@Column(name="job_number")
+	@Column(name = "job_number")
 	private String jobNumber;
 
-	@Column(name="known_as")
+	@Column(name = "known_as")
 	private String knownAs;
 
-	@Column(name="office_description")
+	@Column(name = "office_description")
 	private String officeDescription;
 
-	@Column(name="office_id")
+	@Column(name = "office_id")
 	private String officeId;
 
 	private BigDecimal rate;
 
-	@Column(name="revision_number")
-	private long revisionNumber;
+	@Column(name = "revision_number")
+	private Long revisionNumber;
 
-	//bi-directional many-to-one association to Booking
-	@ManyToOne
-	@JoinColumn(name="booking_id")
-	private Booking booking;
-
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne
-	@JoinColumn(name="contractor_employee_role_id")
-	private ContractorEmployeeRole contractorEmployeeRole;
-
-	//bi-directional one-to-one association to CurrencyDm
-	@OneToOne
-	@JoinColumn(name="currency_id")
-	private CurrencyDm currencyDm;
-
-	//bi-directional one-to-one association to ApprovalStatusDm
-	@OneToOne
-	@JoinColumn(name="approval_status_id")
-	private ApprovalStatusDm approvalStatusDm;
-
-	public BookingRevision() {
+	public Long getBookingRevisionId() {
+		return bookingRevisionId;
 	}
 
-	public long getBookingRevisionId() {
-		return this.bookingRevisionId;
-	}
-
-	public void setBookingRevisionId(long bookingRevisionId) {
+	public void setBookingRevisionId(Long bookingRevisionId) {
 		this.bookingRevisionId = bookingRevisionId;
 	}
 
 	public String getAgreementDocumentId() {
-		return this.agreementDocumentId;
+		return agreementDocumentId;
 	}
 
 	public void setAgreementDocumentId(String agreementDocumentId) {
@@ -135,15 +129,23 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getAgreementId() {
-		return this.agreementId;
+		return agreementId;
 	}
 
 	public void setAgreementId(String agreementId) {
 		this.agreementId = agreementId;
 	}
 
+	public Long getApprovalStatusId() {
+		return approvalStatusId;
+	}
+
+	public void setApprovalStatusId(Long approvalStatusId) {
+		this.approvalStatusId = approvalStatusId;
+	}
+
 	public String getChangedBy() {
-		return this.changedBy;
+		return changedBy;
 	}
 
 	public void setChangedBy(String changedBy) {
@@ -151,7 +153,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public Timestamp getChangedDate() {
-		return this.changedDate;
+		return changedDate;
 	}
 
 	public void setChangedDate(Timestamp changedDate) {
@@ -159,7 +161,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public BigDecimal getContractAmountAftertax() {
-		return this.contractAmountAftertax;
+		return contractAmountAftertax;
 	}
 
 	public void setContractAmountAftertax(BigDecimal contractAmountAftertax) {
@@ -167,7 +169,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public BigDecimal getContractAmountBeforetax() {
-		return this.contractAmountBeforetax;
+		return contractAmountBeforetax;
 	}
 
 	public void setContractAmountBeforetax(BigDecimal contractAmountBeforetax) {
@@ -175,7 +177,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public Timestamp getContractedFromDate() {
-		return this.contractedFromDate;
+		return contractedFromDate;
 	}
 
 	public void setContractedFromDate(Timestamp contractedFromDate) {
@@ -183,7 +185,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public Timestamp getContractedToDate() {
-		return this.contractedToDate;
+		return contractedToDate;
 	}
 
 	public void setContractedToDate(Timestamp contractedToDate) {
@@ -191,7 +193,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getContractorContactDetails() {
-		return this.contractorContactDetails;
+		return contractorContactDetails;
 	}
 
 	public void setContractorContactDetails(String contractorContactDetails) {
@@ -199,23 +201,31 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getContractorEmployeeName() {
-		return this.contractorEmployeeName;
+		return contractorEmployeeName;
 	}
 
 	public void setContractorEmployeeName(String contractorEmployeeName) {
 		this.contractorEmployeeName = contractorEmployeeName;
 	}
 
-	public long getContractorId() {
-		return this.contractorId;
+	public Long getContractorEmployeeRoleId() {
+		return contractorEmployeeRoleId;
 	}
 
-	public void setContractorId(long contractorId) {
+	public void setContractorEmployeeRoleId(Long contractorEmployeeRoleId) {
+		this.contractorEmployeeRoleId = contractorEmployeeRoleId;
+	}
+
+	public Long getContractorId() {
+		return contractorId;
+	}
+
+	public void setContractorId(Long contractorId) {
 		this.contractorId = contractorId;
 	}
 
 	public String getContractorName() {
-		return this.contractorName;
+		return contractorName;
 	}
 
 	public void setContractorName(String contractorName) {
@@ -223,39 +233,47 @@ public class BookingRevision implements Serializable {
 	}
 
 	public Timestamp getContractorSignedDate() {
-		return this.contractorSignedDate;
+		return contractorSignedDate;
 	}
 
 	public void setContractorSignedDate(Timestamp contractorSignedDate) {
 		this.contractorSignedDate = contractorSignedDate;
 	}
 
-	public long getContractorTotalAvailableDays() {
-		return this.contractorTotalAvailableDays;
+	public Long getContractorTotalAvailableDays() {
+		return contractorTotalAvailableDays;
 	}
 
-	public void setContractorTotalAvailableDays(long contractorTotalAvailableDays) {
+	public void setContractorTotalAvailableDays(Long contractorTotalAvailableDays) {
 		this.contractorTotalAvailableDays = contractorTotalAvailableDays;
 	}
 
-	public long getContractorTotalWorkingDays() {
-		return this.contractorTotalWorkingDays;
+	public Long getContractorTotalWorkingDays() {
+		return contractorTotalWorkingDays;
 	}
 
-	public void setContractorTotalWorkingDays(long contractorTotalWorkingDays) {
+	public void setContractorTotalWorkingDays(Long contractorTotalWorkingDays) {
 		this.contractorTotalWorkingDays = contractorTotalWorkingDays;
 	}
 
 	public String getContractorType() {
-		return this.contractorType;
+		return contractorType;
 	}
 
 	public void setContractorType(String contractorType) {
 		this.contractorType = contractorType;
 	}
 
+	public Long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
+	}
+
 	public String getEmployeeContactDetails() {
-		return this.employeeContactDetails;
+		return employeeContactDetails;
 	}
 
 	public void setEmployeeContactDetails(String employeeContactDetails) {
@@ -263,7 +281,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public BigDecimal getEmployerTaxPercent() {
-		return this.employerTaxPercent;
+		return employerTaxPercent;
 	}
 
 	public void setEmployerTaxPercent(BigDecimal employerTaxPercent) {
@@ -271,7 +289,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getInsideIr35() {
-		return this.insideIr35;
+		return insideIr35;
 	}
 
 	public void setInsideIr35(String insideIr35) {
@@ -279,7 +297,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getJobNumber() {
-		return this.jobNumber;
+		return jobNumber;
 	}
 
 	public void setJobNumber(String jobNumber) {
@@ -287,7 +305,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getKnownAs() {
-		return this.knownAs;
+		return knownAs;
 	}
 
 	public void setKnownAs(String knownAs) {
@@ -295,7 +313,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getOfficeDescription() {
-		return this.officeDescription;
+		return officeDescription;
 	}
 
 	public void setOfficeDescription(String officeDescription) {
@@ -303,7 +321,7 @@ public class BookingRevision implements Serializable {
 	}
 
 	public String getOfficeId() {
-		return this.officeId;
+		return officeId;
 	}
 
 	public void setOfficeId(String officeId) {
@@ -311,51 +329,33 @@ public class BookingRevision implements Serializable {
 	}
 
 	public BigDecimal getRate() {
-		return this.rate;
+		return rate;
 	}
 
 	public void setRate(BigDecimal rate) {
 		this.rate = rate;
 	}
 
-	public long getRevisionNumber() {
-		return this.revisionNumber;
+	public Long getRevisionNumber() {
+		return revisionNumber;
 	}
 
-	public void setRevisionNumber(long revisionNumber) {
+	public void setRevisionNumber(Long revisionNumber) {
 		this.revisionNumber = revisionNumber;
 	}
 
 	public Booking getBooking() {
-		return this.booking;
+		return booking;
 	}
 
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole() {
-		return this.contractorEmployeeRole;
-	}
+	@ManyToOne
+	@JoinColumn(name = "booking_id")
+	private Booking booking;
 
-	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
-		this.contractorEmployeeRole = contractorEmployeeRole;
+	public BookingRevision() {
 	}
-
-	public CurrencyDm getCurrencyDm() {
-		return this.currencyDm;
-	}
-
-	public void setCurrencyDm(CurrencyDm currencyDm) {
-		this.currencyDm = currencyDm;
-	}
-
-	public ApprovalStatusDm getApprovalStatusDm() {
-		return this.approvalStatusDm;
-	}
-
-	public void setApprovalStatusDm(ApprovalStatusDm approvalStatusDm) {
-		this.approvalStatusDm = approvalStatusDm;
-	}
-
 }
