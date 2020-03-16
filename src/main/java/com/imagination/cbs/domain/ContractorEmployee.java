@@ -16,6 +16,7 @@ public class ContractorEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="contractor_employee_id")
 	private long contractorEmployeeId;
 
@@ -27,9 +28,6 @@ public class ContractorEmployee implements Serializable {
 
 	@Column(name="contact_details")
 	private String contactDetails;
-
-	@Column(name="employee_id")
-	private long employeeId;
 
 	@Column(name="employee_name")
 	private String employeeName;
@@ -43,20 +41,23 @@ public class ContractorEmployee implements Serializable {
 	@OneToOne(mappedBy="contractorEmployee")
 	private ContractorEmployeeRole contractorEmployeeRole;
 
-	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
+	//bi-directional one-to-one association to Contractor
 	@OneToOne
-	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	@JoinColumn(name="contractor_id")
+	private Contractor contractor;
+
+	//bi-directional one-to-one association to EmployeeMapping
+	@OneToOne
+	@JoinColumn(name="employee_id")
+	private EmployeeMapping employeeMapping;
+
+	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
+	@OneToOne(mappedBy="contractorEmployee")
 	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
 
 	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne
-	@JoinColumn(name="contractor_employee_id", referencedColumnName="contractor_employee_id")
+	@OneToOne(mappedBy="contractorEmployee")
 	private ContractorEmployeeRating contractorEmployeeRating;
-
-	//bi-directional many-to-one association to Contractor
-	@ManyToOne
-	@JoinColumn(name="contractor_id")
-	private Contractor contractor;
 
 	public ContractorEmployee() {
 	}
@@ -93,14 +94,6 @@ public class ContractorEmployee implements Serializable {
 		this.contactDetails = contactDetails;
 	}
 
-	public long getEmployeeId() {
-		return this.employeeId;
-	}
-
-	public void setEmployeeId(long employeeId) {
-		this.employeeId = employeeId;
-	}
-
 	public String getEmployeeName() {
 		return this.employeeName;
 	}
@@ -133,6 +126,22 @@ public class ContractorEmployee implements Serializable {
 		this.contractorEmployeeRole = contractorEmployeeRole;
 	}
 
+	public Contractor getContractor() {
+		return this.contractor;
+	}
+
+	public void setContractor(Contractor contractor) {
+		this.contractor = contractor;
+	}
+
+	public EmployeeMapping getEmployeeMapping() {
+		return this.employeeMapping;
+	}
+
+	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
+		this.employeeMapping = employeeMapping;
+	}
+
 	public ContractorEmployeeDefaultRate getContractorEmployeeDefaultRate() {
 		return this.contractorEmployeeDefaultRate;
 	}
@@ -147,14 +156,6 @@ public class ContractorEmployee implements Serializable {
 
 	public void setContractorEmployeeRating(ContractorEmployeeRating contractorEmployeeRating) {
 		this.contractorEmployeeRating = contractorEmployeeRating;
-	}
-
-	public Contractor getContractor() {
-		return this.contractor;
-	}
-
-	public void setContractor(Contractor contractor) {
-		this.contractor = contractor;
 	}
 
 }

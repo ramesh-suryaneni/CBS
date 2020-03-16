@@ -1,56 +1,67 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * The persistent class for the booking database table.
  * 
  */
 @Entity
-@Table(name="booking")
-@NamedQuery(name="Booking.findAll", query="SELECT b FROM Booking b")
+@Table(name = "booking")
+@NamedQuery(name = "Booking.findAll", query = "SELECT b FROM Booking b")
 public class Booking implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="booking_id")
-	private long bookingId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "booking_id")
+	private Long bookingId;
 
-	@Column(name="booking_description")
+	@Column(name = "booking_description")
 	private String bookingDescription;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	//bi-directional many-to-one association to Team
-	@ManyToOne
-	@JoinColumn(name="team_id")
+	@OneToOne
+	@JoinColumn(name = "team_id")
 	private Team team;
 
-	//bi-directional one-to-one association to ApprovalStatusDm
 	@OneToOne
-	@JoinColumn(name="status_id")
+	@JoinColumn(name = "status_id")
 	private ApprovalStatusDm approvalStatusDm;
 
-	//bi-directional many-to-one association to BookingRevision
-	@OneToMany(mappedBy="booking")
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
 	private List<BookingRevision> bookingRevisions;
 
 	public Booking() {
 	}
 
-	public long getBookingId() {
+	public Long getBookingId() {
 		return this.bookingId;
 	}
 
-	public void setBookingId(long bookingId) {
+	public void setBookingId(Long bookingId) {
 		this.bookingId = bookingId;
 	}
 
@@ -95,6 +106,9 @@ public class Booking implements Serializable {
 	}
 
 	public List<BookingRevision> getBookingRevisions() {
+		if (CollectionUtils.isEmpty(this.bookingRevisions)) {
+			return this.bookingRevisions = new ArrayList<BookingRevision>();
+		}
 		return this.bookingRevisions;
 	}
 
@@ -102,17 +116,13 @@ public class Booking implements Serializable {
 		this.bookingRevisions = bookingRevisions;
 	}
 
-	public BookingRevision addBookingRevision(BookingRevision bookingRevision) {
+	public void addBookingRevision(BookingRevision bookingRevision) {
 		getBookingRevisions().add(bookingRevision);
 		bookingRevision.setBooking(this);
-
-		return bookingRevision;
 	}
 
 	public BookingRevision removeBookingRevision(BookingRevision bookingRevision) {
 		getBookingRevisions().remove(bookingRevision);
-		bookingRevision.setBooking(null);
-
 		return bookingRevision;
 	}
 
