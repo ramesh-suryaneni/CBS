@@ -31,10 +31,10 @@ public class EmployeeMapping implements Serializable {
 	private Timestamp changedDate;
 
 	@Column(name = "employee_number_maconomy")
-	private Long employeeNumberMaconomy;
+	private String employeeNumberMaconomy;
 
-	@Column(name = "ogle_account")
-	private String ogleAccount;
+	@Column(name = "google_account")
+	private String googleAccount;
 
 	public EmployeeMapping() {
 	}
@@ -63,19 +63,19 @@ public class EmployeeMapping implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public Long getEmployeeNumberMaconomy() {
+	public String getEmployeeNumberMaconomy() {
 		return this.employeeNumberMaconomy;
 	}
 
-	public void setEmployeeNumberMaconomy(Long employeeNumberMaconomy) {
+	public void setEmployeeNumberMaconomy(String employeeNumberMaconomy) {
 		this.employeeNumberMaconomy = employeeNumberMaconomy;
 	}
 
-	public String getOgleAccount() {
-		return this.ogleAccount;
+	public String getGoogleAccount() {
+		return this.googleAccount;
 	}
 
-	public void setOgleAccount(String ogleAccount) {
-		this.ogleAccount = ogleAccount;
+	public void setGoogleAccount(String googleAccount) {
+		this.googleAccount = googleAccount;
 	}
 }
