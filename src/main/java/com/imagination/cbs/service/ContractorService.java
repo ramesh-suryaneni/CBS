@@ -7,5 +7,5 @@ import com.imagination.cbs.dto.ContractorDto;
 
 public interface ContractorService {
 
-	List<ContractorDto> getContractorsContainingName(String contractorName);
+	List<ContractorDto> getContractorsByContractorName(String contractorName);
 }

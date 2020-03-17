@@ -28,8 +28,8 @@ public class ContractorController {
 	private ContractorService contractorService;
 
 	@GetMapping("/{contractorName}")
-	public List<ContractorDto> getContractorsContainingName(@PathVariable String contractorName){
+	public List<ContractorDto> getContractorsByContractorName(@PathVariable("contractorName") String contractorName){
 		
-		return contractorService.getContractorsContainingName(contractorName);
+		return contractorService.getContractorsByContractorName(contractorName);
 	}
 }

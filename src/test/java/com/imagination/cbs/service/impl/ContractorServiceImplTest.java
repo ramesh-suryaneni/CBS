@@ -1,6 +1,7 @@
 package com.imagination.cbs.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ContractorServiceImplTest {
 	private ContractorServiceImpl serviceImpl;
 
 	@Test
-	public void getContractorsContainingName_NameExists() {
+	public void getContractorsByContractorNameIfContractorNameExistsInDB() {
 		List<Contractor> contractorList = new ArrayList<>();
 
 		Contractor cntr1 = new Contractor();
@@ -54,21 +55,32 @@ public class ContractorServiceImplTest {
 
 		contractorDtoList.add(cntrDto1);
 		contractorDtoList.add(cntrDto2);
-		when(repository.findByContractorNameContains(Mockito.anyString())).thenReturn(contractorList);
-		when(mapper.toListContractorDto(Mockito.any())).thenReturn(contractorDtoList);
-		List<ContractorDto> resultContractorDtoList = serviceImpl.getContractorsContainingName("As");
+		
+		when(repository.findByContractorNameContains("Yash")).thenReturn(contractorList);
+		when(mapper.toListOfContractorDto(contractorList)).thenReturn(contractorDtoList);
+		
+		List<ContractorDto> resultContractorDtoList = serviceImpl.getContractorsByContractorName("Yash");
 
+		verify(repository).findByContractorNameContains("Yash");
+		verify(mapper).toListOfContractorDto(contractorList);
+		
 		assertEquals(resultContractorDtoList.get(0).getContractorName(), "Yash");
 		assertEquals(resultContractorDtoList.get(1).getContractorName(), "Yash Technologies");
 	}
 
 	@Test
-	public void getContractorsContainingName_NoNameExists() {
+	public void getContractorsByContractorNameIfContractorNameNotExistsInDB() {
+		
+		List<Contractor> contractorList = new ArrayList<>();
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
+		
+		when(repository.findByContractorNameContains("Yash")).thenReturn(contractorList);
+		when(mapper.toListOfContractorDto(contractorList)).thenReturn(contractorDtoList);
 
-		when(mapper.toListContractorDto(Mockito.any())).thenReturn(contractorDtoList);
-
-		List<ContractorDto> resultContractorDtoList = serviceImpl.getContractorsContainingName("As");
+		List<ContractorDto> resultContractorDtoList = serviceImpl.getContractorsByContractorName("Yash");
+		
+		verify(repository).findByContractorNameContains("Yash");
+		verify(mapper).toListOfContractorDto(contractorList);
 
 		assertEquals(contractorDtoList, resultContractorDtoList);
 	}
