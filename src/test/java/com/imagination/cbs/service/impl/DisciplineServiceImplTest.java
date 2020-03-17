@@ -1,19 +1,15 @@
 package com.imagination.cbs.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.imagination.cbs.domain.Discipline;
@@ -42,9 +38,9 @@ public class DisciplineServiceImplTest {
 
 		List<DisciplineDto> actualListOfDisciplineDto = disciplineServiceImpl.getAllDisciplines();
 
-		assertEquals(8000,actualListOfDisciplineDto.get(0).getDisciplineId());
-		assertEquals("Creative",actualListOfDisciplineDto.get(0).getDisciplineName());
-		assertEquals("Client Services",actualListOfDisciplineDto.get(0).getDisciplineDescription());
+		assertEquals(8000, actualListOfDisciplineDto.get(0).getDisciplineId());
+		assertEquals("Creative", actualListOfDisciplineDto.get(0).getDisciplineName());
+		assertEquals("Client Services", actualListOfDisciplineDto.get(0).getDisciplineDescription());
 
 	}
 
@@ -53,7 +49,7 @@ public class DisciplineServiceImplTest {
 		List<Discipline> listOfDiscipline = new ArrayList<>();
 
 		Discipline discipline = new Discipline();
-		discipline.setDisciplineId(8000);
+		discipline.setDisciplineId(8000L);
 		discipline.setDisciplineDescription("Client Services");
 		discipline.setDisciplineName("Creative");
 

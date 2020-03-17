@@ -1,10 +1,14 @@
+/**
+ * 
+ */
 package com.imagination.cbs.exception;
 
-public class CBSApplicationException extends RuntimeException{
+/**
+ * @author Ramesh.Suryaneni
+ *
+ */
+public class CBSApplicationException extends RuntimeException {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private String errorMessage;
@@ -22,4 +26,5 @@ public class CBSApplicationException extends RuntimeException{
 		super(errorMessage);
 		this.errorMessage = errorMessage;
 	}
+
 }

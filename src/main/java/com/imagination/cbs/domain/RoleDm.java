@@ -1,48 +1,60 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the role_dm database table.
  * 
  */
 @Entity
-@Table(name="role_dm")
-@NamedQuery(name="RoleDm.findAll", query="SELECT r FROM RoleDm r")
+@Table(name = "role_dm")
 public class RoleDm implements Serializable {
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "role_id")
 	private Long roleId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="discipline_id")
-	private Long disciplineId;
+	@Column(name = "inside_ir35")
+	private String insideIr35;
 
-	@Column(name="role_description")
+	@Column(name = "role_description")
 	private String roleDescription;
 
-	@Column(name="role_name")
+	@Column(name = "role_name")
 	private String roleName;
 
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="roleDm")
-	private ContractorEmployeeRole contractorEmployeeRole;
+	@Column(name = "status")
+	private String status;
 
-	//bi-directional one-to-one association to RoleDefaultRate
-	@OneToOne
-	@JoinColumn(name="role_id", referencedColumnName="role_id")
-	private RoleDefaultRate roleDefaultRate;
+	@ManyToOne
+	@JoinColumn(name = "discipline_id")
+	private Discipline discipline;
+
+	public Discipline getDiscipline() {
+		return discipline;
+	}
+
+	public void setDiscipline(Discipline discipline) {
+		this.discipline = discipline;
+	}
 
 	public RoleDm() {
 	}
@@ -71,12 +83,12 @@ public class RoleDm implements Serializable {
 		this.changedDate = changedDate;
 	}
 
-	public Long getDisciplineId() {
-		return this.disciplineId;
+	public String getInsideIr35() {
+		return this.insideIr35;
 	}
 
-	public void setDisciplineId(Long disciplineId) {
-		this.disciplineId = disciplineId;
+	public void setInsideIr35(String insideIr35) {
+		this.insideIr35 = insideIr35;
 	}
 
 	public String getRoleDescription() {
@@ -95,20 +107,11 @@ public class RoleDm implements Serializable {
 		this.roleName = roleName;
 	}
 
-	public ContractorEmployeeRole getContractorEmployeeRole() {
-		return this.contractorEmployeeRole;
+	public String getStatus() {
+		return this.status;
 	}
 
-	public void setContractorEmployeeRole(ContractorEmployeeRole contractorEmployeeRole) {
-		this.contractorEmployeeRole = contractorEmployeeRole;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-
-	public RoleDefaultRate getRoleDefaultRate() {
-		return this.roleDefaultRate;
-	}
-
-	public void setRoleDefaultRate(RoleDefaultRate roleDefaultRate) {
-		this.roleDefaultRate = roleDefaultRate;
-	}
-
 }

@@ -9,37 +9,37 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="reasons_for_recruiting")
-@NamedQuery(name="ReasonsForRecruiting.findAll", query="SELECT r FROM ReasonsForRecruiting r")
+@Table(name = "reasons_for_recruiting")
 public class ReasonsForRecruiting implements Serializable {
-	
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="reason_id")
-	private long reasonId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "reason_id")
+	private Long reasonId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="reason_description")
+	@Column(name = "reason_description")
 	private String reasonDescription;
 
-	@Column(name="reason_name")
+	@Column(name = "reason_name")
 	private String reasonName;
 
 	public ReasonsForRecruiting() {
 	}
 
-	public long getReasonId() {
+
+	public Long getReasonId() {
 		return this.reasonId;
 	}
 
-	public void setReasonId(long reasonId) {
+	public void setReasonId(Long reasonId) {
+
 		this.reasonId = reasonId;
 	}
 
@@ -75,4 +75,7 @@ public class ReasonsForRecruiting implements Serializable {
 		this.reasonName = reasonName;
 	}
 
+
 }
+
+

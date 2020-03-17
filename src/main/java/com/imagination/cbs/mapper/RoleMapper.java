@@ -9,5 +9,7 @@ import com.imagination.cbs.dto.ContractorRoleDto;
 public interface RoleMapper {
 	
 	public List<ContractorRoleDto> toListContractorRoleDto(List<RoleDm> listOfRoles);
+	
+	public ContractorRoleDto toRoleDTO(RoleDm roledm);
 
 }

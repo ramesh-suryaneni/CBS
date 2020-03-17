@@ -1,55 +1,63 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the contractor_employee_ratings database table.
  * 
  */
 @Entity
-@Table(name="contractor_employee_ratings")
-@NamedQuery(name="ContractorEmployeeRating.findAll", query="SELECT c FROM ContractorEmployeeRating c")
+@Table(name = "contractor_employee_ratings")
 public class ContractorEmployeeRating implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="contractor_employee_ratings_id")
-	private long contractorEmployeeRatingsId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "contractor_employee_ratings_id")
+	private Long contractorEmployeeRatingsId;
 
 	private String description;
 
-	@Column(name="rating_given")
+	@Column(name = "rating_given")
 	private BigDecimal ratingGiven;
 
-	@Column(name="rating_given_by")
+	@Column(name = "rating_given_by")
 	private String ratingGivenBy;
 
-	@Column(name="rating_given_date")
+	@Column(name = "rating_given_date")
 	private Timestamp ratingGivenDate;
 
 	private String status;
 
-	//bi-directional one-to-one association to ContractorEmployee
-	@OneToOne(mappedBy="contractorEmployeeRating")
+	// bi-directional one-to-one association to ContractorEmployee
+	@OneToOne
+	@JoinColumn(name = "contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 
-	//bi-directional one-to-one association to BookingRevision
+	// bi-directional one-to-one association to Booking
 	@OneToOne
-	@JoinColumn(name="booking_id", referencedColumnName="booking_id")
-	private BookingRevision bookingRevision;
+	@JoinColumn(name = "booking_id")
+	private Booking booking;
 
 	public ContractorEmployeeRating() {
 	}
 
-	public long getContractorEmployeeRatingsId() {
+	public Long getContractorEmployeeRatingsId() {
 		return this.contractorEmployeeRatingsId;
 	}
 
-	public void setContractorEmployeeRatingsId(long contractorEmployeeRatingsId) {
+	public void setContractorEmployeeRatingsId(Long contractorEmployeeRatingsId) {
 		this.contractorEmployeeRatingsId = contractorEmployeeRatingsId;
 	}
 
@@ -101,12 +109,12 @@ public class ContractorEmployeeRating implements Serializable {
 		this.contractorEmployee = contractorEmployee;
 	}
 
-	public BookingRevision getBookingRevision() {
-		return this.bookingRevision;
+	public Booking getBooking() {
+		return this.booking;
 	}
 
-	public void setBookingRevision(BookingRevision bookingRevision) {
-		this.bookingRevision = bookingRevision;
+	public void setBooking(Booking booking) {
+		this.booking = booking;
 	}
 
 }

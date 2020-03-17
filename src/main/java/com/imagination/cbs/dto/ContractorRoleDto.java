@@ -3,36 +3,32 @@ package com.imagination.cbs.dto;
 import java.sql.Timestamp;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 public class ContractorRoleDto {
 	
-	@Setter
-	@Getter
 	private long roleId;
 	
-	@Setter
-	@Getter
 	private String changedBy;
 	
-	@Setter
-	@Getter
 	private Timestamp changedDate;
 	
-	@Setter
-	@Getter
 	private long disciplineId;
 	
-	@Setter
-	@Getter
 	private String roleDescription;
 	
-	@Setter
-	@Getter
 	private String roleName;
 	
+	private String cestDownloadLink;
+	
+	private boolean insideIr35;
+
+	@Override
+	public String toString() {
+		return "ContractorRoleDto [roleId=" + roleId + ", changedBy=" + changedBy + ", changedDate=" + changedDate
+				+ ", disciplineId=" + disciplineId + ", roleDescription=" + roleDescription + ", roleName=" + roleName
+				+ "]";
+	}
 	
 	
 

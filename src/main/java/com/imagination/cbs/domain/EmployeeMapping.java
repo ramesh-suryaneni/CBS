@@ -1,67 +1,81 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the employee_mapping database table.
  * 
  */
 @Entity
-@Table(name="employee_mapping")
-@NamedQuery(name="EmployeeMapping.findAll", query="SELECT e FROM EmployeeMapping e")
+@Table(name = "employee_mapping")
 public class EmployeeMapping implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="employee_id")
-	private long employeeId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "employee_id")
+	private Long employeeId;
 
-	@Column(name="employee_number_maconomy")
-	private long employeeNumberMaconomy;
+	@Column(name = "changed_by")
+	private String changedBy;
 
-	@Column(name="ogle_account")
-	private String ogleAccount;
+	@Column(name = "changed_date")
+	private Timestamp changedDate;
 
-	//bi-directional one-to-one association to Approver
-	@OneToOne
-	@JoinColumn(name="employee_id", referencedColumnName="employe_id")
-	private Approver approver;
+	@Column(name = "employee_number_maconomy")
+	private String employeeNumberMaconomy;
+
+	@Column(name = "google_account")
+	private String googleAccount;
 
 	public EmployeeMapping() {
 	}
 
-	public long getEmployeeId() {
+	public Long getEmployeeId() {
 		return this.employeeId;
 	}
 
-	public void setEmployeeId(long employeeId) {
+	public void setEmployeeId(Long employeeId) {
 		this.employeeId = employeeId;
 	}
 
-	public long getEmployeeNumberMaconomy() {
+	public String getChangedBy() {
+		return this.changedBy;
+	}
+
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public Timestamp getChangedDate() {
+		return this.changedDate;
+	}
+
+	public void setChangedDate(Timestamp changedDate) {
+		this.changedDate = changedDate;
+	}
+
+	public String getEmployeeNumberMaconomy() {
 		return this.employeeNumberMaconomy;
 	}
 
-	public void setEmployeeNumberMaconomy(long employeeNumberMaconomy) {
+	public void setEmployeeNumberMaconomy(String employeeNumberMaconomy) {
 		this.employeeNumberMaconomy = employeeNumberMaconomy;
 	}
 
-	public String getOgleAccount() {
-		return this.ogleAccount;
+	public String getGoogleAccount() {
+		return this.googleAccount;
 	}
 
-	public void setOgleAccount(String ogleAccount) {
-		this.ogleAccount = ogleAccount;
+	public void setGoogleAccount(String googleAccount) {
+		this.googleAccount = googleAccount;
 	}
-
-	public Approver getApprover() {
-		return this.approver;
-	}
-
-	public void setApprover(Approver approver) {
-		this.approver = approver;
-	}
-
 }

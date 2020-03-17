@@ -5,50 +5,66 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the role_default_rate database table.
  * 
  */
 @Entity
-@Table(name="role_default_rate")
-@NamedQuery(name="RoleDefaultRate.findAll", query="SELECT r FROM RoleDefaultRate r")
+@Table(name = "role_default_rate")
 public class RoleDefaultRate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="default_rate_id")
-	private long defaultRateId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "default_rate_id")
+	private Long defaultRateId;
 
-	@Column(name="currency_id")
-	private long currencyId;
+	@Column(name = "changed_by")
+	private String changedBy;
 
-	@Column(name="date_from")
+	@Column(name = "changed_date")
+	private Timestamp changedDate;
+
+	@Column(name = "date_from")
 	private Timestamp dateFrom;
 
 	private BigDecimal rate;
 
-	//bi-directional one-to-one association to RoleDm
-	@OneToOne(mappedBy="roleDefaultRate")
+	// bi-directional one-to-one association to RoleDm
+	@OneToOne
+	@JoinColumn(name = "role_id")
 	private RoleDm roleDm;
+
+	// bi-directional one-to-one association to CurrencyDm
+	@OneToOne
+	@JoinColumn(name = "currency_id")
+	private CurrencyDm currencyDm;
 
 	public RoleDefaultRate() {
 	}
 
-	public long getDefaultRateId() {
+	public Long getDefaultRateId() {
 		return this.defaultRateId;
 	}
 
-	public void setDefaultRateId(long defaultRateId) {
+	public void setDefaultRateId(Long defaultRateId) {
 		this.defaultRateId = defaultRateId;
 	}
 
-	public long getCurrencyId() {
-		return this.currencyId;
+	public String getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setCurrencyId(long currencyId) {
-		this.currencyId = currencyId;
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public Timestamp getChangedDate() {
+		return this.changedDate;
+	}
+
+	public void setChangedDate(Timestamp changedDate) {
+		this.changedDate = changedDate;
 	}
 
 	public Timestamp getDateFrom() {
@@ -73,6 +89,14 @@ public class RoleDefaultRate implements Serializable {
 
 	public void setRoleDm(RoleDm roleDm) {
 		this.roleDm = roleDm;
+	}
+
+	public CurrencyDm getCurrencyDm() {
+		return this.currencyDm;
+	}
+
+	public void setCurrencyDm(CurrencyDm currencyDm) {
+		this.currencyDm = currencyDm;
 	}
 
 }

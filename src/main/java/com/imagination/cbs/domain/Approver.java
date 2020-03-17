@@ -1,62 +1,67 @@
 package com.imagination.cbs.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the approver database table.
  * 
  */
 @Entity
-@Table(name="approver")
-@NamedQuery(name="Approver.findAll", query="SELECT a FROM Approver a")
+@Table(name = "approver")
 public class Approver implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="approver_id")
-	private long approverId;
-	
-	@Column(name="approver_number")
-	private long approverNumber;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "approver_id")
+	private Long approverId;
 
-	@Column(name="changed_by")
+	@Column(name = "approver_order")
+	private Long approverOrder;
+
+	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="team_id")
-	private long teamId;
-
-	//bi-directional many-to-one association to Team
-	@ManyToOne
-	@JoinColumn(name="team_id", insertable=false, updatable =false)
+	// bi-directional one-to-one association to Team
+	@OneToOne
+	@JoinColumn(name = "team_id")
 	private Team team;
 
-	//bi-directional one-to-one association to EmployeeMapping
-	@OneToOne(mappedBy="approver")
+	// bi-directional one-to-one association to EmployeeMapping
+	@OneToOne
+	@JoinColumn(name = "employe_id")
 	private EmployeeMapping employeeMapping;
 
 	public Approver() {
 	}
 
-	public long getApproverId() {
-		return approverId;
+	public Long getApproverId() {
+		return this.approverId;
 	}
 
-	public void setApproverId(long approverId) {
+	public void setApproverId(Long approverId) {
 		this.approverId = approverId;
 	}
 
-	public long getApproverNumber() {
-		return this.approverNumber;
+	public Long getApproverOrder() {
+		return this.approverOrder;
 	}
 
-	public void setApproverNumber(long approverNumber) {
-		this.approverNumber = approverNumber;
+	public void setApproverOrder(Long approverOrder) {
+		this.approverOrder = approverOrder;
 	}
 
 	public String getChangedBy() {
@@ -73,14 +78,6 @@ public class Approver implements Serializable {
 
 	public void setChangedDate(Timestamp changedDate) {
 		this.changedDate = changedDate;
-	}
-
-	public long getTeamId() {
-		return this.teamId;
-	}
-
-	public void setTeamId(long teamId) {
-		this.teamId = teamId;
 	}
 
 	public Team getTeam() {
