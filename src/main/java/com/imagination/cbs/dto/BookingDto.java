@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class BookingDto {
+	private String bookingId;
 	private String bookingDescription;
 	private String changedBy;
 	private String changedDate;
@@ -75,6 +76,7 @@ public class BookingDto {
 
 	private String rate;
 
+	@NotNull(message = "Revision No cannot be null")
 	private String revisionNumber;
 
 }

@@ -110,6 +110,13 @@ public class BookingRevision implements Serializable {
 	@Column(name = "revision_number")
 	private Long revisionNumber;
 
+	@ManyToOne
+	@JoinColumn(name = "booking_id")
+	private Booking booking;
+
+	public BookingRevision() {
+	}
+
 	public Long getBookingRevisionId() {
 		return bookingRevisionId;
 	}
@@ -348,12 +355,5 @@ public class BookingRevision implements Serializable {
 
 	public void setBooking(Booking booking) {
 		this.booking = booking;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "booking_id")
-	private Booking booking;
-
-	public BookingRevision() {
 	}
 }
