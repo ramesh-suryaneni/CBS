@@ -30,40 +30,41 @@ public class ContractorControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@MockBean
 	private ContractorServiceImpl contractorServiceImpl;
-	
+
 	@Test
-	public void getContractorContainingName_NameExists() throws Exception {
+	public void shouldReturnListOfContractorsByContractorName() throws Exception {
 		List<ContractorDto> contractorDtos = getContractorDtos();
-		
-		when(contractorServiceImpl.getContractorsContainingName("Im")).thenReturn(contractorDtos);
-		
+
+		when(contractorServiceImpl.getContractorsByContractorName("Im")).thenReturn(contractorDtos);
+
 		mockMvc.perform(get("/contractors/Im").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-			.andExpect(jsonPath("$[0].contractorName", comparesEqualTo("Imagination")));
-		
-		verify(contractorServiceImpl).getContractorsContainingName("Im");
+				.andExpect(jsonPath("$[0].contractorName", comparesEqualTo("Imagination")));
+
+		verify(contractorServiceImpl).getContractorsByContractorName("Im");
 	}
-	
+
 	@Test
-	public void getContractorContainingName_NoNameExists() throws Exception {
+	public void shouldReturnEmptyContractListIfContractorNameIsNotPresentInDB() throws Exception {
 		List<ContractorDto> contractorDtos = new ArrayList<>();
-		
-		when(contractorServiceImpl.getContractorsContainingName(Mockito.anyString())).thenReturn(contractorDtos);
-		
+
+		when(contractorServiceImpl.getContractorsByContractorName(Mockito.anyString())).thenReturn(contractorDtos);
+
 		mockMvc.perform(get("/contractors/Test").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		.andExpect(jsonPath("$").isEmpty());
-		
-		verify(contractorServiceImpl).getContractorsContainingName("Test");
+				.andExpect(jsonPath("$").isEmpty());
+
+		verify(contractorServiceImpl).getContractorsByContractorName("Test");
 	}
-	public List<ContractorDto> getContractorDtos(){
+
+	public List<ContractorDto> getContractorDtos() {
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
 		ContractorDto contractorDto1 = new ContractorDto();
 		contractorDto1.setContractorId(101);
 		contractorDto1.setContractorName("Imagination");
 		contractorDtoList.add(contractorDto1);
-		
+
 		return contractorDtoList;
 	}
 }
