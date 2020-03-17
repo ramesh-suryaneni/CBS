@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Discipline;
@@ -27,6 +28,7 @@ public class DisciplineServiceImpl implements DisciplineService {
 	private RoleMapper roleMapper;
 
 	@Override
+	@Cacheable("disciplines")
 	public List<DisciplineDto> getAllDisciplines() {
 
 		return disciplineMapper.toListOfDisciplineDTO(disciplineRepository.findAll());
@@ -34,6 +36,7 @@ public class DisciplineServiceImpl implements DisciplineService {
 	}
 
 	@Override
+	@Cacheable("roles")
 	public List<ContractorRoleDto> findAllContractorRoles(Long disciplineId) {
 
 		Optional<Discipline> discpline = disciplineRepository.findById(disciplineId);
