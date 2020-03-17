@@ -1,21 +1,14 @@
 
 package com.imagination.cbs.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.imagination.cbs.security.GoogleAccessTokenValidationFilter;
-import com.imagination.cbs.security.GoogleAuthenticationProvider;
+import com.imagination.cbs.security.GoogleIDTokenValidationFilter;
 
 
 
@@ -23,7 +16,7 @@ import com.imagination.cbs.security.GoogleAuthenticationProvider;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	private GoogleAuthenticationProvider googleAuthenticationProvider;
+	private GoogleIDTokenValidationFilter googleIDTokenValidationFilter;
 	
 	    @Override
 	    public void configure(WebSecurity web) throws Exception {
@@ -40,23 +33,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
-	        http.cors().and().csrf().disable().httpBasic().and().antMatcher("/**").
+	        http.cors().and().csrf().disable().antMatcher("/**").
 	                authorizeRequests().antMatchers("/", "/index.html").permitAll()
 	                
 	                //** BOTH ADMIN/USER CAN ACCESS **//*
 	                //** ONLY ADMIN CAN ACCESS **//*
-	                .anyRequest().authenticated().and().addFilter(getGoogleAccessTokenValidationFilter());
+	                .anyRequest().authenticated().and().addFilterBefore(googleIDTokenValidationFilter,UsernamePasswordAuthenticationFilter.class);
 	                
 	    }
 	    
-	    private BasicAuthenticationFilter getGoogleAccessTokenValidationFilter(){
-			
-			List<AuthenticationProvider> listOfAuthenticationProvider=new ArrayList<>();
-			listOfAuthenticationProvider.add(googleAuthenticationProvider);
-			
-			AuthenticationManager manager=new ProviderManager(listOfAuthenticationProvider);
-			
-			return new GoogleAccessTokenValidationFilter(manager);
-		}
+	  
 
 }

@@ -2,13 +2,19 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * The persistent class for the employee_mapping database table.
@@ -35,6 +41,10 @@ public class EmployeeMapping implements Serializable {
 
 	@Column(name = "google_account")
 	private String googleAccount;
+	
+	@OneToMany(mappedBy = "employeeMapping")
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private Set<EmployeePermissions> employeePermissions;
 
 	public EmployeeMapping() {
 	}
@@ -77,5 +87,13 @@ public class EmployeeMapping implements Serializable {
 
 	public void setGoogleAccount(String googleAccount) {
 		this.googleAccount = googleAccount;
+	}
+
+	public Set<EmployeePermissions> getEmployeePermissions() {
+		return employeePermissions;
+	}
+
+	public void setEmployeePermissions(Set<EmployeePermissions> employeePermissions) {
+		this.employeePermissions = employeePermissions;
 	}
 }
