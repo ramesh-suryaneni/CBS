@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.security;
+package com.imagination.cbs.security;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -24,7 +24,7 @@ import com.imagination.cbs.exception.CBSAuthenticationException;
 @Component(value="googleIDTokenValidationUtility")
 public class GoogleIDTokenValidationUtility {
 
-	private final String ID_TOKEN="idToken";
+	private final String ID_TOKEN="Authorization";
 	private final String CLIENT_ID="73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com";
 	
 	@Autowired
@@ -33,8 +33,16 @@ public class GoogleIDTokenValidationUtility {
 	public boolean validateAccessToken(HttpServletRequest request) throws GeneralSecurityException, IOException{
 		
 		String idTokenString=request.getHeader(ID_TOKEN);
+		
+		if(null ==idTokenString ){
+			throw new CBSAuthenticationException("Bearer/ID Token is not present");
+		}
+		//remove bearer from tokenstring
+		idTokenString=idTokenString.substring(7);
+		
 		final NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
 		final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+		
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
 				.setAudience(Collections.singletonList(CLIENT_ID)).build();
 		
@@ -76,4 +84,3 @@ public class GoogleIDTokenValidationUtility {
 		
 	}
 }
-*/

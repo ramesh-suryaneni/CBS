@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.security;
+package com.imagination.cbs.security;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -49,4 +49,3 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 	}
 
 }
-*/
