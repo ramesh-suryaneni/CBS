@@ -6,6 +6,8 @@ import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,8 @@ import com.imagination.cbs.exception.CBSAuthenticationException;
 
 @Component(value="googleIDTokenValidationUtility")
 public class GoogleIDTokenValidationUtility {
+	
+	private Logger logger=LoggerFactory.getLogger(GoogleIDTokenValidationUtility.class);
 
 	private final String ID_TOKEN="Authorization";
 	private final String CLIENT_ID="73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com";
@@ -37,8 +41,11 @@ public class GoogleIDTokenValidationUtility {
 		if(null ==idTokenString ){
 			throw new CBSAuthenticationException("Bearer/ID Token is not present");
 		}
-		//remove bearer from tokenstring
+		
+		logger.info("Authorization Header: "+idTokenString);
+		//removes bearer from tokenstring
 		idTokenString=idTokenString.substring(7);
+		logger.info("ID Token: "+idTokenString);
 		
 		final NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
 		final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();

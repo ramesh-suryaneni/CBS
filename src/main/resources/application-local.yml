@@ -11,3 +11,9 @@ spring:
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
+   autoconfigure:
+       exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration   
+       
+cbssecurity:
+     enabled: false              
+               
