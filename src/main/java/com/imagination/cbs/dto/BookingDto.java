@@ -1,5 +1,7 @@
 package com.imagination.cbs.dto;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -78,5 +80,11 @@ public class BookingDto {
 
 	@NotNull(message = "Revision No cannot be null")
 	private String revisionNumber;
+
+	private String jobDeptName;
+
+	private String approverComments;
+
+	private List<ContractorMonthlyWorkdayDto> contractorMonthlyWorkday;
 
 }

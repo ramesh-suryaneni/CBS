@@ -22,15 +22,9 @@ public interface BookingMapper {
 
 	public List<ContractorRoleDto> toListContractorRoleDto(List<RoleDm> listOfRoles);
 
-	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp")
+	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp", ignore = true)
 	public Booking toBookingDomainFromBookingDto(BookingDto bookingDto);
 
-	// @Mapping(source = "contractedFromDate", target = "contractedFromDate",
-	// qualifiedByName = "timeStampToString")
-	// @Mapping(source = "contractedToDate", target = "contractedToDate",
-	// qualifiedByName = "timeStampToString")
-	// @Mapping(source = "revisionNumber", target = "revisionNumber",
-	// qualifiedByName = "longToString")
 	public BookingDto toBookingDtoFromBooking(Booking bookingDto);
 
 	@Named("stringToTimeStamp")
@@ -52,4 +46,10 @@ public interface BookingMapper {
 	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "timeStampToString")
 	@Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "longToString")
 	public BookingDto toBookingDtoFromBookingRevision(BookingRevision bookingRevisionDto);
+
+	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp", ignore = true)
+	@Mapping(source = "contractedFromDate", target = "contractedFromDate", qualifiedByName = "stringToTimeStamp")
+	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "stringToTimeStamp")
+	@Mapping(source = "contractorSignedDate", target = "contractorSignedDate", qualifiedByName = "stringToTimeStamp")
+	public BookingRevision toBookingRevisionFromBookingDto(BookingDto bookingDto);
 }

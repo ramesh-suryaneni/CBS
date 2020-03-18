@@ -3,6 +3,8 @@
  */
 package com.imagination.cbs.service.impl;
 
+import java.util.Comparator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.repository.BookingRepository;
+import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.RoleService;
 
@@ -34,6 +37,9 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private BookingRevisionRepository bookingRevisionRepository;
+
 	@Override
 	public BookingDto addBookingDetails(BookingDto booking) {
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
@@ -49,9 +55,9 @@ public class BookingServiceImpl implements BookingService {
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
 		bookingRevision.setJobNumber(booking.getJobNumber());
 		bookingRevision.setChangedBy(booking.getChangedBy());
-		bookingRevision.setChangedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
-		bookingRevision.setContractorSignedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
+		// bookingRevision.setChangedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
 		bookingRevision.setRevisionNumber(1L);
+
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);
 		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(booking.getRoleId()));
@@ -73,7 +79,25 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking) {
-		return bookingMapper.toBookingDtoFromBooking(bookingRepository.findById(bookingId).get());
+
+		Booking bookingDetails = bookingRepository.findById(bookingId).get();
+		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(booking);
+		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
+				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
+		bookingRevision.setRevisionNumber(++revisionNumber);
+		Booking book = new Booking();
+		book.setBookingId(bookingId);
+		bookingRevision.setBooking(book);
+		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
+		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(savedBookingRevision);
+
+		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
+		bookingDto.setTeamId(bookingDetails.getTeam().getTeamId().toString());
+		bookingDto.setApprovalStatusId(bookingDetails.getApprovalStatusDm().getApprovalStatusId().toString());
+		bookingDto.setChangedBy(bookingDetails.getChangedBy());
+		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
+		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
+		return bookingDto;
 	}
 
 	@Override

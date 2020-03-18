@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 /**
  * The persistent class for the booking_revision database table.
  * 
@@ -39,6 +41,7 @@ public class BookingRevision implements Serializable {
 	@Column(name = "changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
@@ -110,9 +113,31 @@ public class BookingRevision implements Serializable {
 	@Column(name = "revision_number")
 	private Long revisionNumber;
 
+	@Column(name = "job_dept_name")
+	private String jobDeptName;
+
+	@Column(name = "appprover_comments")
+	private String approverComments;
+
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
+
+	public String getJobDeptName() {
+		return jobDeptName;
+	}
+
+	public void setJobDeptName(String jobDeptName) {
+		this.jobDeptName = jobDeptName;
+	}
+
+	public String getApproverComments() {
+		return approverComments;
+	}
+
+	public void setApproverComments(String approverComments) {
+		this.approverComments = approverComments;
+	}
 
 	public BookingRevision() {
 	}
