@@ -11,9 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imagination.cbs.dto.ErrorResponse;
 import com.imagination.cbs.exception.CBSAuthenticationException;
 @Component(value="googleIDTokenValidationFilter")
 public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
@@ -40,12 +44,31 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 					
 					throw new CBSAuthenticationException("ID token is not valid");
 				}
-			} catch (GeneralSecurityException e) {
+			} catch (CBSAuthenticationException e) {
 				
+				ErrorResponse errorResponse = new ErrorResponse();
+				errorResponse.setMessage(e.getErrorMessage());
+				errorResponse.setErrorCode(HttpStatus.UNAUTHORIZED.value());
+	            
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+	           
+	            response.getWriter().write(convertObjectToJson(errorResponse));
+	            
+	            logger.error(e.getErrorMessage());
+	            
+			}catch(GeneralSecurityException e){
 				e.printStackTrace();
 			}
 		
 
 	}
+	
+	public String convertObjectToJson(Object object) throws JsonProcessingException {
+        if (object == null) {
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(object);
+    }
 
 }
