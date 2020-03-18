@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
 import com.imagination.cbs.security.GoogleIDTokenValidationFilter;
 
 @EnableWebSecurity
@@ -23,6 +24,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private GoogleIDTokenValidationFilter googleIDTokenValidationFilter;
+	
+	@Autowired
+	private GoogleAuthenticationEntryPoint unauthorizedHandler;
 	
 	   @Override
 	    public void configure(WebSecurity web) throws Exception {
@@ -55,7 +59,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 
                 //** BOTH ADMIN/USER CAN ACCESS **//*
                 //** ONLY ADMIN CAN ACCESS **//*
-                .anyRequest().authenticated().and().addFilterBefore(googleIDTokenValidationFilter,UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).
+                and().addFilterBefore(googleIDTokenValidationFilter,UsernamePasswordAuthenticationFilter.class);
 	    	}else{
 	    		logger.info("Security Disabled");
 	    		

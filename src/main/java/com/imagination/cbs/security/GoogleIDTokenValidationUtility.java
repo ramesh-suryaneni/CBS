@@ -3,6 +3,7 @@ package com.imagination.cbs.security;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,73 +22,90 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.exception.CBSAuthenticationException;
+import com.imagination.cbs.repository.ConfigRepository;
 
-@Component(value="googleIDTokenValidationUtility")
+@Component(value = "googleIDTokenValidationUtility")
 public class GoogleIDTokenValidationUtility {
-	
-	private Logger logger=LoggerFactory.getLogger(GoogleIDTokenValidationUtility.class);
 
-	private final String ID_TOKEN="Authorization";
-	private final String CLIENT_ID="73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com";
+	private Logger logger = LoggerFactory.getLogger(GoogleIDTokenValidationUtility.class);
+
+	private final String ID_TOKEN = "Authorization";
+	private final String GOOGLE_CLIENTID_KEY = "GOOGLE_ID";
 	
 	@Autowired
 	private SecurityUserDetailsServiceImpl securityUserDetailsServiceImpl;
-	
-	public boolean validateAccessToken(HttpServletRequest request) throws GeneralSecurityException, IOException{
-		
-		String idTokenString=request.getHeader(ID_TOKEN);
-		
-		if(null ==idTokenString ){
+
+	@Autowired
+	private ConfigRepository configRepository;
+
+	public boolean validateAccessToken(HttpServletRequest request) throws GeneralSecurityException, IOException {
+
+		String idTokenString = request.getHeader(ID_TOKEN);
+
+		if (null == idTokenString) {
 			throw new CBSAuthenticationException("Bearer/ID Token is not present");
 		}
-		
-		logger.info("Authorization Header: "+idTokenString);
-		//removes bearer from tokenstring
-		idTokenString=idTokenString.substring(7);
-		logger.info("ID Token: "+idTokenString);
+
+		logger.info("Authorization Header: " + idTokenString);
+		// removes bearer from tokenstring
+		idTokenString = idTokenString.substring(7);
+		logger.info("ID Token: " + idTokenString);
+
+		String clientId=getGoogleClientID();
 		
 		final NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
 		final JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-		
+
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-				.setAudience(Collections.singletonList(CLIENT_ID)).build();
-		
-		final GoogleIdToken googleIdToken=verifier.verify(idTokenString);
-		
-		if(googleIdToken!=null){
-			
-			final Payload payload=googleIdToken.getPayload();
-			
+				.setAudience(Collections.singletonList(clientId)).build();
+
+		final GoogleIdToken googleIdToken = verifier.verify(idTokenString);
+
+		if (googleIdToken != null) {
+
+			final Payload payload = googleIdToken.getPayload();
+
 			final Boolean emailVerified = payload.getEmailVerified();
 			
-			if(emailVerified){
-				
-				int index=payload.getEmail().indexOf("@");
-				String truncatedEmailId=payload.getEmail().substring(0,index);
-				
-				UserDetails userDetails=securityUserDetailsServiceImpl.loadUserByUsername(truncatedEmailId);
+			if (emailVerified && payload.getAudience().toString().equalsIgnoreCase(clientId)) {
 
-				if(null !=userDetails){
-					
+				int index = payload.getEmail().indexOf("@");
+				String truncatedEmailId = payload.getEmail().substring(0, index);
+
+				UserDetails userDetails = securityUserDetailsServiceImpl.loadUserByUsername(truncatedEmailId);
+
+				if (null != userDetails) {
+
 					Authentication authresult = new UsernamePasswordAuthenticationToken(userDetails, null,
 							userDetails.getAuthorities());
-					
-					SecurityContextHolder.getContext().setAuthentication(authresult);
-					
-				}else{
-					
-					throw new CBSAuthenticationException("User is not present with Google Account:- "+payload.getEmail());
-				}
-				
-			}
-			
 
-			return emailVerified;
+					SecurityContextHolder.getContext().setAuthentication(authresult);
+
+				} else {
+
+					throw new CBSAuthenticationException(
+							"User is not present with Google Account:- " + payload.getEmail());
+				}
+
+				return true;
+			}
+
+			
 		}
-		
+
 		return false;
+
+	}
+
+	private String getGoogleClientID() {
+		Optional<Config> optionalConfig = configRepository.findByKeyName(GOOGLE_CLIENTID_KEY);
+		if(!optionalConfig.isPresent()){
+			throw new CBSAuthenticationException("Google client id not found");
+		}
+		Config config=optionalConfig.get();
 		
-		
+		return config.getKeyValue();
 	}
 }
