@@ -26,7 +26,7 @@ public class MaconomyController {
 	private MaconomyService maconomyService;
 	
 	@GetMapping()
-	public List<com.imagination.cbs.dto.JobDataDto> test(@RequestParam String jobNumber){
+	public List<com.imagination.cbs.dto.JobDataDto> getJobDetails(@RequestParam String jobNumber){
 		
 		return maconomyService.getJobDetails(jobNumber);
 	}

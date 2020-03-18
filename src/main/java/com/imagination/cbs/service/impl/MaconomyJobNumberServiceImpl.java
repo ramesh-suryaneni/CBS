@@ -37,7 +37,7 @@ import com.imagination.cbs.service.MaconomyService;
  */
 
 @Service("maconomyService")
-public class MaconomyServiceImpl implements MaconomyService {
+public class MaconomyJobNumberServiceImpl implements MaconomyService {
 
 	@Autowired
 	private RestTemplate restTemplate;
