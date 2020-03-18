@@ -3,17 +3,23 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.util.CollectionUtils;
 
 /**
  * The persistent class for the booking_revision database table.
@@ -102,12 +108,6 @@ public class BookingRevision implements Serializable {
 	@Column(name = "known_as")
 	private String knownAs;
 
-	@Column(name = "office_description")
-	private String officeDescription;
-
-	@Column(name = "office_id")
-	private String officeId;
-
 	private BigDecimal rate;
 
 	@Column(name = "revision_number")
@@ -122,6 +122,9 @@ public class BookingRevision implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
+
+	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<BookingWorkTask> bookingWorkTasks;
 
 	public String getJobDeptName() {
 		return jobDeptName;
@@ -342,22 +345,6 @@ public class BookingRevision implements Serializable {
 		this.knownAs = knownAs;
 	}
 
-	public String getOfficeDescription() {
-		return officeDescription;
-	}
-
-	public void setOfficeDescription(String officeDescription) {
-		this.officeDescription = officeDescription;
-	}
-
-	public String getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(String officeId) {
-		this.officeId = officeId;
-	}
-
 	public BigDecimal getRate() {
 		return rate;
 	}
@@ -380,5 +367,21 @@ public class BookingRevision implements Serializable {
 
 	public void setBooking(Booking booking) {
 		this.booking = booking;
+	}
+
+	public List<BookingWorkTask> getBookingWorkTasks() {
+		if (CollectionUtils.isEmpty(this.bookingWorkTasks)) {
+			return this.bookingWorkTasks = new ArrayList<BookingWorkTask>();
+		}
+		return bookingWorkTasks;
+	}
+
+	public void addBookingWorkTask(BookingWorkTask bookingWorkTask) {
+		getBookingWorkTasks().add(bookingWorkTask);
+		bookingWorkTask.setBookingRevision(this);
+	}
+
+	public void setBookingWorkTasks(List<BookingWorkTask> bookingWorkTasks) {
+		this.bookingWorkTasks = bookingWorkTasks;
 	}
 }

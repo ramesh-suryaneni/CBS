@@ -16,7 +16,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "contractor_monthly_workdays")
-public class ContractorMonthlyWorkday implements Serializable {
+public class ContractorMonthlyWorkDay implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -39,7 +39,7 @@ public class ContractorMonthlyWorkday implements Serializable {
 	@Column(name = "month_working_days")
 	private Long monthWorkingDays;
 
-	public ContractorMonthlyWorkday() {
+	public ContractorMonthlyWorkDay() {
 	}
 
 	public Long getWorkDaysId() {

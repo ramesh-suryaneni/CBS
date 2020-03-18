@@ -91,7 +91,9 @@ public class BookingServiceImpl implements BookingService {
 		Booking book = new Booking();
 		book.setBookingId(bookingId);
 		bookingRevision.setBooking(book);
+
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
+
 		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(savedBookingRevision);
 
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
