@@ -52,4 +52,5 @@ public interface BookingMapper {
 	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "stringToTimeStamp")
 	@Mapping(source = "contractorSignedDate", target = "contractorSignedDate", qualifiedByName = "stringToTimeStamp")
 	public BookingRevision toBookingRevisionFromBookingDto(BookingDto bookingDto);
+
 }
