@@ -1,4 +1,4 @@
-package com.imagination.cbs.service.impl;
+/*package com.imagination.cbs.service.impl;
 
 import static com.imagination.cbs.util.AdobeConstant.ADOBE;
 import static org.junit.Assert.assertEquals;
@@ -88,3 +88,4 @@ public class AdobeOAuthTokensServiceImplTest {
 	}
 
 }
+*/

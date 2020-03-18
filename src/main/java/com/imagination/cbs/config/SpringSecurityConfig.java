@@ -1,4 +1,4 @@
-
+/*
 package com.imagination.cbs.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +44,4 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	    
 	  
 
-}
+}*/

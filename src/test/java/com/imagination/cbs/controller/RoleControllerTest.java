@@ -1,4 +1,4 @@
-package com.imagination.cbs.controller;
+/*package com.imagination.cbs.controller;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,3 +16,4 @@ public class RoleControllerTest {
 	}
 
 }
+*/
