@@ -3,7 +3,7 @@ package com.imagination.cbs.dto;
 import lombok.Data;
 
 @Data
-public class ContractorMonthlyWorkdayDto {
+public class WorkDaysDto {
 	private String monthName;
 
 	private String monthWorkingDays;

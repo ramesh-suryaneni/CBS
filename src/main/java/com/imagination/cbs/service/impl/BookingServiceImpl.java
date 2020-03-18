@@ -49,13 +49,16 @@ public class BookingServiceImpl implements BookingService {
 
 		ContractorRoleDto cestResponse = roleService.getCESToutcome(Long.parseLong(booking.getRoleId()));
 
+		// Team id, jobnumber, jobDeptName will come from Pappu's API
 		team.setTeamId(Long.parseLong(booking.getTeamId()));
-		approvalStatusDm.setApprovalStatusId(Long.parseLong(booking.getApprovalStatusId()));
+		bookingRevision.setJobDeptName("");
+
+		approvalStatusDm.setApprovalStatusId(1001L);
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
 		bookingRevision.setJobNumber(booking.getJobNumber());
+		// Changed by will come from Logged in user information
 		bookingRevision.setChangedBy(booking.getChangedBy());
-		// bookingRevision.setChangedDate(BookingMapper.stringToTimeStampConverter(booking.getChangedDate()));
 		bookingRevision.setRevisionNumber(1L);
 
 		bookingDomain.addBookingRevision(bookingRevision);

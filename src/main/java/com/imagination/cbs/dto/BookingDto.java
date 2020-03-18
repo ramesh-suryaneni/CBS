@@ -85,6 +85,8 @@ public class BookingDto {
 
 	private String approverComments;
 
-	private List<ContractorMonthlyWorkdayDto> contractorMonthlyWorkday;
+	private List<WorkDaysDto> workDays;
+
+	private List<WorkTasksDto> workTasks;
 
 }

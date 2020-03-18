@@ -1,4 +1,4 @@
-/*
+
 package com.imagination.cbs.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	    @Override
 	    protected void configure(HttpSecurity http) throws Exception {
 	        http.cors().and().csrf().disable().antMatcher("/**").
-	                authorizeRequests().antMatchers("/", "/index.html").permitAll()
+	                authorizeRequests().antMatchers("/", "/index.html","/token/*", 
+	                		"/v2/**",
+	                        "/configuration/**",
+	                        "/migration/**",
+	                        "/swagger-resources/**",
+	                        "/swagger-ui.html",
+	                        "/webjars/**").permitAll()
 	                
 	                //** BOTH ADMIN/USER CAN ACCESS **//*
 	                //** ONLY ADMIN CAN ACCESS **//*
@@ -44,4 +50,4 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	    
 	  
 
-}*/
+}
