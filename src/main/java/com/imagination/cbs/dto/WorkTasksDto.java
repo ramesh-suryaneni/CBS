@@ -9,4 +9,7 @@ public class WorkTasksDto {
 	private String taskDateRate;
 	private String taskTotalDays;
 	private String taskTotalAmount;
+	private String bookingRevisionId;
+	private String changedBy;
+	private String changedDate;
 }

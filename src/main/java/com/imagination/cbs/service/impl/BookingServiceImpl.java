@@ -15,15 +15,18 @@ import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
+import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.BookingWorkTaskRepository;
+import com.imagination.cbs.repository.ContractorMonthlyWorkDayRepository;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.service.RoleService;
@@ -53,6 +56,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private MaconomyService maconomyService;
+
+	@Autowired
+	private ContractorMonthlyWorkDayRepository contractorMonthlyWorkDayRepository;
 
 	@Override
 	public BookingDto addBookingDetails(BookingDto booking) {
@@ -114,17 +120,19 @@ public class BookingServiceImpl implements BookingService {
 		// This value come from Security of user information
 		// bookingWorktask.setChangedBy("");
 		List<BookingWorkTask> bookingWorkTasks = booking.getWorkTasks().stream().map(work -> {
-			BookingWorkTask bookingWorktask = new BookingWorkTask();
-			bookingWorktask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
-			bookingWorktask.setTaskName(work.getTaskName());
-			bookingWorktask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
-			bookingWorktask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));
-			bookingWorktask.setTaskTotalAmount(Double.parseDouble(work.getTaskTotalAmount()));
-			bookingWorktask.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
-			return bookingWorktask;
+			BookingWorkTask bookingWorkTask = new BookingWorkTask();
+			bookingWorkTask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
+			bookingWorkTask.setTaskName(work.getTaskName());
+			bookingWorkTask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
+			bookingWorkTask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));
+			bookingWorkTask.setTaskTotalAmount(Double.parseDouble(work.getTaskTotalAmount()));
+			bookingWorkTask.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
+			bookingWorkTask.setChangedBy("");// get it from user information
+			return bookingWorkTask;
 		}).collect(Collectors.toList());
 
 		List<BookingWorkTask> savedBookingWorkTasks = bookingWorkTaskRepository.saveAll(bookingWorkTasks);
+
 		List<WorkTasksDto> workTasks = savedBookingWorkTasks.stream().map(work -> {
 			WorkTasksDto workTasksDto = new WorkTasksDto();
 			workTasksDto.setTaskName(work.getTaskName());
@@ -132,12 +140,36 @@ public class BookingServiceImpl implements BookingService {
 			workTasksDto.setTaskDateRate(work.getTaskDateRate().toString());
 			workTasksDto.setTaskTotalDays(work.getTaskTotalDays().toString());
 			workTasksDto.setTaskTotalAmount(work.getTaskTotalAmount().toString());
+			workTasksDto.setChangedBy(work.getChangedBy());
+			workTasksDto.setBookingRevisionId(work.getBookingRevisionId().toString());
 			return workTasksDto;
+		}).collect(Collectors.toList());
+
+		List<ContractorMonthlyWorkDay> monthlyWorkDays = booking.getWorkDays().stream().map(work -> {
+			ContractorMonthlyWorkDay monthlyWorkday = new ContractorMonthlyWorkDay();
+			monthlyWorkday.setMonthName(work.getMonthName());
+			monthlyWorkday.setMonthWorkingDays(Long.parseLong(work.getMonthWorkingDays()));
+			monthlyWorkday.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
+			monthlyWorkday.setChangedBy("");// get it from user information
+			return monthlyWorkday;
+		}).collect(Collectors.toList());
+
+		List<ContractorMonthlyWorkDay> savedMonthlyWorkDays = contractorMonthlyWorkDayRepository
+				.saveAll(monthlyWorkDays);
+
+		List<WorkDaysDto> monthlyWorkdays = savedMonthlyWorkDays.stream().map(work -> {
+			WorkDaysDto workDaysDto = new WorkDaysDto();
+			workDaysDto.setMonthName(work.getMonthName());
+			workDaysDto.setMonthWorkingDays(work.getMonthWorkingDays().toString());
+			workDaysDto.setChangedBy(work.getChangedBy());
+			workDaysDto.setBookingRevisionId(work.getBookingRevisionId().toString());
+			return workDaysDto;
 		}).collect(Collectors.toList());
 
 		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(savedBookingRevision);
 
 		bookingDto.setWorkTasks(workTasks);
+		bookingDto.setWorkDays(monthlyWorkdays);
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
 		bookingDto.setTeamId(bookingDetails.getTeam().getTeamId().toString());
 		bookingDto.setApprovalStatusId(bookingDetails.getApprovalStatusDm().getApprovalStatusId().toString());

@@ -110,15 +110,27 @@ public class BookingRevision implements Serializable {
 	@Column(name = "job_dept_name")
 	private String jobDeptName;
 
+	@Column(name = "supplier_type_id")
+	private Long supplierTypeId;
+
 	@Column(name = "appprover_comments")
 	private String approverComments;
+
+	@Column(name = "commisioning_Office")
+	private String commisioningOffice;
+
+	@Column(name = "contract_work_location")
+	private String contractWorkLocation;
+
+	@Column(name = "reason_for_recruiting")
+	private String reasonForRecruiting;
+
+	@Column(name = "contract_employee_id")
+	private Long contractEmployeeId;
 
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
-
-	// @OneToMany(mappedBy = "bookingRevision")
-	// private List<BookingWorkTask> bookingWorkTasks;
 
 	public String getJobDeptName() {
 		return jobDeptName;
@@ -362,22 +374,4 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
-
-	/*
-	 * public List<BookingWorkTask> getBookingWorkTasks() { if
-	 * (CollectionUtils.isEmpty(this.bookingWorkTasks)) { return
-	 * this.bookingWorkTasks = new ArrayList<BookingWorkTask>(); } return
-	 * bookingWorkTasks; }
-	 * 
-	 * public void setBookingWorkTasks(List<BookingWorkTask> bookingWorkTasks) {
-	 * this.bookingWorkTasks = bookingWorkTasks; }
-	 * 
-	 * public void addBookingWorkTask(BookingWorkTask bookingWorkTask) {
-	 * getBookingWorkTasks().add(bookingWorkTask);
-	 * bookingWorkTask.setBookingRevision(this); }
-	 * 
-	 * public BookingWorkTask removeBookingRevision(BookingWorkTask
-	 * bookingWorkTask) { getBookingWorkTasks().remove(bookingWorkTask); return
-	 * bookingWorkTask; }
-	 */
 }
