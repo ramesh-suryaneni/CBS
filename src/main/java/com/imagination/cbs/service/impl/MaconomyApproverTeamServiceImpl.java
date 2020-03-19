@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,30 +21,27 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.constant.MaconomyConstant;
 import com.imagination.cbs.domain.Config;
-import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
-import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.MaconomyUtils;
 
 /**
  * @author pappu.rout
  *
  */
-
-@Service("maconomyJobNumberServiceImpl")
-public class MaconomyJobNumberServiceImpl implements MaconomyService {
+public class MaconomyApproverTeamServiceImpl {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
+	
 	@Autowired
 	private ConfigRepository configRepository;
-
-	@Override
-	public List<JobDataDto> getJobDetails(String jobNumber) {
-
-		List<JobDataDto> recordList = new ArrayList<>();
+	
+	
+	public List<ApproverTeamDto> getApproverTeamDetails(String departmentName) {
+		
+		List<ApproverTeamDto> recordList = new ArrayList<>();
 		ResponseEntity<JsonNode> responseEntity = null;
 
 		List<Config> macanomyConfigKey = configRepository.findBykeyNameStartingWith(MaconomyConstant.MACANOMY.getMacanomy());
@@ -58,43 +54,44 @@ public class MaconomyJobNumberServiceImpl implements MaconomyService {
 			if (!CollectionUtils.isEmpty(maconomyConfigMap)) {
 
 				String maconomyUrl = maconomyConfigMap.get(MaconomyConstant.MACANOMY_URL.getMacanomy()).getKeyValue()
-						+ MaconomyConstant.MACONOMY_JOB_NUMBER.getMacanomy() + jobNumber;
-				String userName = maconomyConfigMap.get(MaconomyConstant.MACONOMY_USER_NAME.getMacanomy())
-						.getKeyValue();
+						+ MaconomyConstant.MACANOMY_REVENUS_DEPARTMENT.getMacanomy();
+				
+				String userName = maconomyConfigMap.get(MaconomyConstant.MACONOMY_USER_NAME.getMacanomy()).getKeyValue();
 				String password = maconomyConfigMap.get(MaconomyConstant.MACONOMY_PASSWORD.getMacanomy()).getKeyValue();
 
 				try {
 					responseEntity = (ResponseEntity<JsonNode>) restTemplate.exchange(maconomyUrl, HttpMethod.GET,
-							new HttpEntity<byte[]>(	MaconomyUtils.getHttpHeaders(MaconomyConstant.MEDIA_TYPE.getMacanomy(), userName, password)), JsonNode.class);
+							new HttpEntity<byte[]>(MaconomyUtils.getHttpHeaders(MaconomyConstant.MEDIA_TYPE.getMacanomy(), userName, password)),JsonNode.class);
 
 				} catch (RuntimeException runtimeException) {
 					throw new ResourceNotFoundException(runtimeException.getMessage());
 				}
 
 			}
-			return extractResponse(responseEntity, recordList);
+			return extractResponse(responseEntity, recordList, departmentName);
 		}
 		return recordList;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	private List<JobDataDto> extractResponse(ResponseEntity<JsonNode> responseEntity, List<JobDataDto> jobDataDtoList) {
-
-		JsonNode records = responseEntity.getBody().get("panes").get("card").get("records");
-
+	private List<ApproverTeamDto>  extractResponse(ResponseEntity<JsonNode> responseEntity, List<ApproverTeamDto> approverTeamDtoList, String departmentName){
+		
+		JsonNode records = responseEntity.getBody().get("panes").get("filter").get("records");
+		
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			jobDataDtoList = (List<JobDataDto>) objectMapper.readerFor(new TypeReference<List<JobDataDto>>() {
+			approverTeamDtoList = (List<ApproverTeamDto>) objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
 			}).readValue(records);
-
-			return jobDataDtoList;
-
+			 approverTeamDtoList = approverTeamDtoList.stream().filter((approverTeamDto) -> approverTeamDto.getData().getName().equals(departmentName)).collect(Collectors.toList());
+			return approverTeamDtoList;
+			
 		} catch (IOException ioException) {
-
+			
 			ioException.printStackTrace();
 		}
-		return jobDataDtoList;
-
-	}
+		return approverTeamDtoList;
+	
+}
+		
 
 }
