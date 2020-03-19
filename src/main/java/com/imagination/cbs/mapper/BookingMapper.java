@@ -44,7 +44,6 @@ public interface BookingMapper {
 
 	@Mapping(source = "contractedFromDate", target = "contractedFromDate", qualifiedByName = "timeStampToString")
 	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "timeStampToString")
-	@Mapping(source = "revisionNumber", target = "revisionNumber", qualifiedByName = "longToString")
 	public BookingDto toBookingDtoFromBookingRevision(BookingRevision bookingRevisionDto);
 
 	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp", ignore = true)

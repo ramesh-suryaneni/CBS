@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
 		// Changed by will come from Logged in user information
 		bookingRevision.setChangedBy(booking.getChangedBy());
 		bookingRevision.setRevisionNumber(1L);
-
+		// bookingRevision.setContractorId(Long.parseLong(booking.getContractorId()));
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);
 		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(booking.getRoleId()));
@@ -114,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking book = new Booking();
 		book.setBookingId(bookingId);
 		bookingRevision.setBooking(book);
+		bookingRevision.setContractorId(Long.parseLong(booking.getContractorId()));
 
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
 
@@ -141,6 +142,7 @@ public class BookingServiceImpl implements BookingService {
 			workTasksDto.setTaskTotalDays(work.getTaskTotalDays().toString());
 			workTasksDto.setTaskTotalAmount(work.getTaskTotalAmount().toString());
 			workTasksDto.setChangedBy(work.getChangedBy());
+			workTasksDto.setChangedDate(work.getChangedDate().toString());
 			workTasksDto.setBookingRevisionId(work.getBookingRevisionId().toString());
 			return workTasksDto;
 		}).collect(Collectors.toList());
@@ -162,6 +164,7 @@ public class BookingServiceImpl implements BookingService {
 			workDaysDto.setMonthName(work.getMonthName());
 			workDaysDto.setMonthWorkingDays(work.getMonthWorkingDays().toString());
 			workDaysDto.setChangedBy(work.getChangedBy());
+			workDaysDto.setChangedDate(work.getChangedDatetime().toString());
 			workDaysDto.setBookingRevisionId(work.getBookingRevisionId().toString());
 			return workDaysDto;
 		}).collect(Collectors.toList());

@@ -59,10 +59,6 @@ public class BookingWorkTask implements Serializable {
 	@Column(name = "booking_revision_id")
 	private Long bookingRevisionId;
 
-	// @ManyToOne
-	// @JoinColumn(name = "booking_revision_id")
-	// private BookingRevision bookingRevision;
-
 	public Long getBookingWorkId() {
 		return bookingWorkId;
 	}
@@ -126,11 +122,4 @@ public class BookingWorkTask implements Serializable {
 	public void setChangedBy(String changedBy) {
 		this.changedBy = changedBy;
 	}
-
-	/*
-	 * public BookingRevision getBookingRevision() { return bookingRevision; }
-	 * 
-	 * public void setBookingRevision(BookingRevision bookingRevision) {
-	 * this.bookingRevision = bookingRevision; }
-	 */
 }

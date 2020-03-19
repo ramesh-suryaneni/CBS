@@ -116,14 +116,14 @@ public class BookingRevision implements Serializable {
 	@Column(name = "appprover_comments")
 	private String approverComments;
 
-	@Column(name = "commisioning_Office")
-	private String commisioningOffice;
+	@Column(name = "commissioning_office")
+	private Long commisioningOffice;
 
 	@Column(name = "contract_work_location")
-	private String contractWorkLocation;
+	private Long contractWorkLocation;
 
 	@Column(name = "reason_for_recruiting")
-	private String reasonForRecruiting;
+	private Long reasonForRecruiting;
 
 	@Column(name = "contract_employee_id")
 	private Long contractEmployeeId;
@@ -131,6 +131,46 @@ public class BookingRevision implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
+
+	public Long getSupplierTypeId() {
+		return supplierTypeId;
+	}
+
+	public void setSupplierTypeId(Long supplierTypeId) {
+		this.supplierTypeId = supplierTypeId;
+	}
+
+	public Long getCommisioningOffice() {
+		return commisioningOffice;
+	}
+
+	public void setCommisioningOffice(Long commisioningOffice) {
+		this.commisioningOffice = commisioningOffice;
+	}
+
+	public Long getContractWorkLocation() {
+		return contractWorkLocation;
+	}
+
+	public void setContractWorkLocation(Long contractWorkLocation) {
+		this.contractWorkLocation = contractWorkLocation;
+	}
+
+	public Long getReasonForRecruiting() {
+		return reasonForRecruiting;
+	}
+
+	public void setReasonForRecruiting(Long reasonForRecruiting) {
+		this.reasonForRecruiting = reasonForRecruiting;
+	}
+
+	public Long getContractEmployeeId() {
+		return contractEmployeeId;
+	}
+
+	public void setContractEmployeeId(Long contractEmployeeId) {
+		this.contractEmployeeId = contractEmployeeId;
+	}
 
 	public String getJobDeptName() {
 		return jobDeptName;
