@@ -5,6 +5,9 @@
 
 trigger:
 - master
+variables: 
+    azureSubscription: Pay-As-You-Go
+    appName: cbs-api-dev
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -20,3 +23,11 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+    
+- task: AzureWebApp@1
+  displayName: 'Azure Web App Deploy'
+  inputs:
+    azureSubscription: $(azureSubscription)
+    appType: webAppLinux
+    appName: $(appName)
+    package: $(System.ArtifactsDirectory)/**/*.zip
