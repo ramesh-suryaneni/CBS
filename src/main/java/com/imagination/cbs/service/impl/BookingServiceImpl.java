@@ -30,6 +30,7 @@ import com.imagination.cbs.repository.BookingWorkTaskRepository;
 import com.imagination.cbs.repository.ContractorMonthlyWorkDayRepository;
 import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.service.BookingService;
+import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.service.RoleService;
 
@@ -67,11 +68,21 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private TeamRepository teamRepository;
+	
+	@Autowired
+	private LoggedInUserService loggedInUserService;
 
 	@Override
 	public BookingDto addBookingDetails(BookingDto booking) {
-		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
+		
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		
+		booking.setChangedBy(loggedInUser);
 		BookingRevision bookingRevision = new BookingRevision();
+		bookingRevision.setChangedBy(loggedInUser);
+		
+		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
+		
 		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
 		Team team = new Team();
 
@@ -94,8 +105,6 @@ public class BookingServiceImpl implements BookingService {
 		approvalStatusDm.setApprovalStatusId(1001L);
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
-		// Changed by will come from Logged in user information
-		bookingRevision.setChangedBy(booking.getChangedBy());
 		bookingRevision.setRevisionNumber(1L);
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);
@@ -118,9 +127,12 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking) {
+		
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(booking);
+		bookingRevision.setChangedBy(loggedInUser);
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		bookingRevision.setRevisionNumber(++revisionNumber);
