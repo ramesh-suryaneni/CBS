@@ -2,6 +2,7 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,48 +10,53 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 
 /**
  * The persistent class for the contractor database table.
  * 
  */
 @Entity
-@Table(name = "contractor")
-@NamedQuery(name = "Contractor.findAll", query = "SELECT c FROM Contractor c")
+@Table(name="contractor")
+@NamedQuery(name="Contractor.findAll", query="SELECT c FROM Contractor c")
 public class Contractor implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "contractor_id")
-	private Long contractorId;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="contractor_id")
+	private long contractorId;
 
-	@Column(name = "changed_by")
+	@Column(name="changed_by")
 	private String changedBy;
 
-	@Column(name = "changed_date")
+	@Column(name="changed_date")
 	private Timestamp changedDate;
 
-	@Column(name = "company_type")
+	@Column(name="company_type")
 	private String companyType;
 
-	@Column(name = "contact_details")
+	@Column(name="contact_details")
 	private String contactDetails;
 
-	@Column(name = "contractor_name")
+	@Column(name="contractor_name")
 	private String contractorName;
 
 	private String status;
 
+	@OneToMany(mappedBy = "contractor")
+	private List<ContractorEmployee> contractorEmployeeList;
+	
 	public Contractor() {
 	}
 
-	public Long getContractorId() {
+	public long getContractorId() {
 		return this.contractorId;
 	}
 
-	public void setContractorId(Long contractorId) {
+	public void setContractorId(long contractorId) {
 		this.contractorId = contractorId;
 	}
 
@@ -101,5 +107,14 @@ public class Contractor implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public List<ContractorEmployee> getContractorEmployeeList() {
+		return contractorEmployeeList;
+	}
+
+	public void setContractorEmployeeList(List<ContractorEmployee> contractorEmployeeList) {
+		this.contractorEmployeeList = contractorEmployeeList;
+	}
+	
 
 }
