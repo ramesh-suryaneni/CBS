@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,6 +31,7 @@ import com.imagination.cbs.util.MaconomyUtils;
  * @author pappu.rout
  *
  */
+@Component
 public class MaconomyApproverTeamServiceImpl {
 
 	@Autowired

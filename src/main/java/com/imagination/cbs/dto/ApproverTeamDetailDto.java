@@ -32,10 +32,4 @@ public class ApproverTeamDetailDto {
 	public String toString() {
 		return "ApproverTeamDetailDto [remark3=" + remark3 + ", name=" + name + "]";
 	}
-	
-	
-
-	
-		
-	
 }

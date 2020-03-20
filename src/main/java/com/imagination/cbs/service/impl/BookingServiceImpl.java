@@ -17,6 +17,7 @@ import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.Team;
+import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.JobDataDto;
@@ -27,6 +28,7 @@ import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.BookingWorkTaskRepository;
 import com.imagination.cbs.repository.ContractorMonthlyWorkDayRepository;
+import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.service.RoleService;
@@ -60,6 +62,12 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private ContractorMonthlyWorkDayRepository contractorMonthlyWorkDayRepository;
 
+	@Autowired
+	private MaconomyApproverTeamServiceImpl maconomyApproverTeamServiceImpl;
+
+	@Autowired
+	private TeamRepository teamRepository;
+
 	@Override
 	public BookingDto addBookingDetails(BookingDto booking) {
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
@@ -74,8 +82,14 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setJobNumber(booking.getJobNumber());
 		} else {
 			List<JobDataDto> jobDetails = maconomyService.getJobDetails(booking.getJobNumber());
-			bookingRevision.setJobDeptName(jobDetails.get(0).getData().getText3());
-			team.setTeamId(Long.parseLong(booking.getTeamId()));
+			String deptName = jobDetails.get(0).getData().getText3();
+			bookingRevision.setJobDeptName(deptName);
+			List<ApproverTeamDto> approverTeamDetails = maconomyApproverTeamServiceImpl
+					.getApproverTeamDetails(deptName);
+
+			String remark3 = approverTeamDetails.get(0).getData().getRemark3();
+			Team teamOne = teamRepository.findByTeamName(remark3);
+			team.setTeamId(teamOne.getTeamId());
 		}
 		approvalStatusDm.setApprovalStatusId(1001L);
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
@@ -83,7 +97,6 @@ public class BookingServiceImpl implements BookingService {
 		// Changed by will come from Logged in user information
 		bookingRevision.setChangedBy(booking.getChangedBy());
 		bookingRevision.setRevisionNumber(1L);
-		// bookingRevision.setContractorId(Long.parseLong(booking.getContractorId()));
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setApprovalStatusDm(approvalStatusDm);
 		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(booking.getRoleId()));
