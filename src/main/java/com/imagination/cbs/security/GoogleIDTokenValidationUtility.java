@@ -3,7 +3,6 @@ package com.imagination.cbs.security;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +23,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.exception.CBSAuthenticationException;
-import com.imagination.cbs.repository.ConfigRepository;
+import com.imagination.cbs.service.impl.ConfigServiceImpl;
 
 @Component(value = "googleIDTokenValidationUtility")
 public class GoogleIDTokenValidationUtility {
@@ -36,9 +35,9 @@ public class GoogleIDTokenValidationUtility {
 	
 	@Autowired
 	private SecurityUserDetailsServiceImpl securityUserDetailsServiceImpl;
-
+	
 	@Autowired
-	private ConfigRepository configRepository;
+	private ConfigServiceImpl configServiceImpl;
 
 	public boolean validateAccessToken(HttpServletRequest request) throws GeneralSecurityException, IOException {
 
@@ -100,11 +99,8 @@ public class GoogleIDTokenValidationUtility {
 	}
 
 	private String getGoogleClientID() {
-		Optional<Config> optionalConfig = configRepository.findByKeyName(GOOGLE_CLIENTID_KEY);
-		if(!optionalConfig.isPresent()){
-			throw new CBSAuthenticationException("Google client id not found");
-		}
-		Config config=optionalConfig.get();
+		
+		Config config=configServiceImpl.getConfigDetailsByKeyName(GOOGLE_CLIENTID_KEY);
 		
 		return config.getKeyValue();
 	}

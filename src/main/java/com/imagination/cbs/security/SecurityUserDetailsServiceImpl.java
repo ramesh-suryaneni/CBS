@@ -12,18 +12,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.EmployeeMapping;
-import com.imagination.cbs.repository.EmployeeMappingRepository;
+import com.imagination.cbs.service.EmployeeMappingService;
 
 @Service("securityUserDetailsServiceImpl")
 public class SecurityUserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-	private EmployeeMappingRepository employeeMappingRepository;
+	private EmployeeMappingService employeeMappingServiceImpl;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-		EmployeeMapping employeeMapping = employeeMappingRepository.getEmployeeMappingByGoogleAccount(email);
+		EmployeeMapping employeeMapping = employeeMappingServiceImpl.getEmployeeMappingByGoogleAccount(email);
 		if (null != employeeMapping) {
 
 			return new User(employeeMapping.getGoogleAccount(),employeeMapping.getEmployeeNumberMaconomy(),getAuthority(employeeMapping));
