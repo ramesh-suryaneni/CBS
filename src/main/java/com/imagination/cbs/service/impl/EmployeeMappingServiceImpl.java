@@ -7,7 +7,7 @@ import com.imagination.cbs.domain.EmployeeMapping;
 import com.imagination.cbs.repository.EmployeeMappingRepository;
 import com.imagination.cbs.service.EmployeeMappingService;
 
-@Service("employeeMappingServiceImpl")
+@Service("employeeMappingService")
 public class EmployeeMappingServiceImpl implements EmployeeMappingService{
 
 	@Autowired

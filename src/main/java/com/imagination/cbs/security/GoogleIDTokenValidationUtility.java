@@ -34,7 +34,7 @@ public class GoogleIDTokenValidationUtility {
 	private final String GOOGLE_CLIENTID_KEY = "GOOGLE_ID";
 	
 	@Autowired
-	private SecurityUserDetailsServiceImpl securityUserDetailsServiceImpl;
+	private SecurityUserDetailsServiceImpl securityUserDetailsService;
 	
 	@Autowired
 	private ConfigServiceImpl configServiceImpl;
@@ -73,7 +73,7 @@ public class GoogleIDTokenValidationUtility {
 				int index = payload.getEmail().indexOf("@");
 				String truncatedEmailId = payload.getEmail().substring(0, index);
 
-				UserDetails userDetails = securityUserDetailsServiceImpl.loadUserByUsername(truncatedEmailId);
+				UserDetails userDetails = securityUserDetailsService.loadUserByUsername(truncatedEmailId);
 
 				if (null != userDetails) {
 
