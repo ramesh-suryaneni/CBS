@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,11 +30,11 @@ public class SupplierServiceImplTest {
 	private SupplierMapper supplierMapper;
 
 	@Test
-	@Ignore
 	public void shouldReturnListOfReasonsForRecruiting() {
 
-		when(supplierRepository.findAll()).thenReturn(getListOfSupplierTypeDM());
-		when(supplierMapper.toListOfSupplierDTO(getListOfSupplierTypeDM())).thenReturn(getListOfSupplierDto());
+		List<SupplierTypeDm> listOfSupplierTypeDM = getListOfSupplierTypeDM();
+		when(supplierRepository.findAll()).thenReturn(listOfSupplierTypeDM);
+		when(supplierMapper.toListOfSupplierDTO(listOfSupplierTypeDM)).thenReturn(getListOfSupplierDto());
 
 		List<SupplierDto> actualListOfSupplierDto = supplierServiceImpl.getAllSupplierTypeDM();
 		assertEquals(2L, actualListOfSupplierDto.get(0).getId());
@@ -64,8 +63,8 @@ public class SupplierServiceImplTest {
 		List<SupplierDto> listOfRecruitingDto = new ArrayList<>();
 
 		supplierDto.setId(2L);
-		supplierDto.setName("Specific skills required");
-		supplierDto.setDescription("Specific skills required");
+		supplierDto.setName("Yash");
+		supplierDto.setDescription("Test Data");
 
 		listOfRecruitingDto.add(supplierDto);
 
