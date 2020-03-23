@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,13 +16,12 @@ import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.dto.RecruitingDto;
 import com.imagination.cbs.mapper.RecruitingMapper;
 import com.imagination.cbs.repository.RecruitingRepository;
-import com.imagination.cbs.service.RecruitingService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RecruitingServiceImplTest {
 
 	@InjectMocks
-	private RecruitingService recruitingService;
+	private RecruitingServiceImpl recruitingServiceImpl;
 	@Mock
 	private RecruitingRepository recruitingRepository;
 
@@ -31,14 +29,13 @@ public class RecruitingServiceImplTest {
 	private RecruitingMapper recruitingMapper;
 
 	@Test
-	@Ignore
 	public void shouldReturnListOfReasonsForRecruiting() {
 
-		when(recruitingRepository.findAll()).thenReturn(getListOfReasonsForRecruiting());
-		when(recruitingMapper.toListRecruitingDto(getListOfReasonsForRecruiting()))
-				.thenReturn(getListOfRecruitingDto());
+		List<ReasonsForRecruiting> listOfRecruting = getListOfReasonsForRecruiting();
+		when(recruitingRepository.findAll()).thenReturn(listOfRecruting);
+		when(recruitingMapper.toListRecruitingDto(listOfRecruting)).thenReturn(getListOfRecruitingDto());
 
-		List<RecruitingDto> actualListOfRecruitingDto = recruitingService.getAllReasonForRecruiting();
+		List<RecruitingDto> actualListOfRecruitingDto = recruitingServiceImpl.getAllReasonForRecruiting();
 		assertEquals(2L, actualListOfRecruitingDto.get(0).getReasonId());
 		assertEquals("Specific skills required", actualListOfRecruitingDto.get(0).getReasonName());
 		assertEquals("Specific skills required", actualListOfRecruitingDto.get(0).getReasonDescription());

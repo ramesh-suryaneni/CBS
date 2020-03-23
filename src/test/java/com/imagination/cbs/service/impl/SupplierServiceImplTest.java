@@ -39,8 +39,8 @@ public class SupplierServiceImplTest {
 
 		List<SupplierDto> actualListOfSupplierDto = supplierServiceImpl.getAllSupplierTypeDM();
 		assertEquals(2L, actualListOfSupplierDto.get(0).getId());
-		assertEquals("Specific skills required", actualListOfSupplierDto.get(0).getName());
-		assertEquals("Specific skills required", actualListOfSupplierDto.get(0).getDescription());
+		assertEquals("Yash", actualListOfSupplierDto.get(0).getName());
+		assertEquals("Test Data", actualListOfSupplierDto.get(0).getDescription());
 
 	}
 
@@ -50,8 +50,8 @@ public class SupplierServiceImplTest {
 
 		SupplierTypeDm supplier = new SupplierTypeDm();
 		supplier.setId(2L);
-		supplier.setName("Specific skills required");
-		supplier.setDescription("Specific skills required");
+		supplier.setName("Yash");
+		supplier.setDescription("Test Data");
 
 		list.add(supplier);
 
