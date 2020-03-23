@@ -11,8 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import com.imagination.cbs.domain.ContractorIndex;
 import com.imagination.cbs.dto.ContractorDto;
-import com.imagination.cbs.dto.
-  Dto;
+import com.imagination.cbs.dto.ContractorIndexDto;
 import com.imagination.cbs.mapper.ContractorMapper;
 import com.imagination.cbs.repository.ContractorIndexRepository;
 import com.imagination.cbs.repository.ContractorRepository;
