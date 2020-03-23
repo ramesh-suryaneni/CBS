@@ -12,7 +12,7 @@ import com.imagination.cbs.mapper.SupplierMapper;
 import com.imagination.cbs.repository.SupplierRepository;
 import com.imagination.cbs.service.SupplierService;
 
-@Service("supplierServiceImpl")
+@Service("supplierService")
 public class SupplierServiceImpl implements SupplierService {
 
 	@Autowired

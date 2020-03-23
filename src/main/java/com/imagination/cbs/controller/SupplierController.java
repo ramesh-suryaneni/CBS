@@ -18,12 +18,12 @@ import com.imagination.cbs.service.SupplierService;
 public class SupplierController {
 
 	@Autowired
-	private SupplierService supplierServiceImpl;
+	private SupplierService supplierService;
 
 	@GetMapping("/{name}")
 	public List<SupplierDto> getSuppliersBySupplierName(@PathVariable("name") String name) {
 
-		return supplierServiceImpl.getSuppliersBySupplierName(name);
+		return supplierService.getSuppliersBySupplierName(name);
 
 	}
 
