@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
 	private BookingWorkTaskRepository bookingWorkTaskRepository;
 
 	@Autowired
-	private MaconomyService maconomyJobNumberService;
+	private MaconomyService maconomyService;
 
 	@Autowired
 	private ContractorMonthlyWorkDayRepository contractorMonthlyWorkDayRepository;
@@ -92,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
 		if (booking.getJobNumber() == null) {
 			bookingRevision.setJobNumber(booking.getJobNumber());
 		} else {
-			JobDataDto jobDetails = maconomyJobNumberService.getJobDetails(booking.getJobNumber());
+			JobDataDto jobDetails = maconomyService.getJobDetails(booking.getJobNumber());
 			String deptName = jobDetails.getData().getText3();
 			bookingRevision.setJobDeptName(deptName);
 			ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);

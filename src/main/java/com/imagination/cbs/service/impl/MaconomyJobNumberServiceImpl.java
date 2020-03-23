@@ -30,7 +30,7 @@ import com.imagination.cbs.util.MaconomyRestClient;
  *
  */
 
-@Service("maconomyJobNumberService")
+@Service("maconomyService")
 public class MaconomyJobNumberServiceImpl implements MaconomyService {
 
 	@Autowired
