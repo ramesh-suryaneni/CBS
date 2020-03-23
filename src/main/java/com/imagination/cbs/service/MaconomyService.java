@@ -3,8 +3,6 @@
  */
 package com.imagination.cbs.service;
 
-import java.util.List;
-
 import com.imagination.cbs.dto.JobDataDto;
 
 /**
@@ -13,6 +11,6 @@ import com.imagination.cbs.dto.JobDataDto;
  */
 public interface MaconomyService {
 	
-	public List<JobDataDto> getJobDetails(String jobNumber);
+	public JobDataDto getJobDetails(String jobNumber);
 
 }

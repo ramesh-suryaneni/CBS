@@ -58,13 +58,13 @@ public class BookingServiceImpl implements BookingService {
 	private BookingWorkTaskRepository bookingWorkTaskRepository;
 
 	@Autowired
-	private MaconomyService maconomyService;
+	private MaconomyService maconomyJobNumberService;
 
 	@Autowired
 	private ContractorMonthlyWorkDayRepository contractorMonthlyWorkDayRepository;
 
 	@Autowired
-	private MaconomyApproverTeamServiceImpl maconomyApproverTeamServiceImpl;
+	private MaconomyApproverTeamServiceImpl maconomyApproverTeamService;
 
 	@Autowired
 	private TeamRepository teamRepository;
@@ -92,13 +92,12 @@ public class BookingServiceImpl implements BookingService {
 		if (booking.getJobNumber() == null) {
 			bookingRevision.setJobNumber(booking.getJobNumber());
 		} else {
-			List<JobDataDto> jobDetails = maconomyService.getJobDetails(booking.getJobNumber());
-			String deptName = jobDetails.get(0).getData().getText3();
+			JobDataDto jobDetails = maconomyJobNumberService.getJobDetails(booking.getJobNumber());
+			String deptName = jobDetails.getData().getText3();
 			bookingRevision.setJobDeptName(deptName);
-			List<ApproverTeamDto> approverTeamDetails = maconomyApproverTeamServiceImpl
-					.getApproverTeamDetails(deptName);
+			ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
 
-			String remark3 = approverTeamDetails.get(0).getData().getRemark3();
+			String remark3 = approverTeamDetails.getData().getRemark3();
 			Team teamOne = teamRepository.findByTeamName(remark3);
 			team.setTeamId(teamOne.getTeamId());
 		}

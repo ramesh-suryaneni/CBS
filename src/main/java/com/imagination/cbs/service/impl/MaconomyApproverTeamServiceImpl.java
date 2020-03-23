@@ -10,12 +10,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,27 +20,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.constant.MaconomyConstant;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.dto.ApproverTeamDto;
-import com.imagination.cbs.exception.ResourceNotFoundException;
+import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.repository.ConfigRepository;
-import com.imagination.cbs.util.MaconomyUtils;
+import com.imagination.cbs.util.MaconomyRestClient;
 
 /**
  * @author pappu.rout
  *
  */
-@Component
+
+@Service("maconomyApproverTeamService")
 public class MaconomyApproverTeamServiceImpl {
 
 	@Autowired
-	private RestTemplate restTemplate;
-	
+	private MaconomyRestClient maconomyRestClient;
+
 	@Autowired
 	private ConfigRepository configRepository;
-	
-	
-	public List<ApproverTeamDto> getApproverTeamDetails(String departmentName) {
-		
-		List<ApproverTeamDto> recordList = new ArrayList<>();
+
+	@SuppressWarnings("unchecked")
+	public ApproverTeamDto getApproverTeamDetails(String departmentName) {
+
+		ApproverTeamDto approverTeamDto = new ApproverTeamDto();
 		ResponseEntity<JsonNode> responseEntity = null;
 
 		List<Config> macanomyConfigKey = configRepository.findBykeyNameStartingWith(MaconomyConstant.MACANOMY.getMacanomy());
@@ -57,43 +55,46 @@ public class MaconomyApproverTeamServiceImpl {
 
 				String maconomyUrl = maconomyConfigMap.get(MaconomyConstant.MACANOMY_URL.getMacanomy()).getKeyValue()
 						+ MaconomyConstant.MACANOMY_REVENUS_DEPARTMENT.getMacanomy();
-				
-				String userName = maconomyConfigMap.get(MaconomyConstant.MACONOMY_USER_NAME.getMacanomy()).getKeyValue();
+
+				String username = maconomyConfigMap.get(MaconomyConstant.MACONOMY_USER_NAME.getMacanomy()).getKeyValue();
 				String password = maconomyConfigMap.get(MaconomyConstant.MACONOMY_PASSWORD.getMacanomy()).getKeyValue();
 
-				try {
-					responseEntity = (ResponseEntity<JsonNode>) restTemplate.exchange(maconomyUrl, HttpMethod.GET,
-							new HttpEntity<byte[]>(MaconomyUtils.getHttpHeaders(MaconomyConstant.MEDIA_TYPE.getMacanomy(), userName, password)),JsonNode.class);
-
-				} catch (RuntimeException runtimeException) {
-					throw new ResourceNotFoundException(runtimeException.getMessage());
-				}
+				responseEntity = (ResponseEntity<JsonNode>) maconomyRestClient.callRestServiceForGet(maconomyUrl,username, password);
 
 			}
-			return extractResponse(responseEntity, recordList, departmentName);
+			return extractResponse(responseEntity, approverTeamDto, departmentName);
 		}
-		return recordList;
+		return approverTeamDto;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<ApproverTeamDto>  extractResponse(ResponseEntity<JsonNode> responseEntity, List<ApproverTeamDto> approverTeamDtoList, String departmentName){
-		
+	private ApproverTeamDto extractResponse(ResponseEntity<JsonNode> responseEntity, ApproverTeamDto approverTeamDto, String departmentName) {
+
+		List<ApproverTeamDto> approverTeamDtoList = new ArrayList<>();
+
+		if (null == responseEntity.getBody()) {
+
+			throw new CBSValidationException("Please Provide Valid Department Name ");
+		}
+
 		JsonNode records = responseEntity.getBody().get("panes").get("filter").get("records");
-		
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			approverTeamDtoList = (List<ApproverTeamDto>) objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
-			}).readValue(records);
-			 approverTeamDtoList = approverTeamDtoList.stream().filter((approverTeamDto) -> approverTeamDto.getData().getName().equals(departmentName)).collect(Collectors.toList());
-			return approverTeamDtoList;
-			
+					}).readValue(records);
+
+			approverTeamDtoList = approverTeamDtoList.stream().filter((approverTeam) -> approverTeam.getData().getName().equals(departmentName))
+					.collect(Collectors.toList());
+
+			return approverTeamDtoList.get(0);
+
 		} catch (IOException ioException) {
-			
+
 			ioException.printStackTrace();
 		}
-		return approverTeamDtoList;
-	
-}
-		
+		return approverTeamDto;
+
+	}
 
 }

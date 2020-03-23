@@ -3,8 +3,6 @@
  */
 package com.imagination.cbs.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +25,9 @@ public class MaconomyController {
 	private MaconomyService maconomyService;
 	
 	@GetMapping()
-	public List<JobDataDto> getJobDetails(@RequestParam String jobNumber){
+	public JobDataDto getJobDetails(@RequestParam String jobNumber){
 		
 		return maconomyService.getJobDetails(jobNumber);
 	}
 	
-
 }
