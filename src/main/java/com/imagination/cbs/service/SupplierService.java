@@ -6,6 +6,5 @@ import com.imagination.cbs.dto.SupplierDto;
 
 public interface SupplierService {
 
-	public List<SupplierDto> getSuppliersBySupplierName(String supplierName);
-
+	public List<SupplierDto> getAllSupplierTypeDM();
 }
