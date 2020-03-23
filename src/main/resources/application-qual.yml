@@ -1,0 +1,17 @@
+spring:
+   datasource:
+      url:   jdbc:sqlserver://imagination-cbs.database.windows.net:1433;database=imagination-cbs      
+      username:   yash@imagination-cbs
+      password:   test@123
+   jpa:
+      generate-ddl:   false
+      properties:
+         hibernate:
+            default_schema:   cbs
+            dialect:   org.hibernate.dialect.SQLServer2012Dialect
+            temp:
+               use_jdbc_metadata_defaults:   false
+  
+cbssecurity:
+     enabled: true              
+               

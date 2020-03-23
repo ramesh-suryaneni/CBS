@@ -40,12 +40,11 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 					
 					throw new CBSAuthenticationException("ID token is not valid");
 				}
-			} catch (GeneralSecurityException e) {
-				
+			} catch(GeneralSecurityException e){
 				e.printStackTrace();
 			}
 		
 
 	}
-
+	
 }

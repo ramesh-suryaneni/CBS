@@ -46,4 +46,13 @@ public class CBSGlobalExceptionHandler {
 	}
 	
 
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<CBSErrorMessage> handleResourceNotFoundException(RuntimeException runtimeException) {
+		CBSErrorMessage cbsErrorMessage =  new CBSErrorMessage();
+		cbsErrorMessage.setErrorMessage(runtimeException.getMessage());
+		return new ResponseEntity<>(cbsErrorMessage, HttpStatus.NOT_FOUND);
+
+	}
+	
+
 }

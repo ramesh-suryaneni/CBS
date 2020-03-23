@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 /**
  * The persistent class for the booking_revision database table.
  * 
@@ -39,6 +41,7 @@ public class BookingRevision implements Serializable {
 	@Column(name = "changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
@@ -99,20 +102,91 @@ public class BookingRevision implements Serializable {
 	@Column(name = "known_as")
 	private String knownAs;
 
-	@Column(name = "office_description")
-	private String officeDescription;
-
-	@Column(name = "office_id")
-	private String officeId;
-
 	private BigDecimal rate;
 
 	@Column(name = "revision_number")
 	private Long revisionNumber;
 
+	@Column(name = "job_dept_name")
+	private String jobDeptName;
+
+	@Column(name = "supplier_type_id")
+	private Long supplierTypeId;
+
+	@Column(name = "appprover_comments")
+	private String approverComments;
+
+	@Column(name = "commissioning_office")
+	private Long commisioningOffice;
+
+	@Column(name = "contract_work_location")
+	private Long contractWorkLocation;
+
+	@Column(name = "reason_for_recruiting")
+	private Long reasonForRecruiting;
+
+	@Column(name = "contract_employee_id")
+	private Long contractEmployeeId;
+
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
+
+	public Long getSupplierTypeId() {
+		return supplierTypeId;
+	}
+
+	public void setSupplierTypeId(Long supplierTypeId) {
+		this.supplierTypeId = supplierTypeId;
+	}
+
+	public Long getCommisioningOffice() {
+		return commisioningOffice;
+	}
+
+	public void setCommisioningOffice(Long commisioningOffice) {
+		this.commisioningOffice = commisioningOffice;
+	}
+
+	public Long getContractWorkLocation() {
+		return contractWorkLocation;
+	}
+
+	public void setContractWorkLocation(Long contractWorkLocation) {
+		this.contractWorkLocation = contractWorkLocation;
+	}
+
+	public Long getReasonForRecruiting() {
+		return reasonForRecruiting;
+	}
+
+	public void setReasonForRecruiting(Long reasonForRecruiting) {
+		this.reasonForRecruiting = reasonForRecruiting;
+	}
+
+	public Long getContractEmployeeId() {
+		return contractEmployeeId;
+	}
+
+	public void setContractEmployeeId(Long contractEmployeeId) {
+		this.contractEmployeeId = contractEmployeeId;
+	}
+
+	public String getJobDeptName() {
+		return jobDeptName;
+	}
+
+	public void setJobDeptName(String jobDeptName) {
+		this.jobDeptName = jobDeptName;
+	}
+
+	public String getApproverComments() {
+		return approverComments;
+	}
+
+	public void setApproverComments(String approverComments) {
+		this.approverComments = approverComments;
+	}
 
 	public BookingRevision() {
 	}
@@ -315,22 +389,6 @@ public class BookingRevision implements Serializable {
 
 	public void setKnownAs(String knownAs) {
 		this.knownAs = knownAs;
-	}
-
-	public String getOfficeDescription() {
-		return officeDescription;
-	}
-
-	public void setOfficeDescription(String officeDescription) {
-		this.officeDescription = officeDescription;
-	}
-
-	public String getOfficeId() {
-		return officeId;
-	}
-
-	public void setOfficeId(String officeId) {
-		this.officeId = officeId;
 	}
 
 	public BigDecimal getRate() {

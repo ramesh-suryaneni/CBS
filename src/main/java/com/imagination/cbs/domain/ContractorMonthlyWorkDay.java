@@ -10,13 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 /**
  * The persistent class for the contractor_monthly_workdays database table.
  * 
  */
 @Entity
 @Table(name = "contractor_monthly_workdays")
-public class ContractorMonthlyWorkday implements Serializable {
+public class ContractorMonthlyWorkDay implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -30,6 +32,7 @@ public class ContractorMonthlyWorkday implements Serializable {
 	@Column(name = "changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name = "changed_datetime")
 	private Timestamp changedDatetime;
 
@@ -39,7 +42,7 @@ public class ContractorMonthlyWorkday implements Serializable {
 	@Column(name = "month_working_days")
 	private Long monthWorkingDays;
 
-	public ContractorMonthlyWorkday() {
+	public ContractorMonthlyWorkDay() {
 	}
 
 	public Long getWorkDaysId() {
