@@ -59,7 +59,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
       web
         .ignoring()
-        .antMatchers("/token/*", 
+        .antMatchers("/webhooks/**", 
         		"/v2/**",
                 "/configuration/**",
                 "/migration/**",
