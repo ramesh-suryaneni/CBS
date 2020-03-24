@@ -13,22 +13,22 @@ import com.imagination.cbs.service.RegionOfficeService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/countries")
-public class CountryOfficeController {
+@RequestMapping("/regions")
+public class RegionOfficeController {
 
 	@Autowired
-	private RegionOfficeService countryOfficeServiceImpl;
+	private RegionOfficeService countryOfficeService;
 	
 	@GetMapping
 	public List<RegionDto> findAllCountries()
 	{
-		return countryOfficeServiceImpl.getAllCountries();
+		return countryOfficeService.getAllRegions();
 	}
 	
-	@GetMapping("/{countryId}/offices")
-	public List<OfficeDto> findOfficesInCountry(@PathVariable("countryId") Long countryId)
+	@GetMapping("/{regionId}/offices")
+	public List<OfficeDto> findOfficesInCountry(@PathVariable("regionId") Long regionId)
 	{
-		return countryOfficeServiceImpl.getAllOfficesInCountry(countryId);
+		return countryOfficeService.getAllOfficesInRegion(regionId);
 		
 	}
 }

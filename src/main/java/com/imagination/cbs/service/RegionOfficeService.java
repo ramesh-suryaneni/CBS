@@ -6,7 +6,7 @@ import com.imagination.cbs.dto.OfficeDto;
 
 public interface RegionOfficeService {
 
-	public List<RegionDto> getAllCountries();
+	public List<RegionDto> getAllRegions();
 
-	public List<OfficeDto> getAllOfficesInCountry(Long countryId);
+	public List<OfficeDto> getAllOfficesInRegion(Long regionId);
 }

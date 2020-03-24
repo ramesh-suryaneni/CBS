@@ -11,11 +11,11 @@ import com.imagination.cbs.repository.RegionRepository;
 import com.imagination.cbs.repository.OfficeRepository;
 import com.imagination.cbs.service.RegionOfficeService;
 
-@Service("countryOfficeService")
-public class CountryOfficeServiceImpl implements RegionOfficeService {
+@Service("regionOfficeService")
+public class RegionOfficeServiceImpl implements RegionOfficeService {
 
 	@Autowired
-	private RegionRepository countryRepository;
+	private RegionRepository regionRepository;
 
 	@Autowired
 	private OfficeRepository officeRepository;
@@ -27,12 +27,12 @@ public class CountryOfficeServiceImpl implements RegionOfficeService {
 	private RegionMapper regionMapper;
 
 	@Override
-	public List<RegionDto> getAllCountries() {
-		return regionMapper.toListOfRegionDTO(countryRepository.findAll());
+	public List<RegionDto> getAllRegions() {
+		return regionMapper.toListOfRegionDTO(regionRepository.findAll());
 	}
 
 	@Override
-	public List<OfficeDto> getAllOfficesInCountry(Long countryId) {
-		return officeMapper.toListOfficeDTO(officeRepository.findByOfficeId(countryId));
+	public List<OfficeDto> getAllOfficesInRegion(Long regionId) {
+		return officeMapper.toListOfficeDTO(officeRepository.findByOfficeId(regionId));
 	}
 }

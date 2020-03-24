@@ -22,16 +22,16 @@ import com.imagination.cbs.repository.RegionRepository;
 import com.imagination.cbs.repository.OfficeRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CountryOfficeServiceImplTest {
+public class RegionOfficeServiceImplTest {
 
 	@InjectMocks
-	private CountryOfficeServiceImpl countryOfficeServiceImpl;
+	private RegionOfficeServiceImpl RegionOfficeServiceImpl;
 
 	@Mock
-	private RegionRepository countryRepository;
+	private RegionRepository RegionRepository;
 
 	@Mock
-	private RegionMapper countryMapper;
+	private RegionMapper RegionMapper;
 
 	@Mock
 	private OfficeRepository officeRepository;
@@ -42,30 +42,30 @@ public class CountryOfficeServiceImplTest {
 	@Test
 	public void shouldReturnListOfCountries() {
 
-		List<Region> listOfCountryDms = createRegionDmList();
+		List<Region> listOfRegionDms = createRegionDmList();
 
-		when(countryRepository.findAll()).thenReturn(listOfCountryDms);
-		when(countryMapper.toListOfRegionDTO(listOfCountryDms)).thenReturn(createCountryDtoList());
+		when(RegionRepository.findAll()).thenReturn(listOfRegionDms);
+		when(RegionMapper.toListOfRegionDTO(listOfRegionDms)).thenReturn(createRegionDtoList());
 
-		List<RegionDto> actualListOfCountryDto = countryOfficeServiceImpl.getAllCountries();
+		List<RegionDto> actualListOfRegionDto = RegionOfficeServiceImpl.getAllRegions();
 
-		assertEquals(7000, actualListOfCountryDto.get(0).getRegionId());
-		assertEquals("Australia", actualListOfCountryDto.get(0).getRegionName());
-		assertEquals("Australia", actualListOfCountryDto.get(0).getRegionDescription());
+		assertEquals(7000, actualListOfRegionDto.get(0).getRegionId());
+		assertEquals("Australia", actualListOfRegionDto.get(0).getRegionName());
+		assertEquals("Australia", actualListOfRegionDto.get(0).getRegionDescription());
 
 	}
 
 	@Test
-	public void shouldReturnListOfOfficesFromCountryId() {
+	public void shouldReturnListOfOfficesFromRegionId() {
 
-		Long countryId = 7000l;
+		Long RegionId = 7000l;
 
 		List<OfficeDm> listOfOffices = createOfficeDmList();
 
-		when(officeRepository.findByOfficeId(countryId)).thenReturn(listOfOffices);
+		when(officeRepository.findByOfficeId(RegionId)).thenReturn(listOfOffices);
 		when(officeMapper.toListOfficeDTO(listOfOffices)).thenReturn(createOfficeDtoList());
 
-		List<OfficeDto> actualListOfOfficeDto = countryOfficeServiceImpl.getAllOfficesInCountry(countryId);
+		List<OfficeDto> actualListOfOfficeDto = RegionOfficeServiceImpl.getAllOfficesInRegion(RegionId);
 
 		assertEquals(8000l, actualListOfOfficeDto.get(0).getOfficeId());
 		assertEquals("Melbourne", actualListOfOfficeDto.get(0).getOfficeName());
@@ -74,27 +74,27 @@ public class CountryOfficeServiceImplTest {
 		assertEquals(2, actualListOfOfficeDto.size());
 	}
 
-	private List<RegionDto> createCountryDtoList() {
-		List<RegionDto> listOfCountryDtos = new ArrayList<>();
+	private List<RegionDto> createRegionDtoList() {
+		List<RegionDto> listOfRegionDtos = new ArrayList<>();
 
 		RegionDto regionDto = new RegionDto();
 		regionDto.setRegionId(7000l);
 		regionDto.setRegionName("Australia");
 		regionDto.setRegionDescription("Australia");
 
-		listOfCountryDtos.add(regionDto);
-		return listOfCountryDtos;
+		listOfRegionDtos.add(regionDto);
+		return listOfRegionDtos;
 	}
 
 	private List<Region> createRegionDmList() {
 		List<Region> listOfRegion = new ArrayList<Region>();
 
-		Region countryDm = new Region();
-		countryDm.setRegionId(7000l);
-		countryDm.setRegionName("Australia");
-		countryDm.setRegionDescription("Australia");
+		Region RegionDm = new Region();
+		RegionDm.setRegionId(7000l);
+		RegionDm.setRegionName("Australia");
+		RegionDm.setRegionDescription("Australia");
 
-		listOfRegion.add(countryDm);
+		listOfRegion.add(RegionDm);
 		return listOfRegion;
 	}
 
