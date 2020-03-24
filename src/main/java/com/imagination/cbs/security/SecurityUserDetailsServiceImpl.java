@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.EmployeeMapping;
 import com.imagination.cbs.service.EmployeeMappingService;
+import com.imagination.cbs.util.SecurityConstants;
 
 @Service("securityUserDetailsService")
 public class SecurityUserDetailsServiceImpl implements UserDetailsService {
@@ -23,20 +24,22 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
 public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
 		EmployeeMapping employeeMapping = employeeMappingService.getEmployeeMappingByGoogleAccount(email);
-		if (null != employeeMapping) {
+		 if (employeeMapping == null) {
+	            throw new UsernameNotFoundException(email);
+	     }
+		 else {
 
-			//return new CBSUser(employeeMapping.getGoogleAccount(),employeeMapping.getEmployeeNumberMaconomy(),getAuthority(employeeMapping));
-			return new CBSUser(email, employeeMapping.getEmployeeId(),employeeMapping.getEmployeeNumberMaconomy(), employeeMapping.getGoogleAccount(), 
-					null, email, getAuthority(employeeMapping));
+			return new CBSUser(email, employeeMapping.getEmployeeId(),employeeMapping.getEmployeeNumberMaconomy(), 
+					employeeMapping.getGoogleAccount(), null, email, getAuthority(employeeMapping));
 		}
-		return null;
 	}
 
 	 private Set<SimpleGrantedAuthority> getAuthority(EmployeeMapping employeeMapping) {
 	        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 	        
 	        employeeMapping.getEmployeePermissions().forEach(employeePermissions ->{
-	        	authorities.add(new SimpleGrantedAuthority(employeePermissions.getPermission().getPermissionName()));
+	        	String role = SecurityConstants.ROLE_+String.valueOf(employeePermissions.getPermission().getPermissionId());
+	        	authorities.add(new SimpleGrantedAuthority(role));
 	        });
 			
 			return authorities;

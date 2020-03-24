@@ -128,9 +128,42 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contract_employee_id")
 	private Long contractEmployeeId;
 
+	@Column(name = "team_id")
+	private Long teamId;
+
+	@Column(name = "job_name")
+	private String jobname;
+
+	@Column(name = "supplier_work_location_type")
+	private Long supplierWorkLocationType;
+
 	@ManyToOne
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
+
+	public Long getTeamId() {
+		return teamId;
+	}
+
+	public void setTeamId(Long teamId) {
+		this.teamId = teamId;
+	}
+
+	public String getJobname() {
+		return jobname;
+	}
+
+	public void setJobname(String jobname) {
+		this.jobname = jobname;
+	}
+
+	public Long getSupplierWorkLocationType() {
+		return supplierWorkLocationType;
+	}
+
+	public void setSupplierWorkLocationType(Long supplierWorkLocationType) {
+		this.supplierWorkLocationType = supplierWorkLocationType;
+	}
 
 	public Long getSupplierTypeId() {
 		return supplierTypeId;
