@@ -25,4 +25,10 @@ public class SupplierServiceImpl implements SupplierService {
 		return supplierMapper.toListOfSupplierDTO(supplierRepository.findAll());
 
 	}
+
+	/*@Override
+	public List<SupplierDto> getSuppliersBySupplierName(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}*/
 }
