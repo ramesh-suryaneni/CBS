@@ -14,10 +14,8 @@ public class BookingDto {
 	private String changedBy;
 	private String changedDate;
 
-	@NotNull(message = "Role Id cannot be null")
 	private String roleId;
 
-	@NotNull(message = "Discipline Id cannot be null")
 	private String disciplineId;
 
 	@NotNull(message = "Start Date cannot be null")
@@ -27,7 +25,6 @@ public class BookingDto {
 	private String endDate;
 
 	@NotNull(message = "Job Number cannot be null")
-	@Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Job Number should be alpha numberic")
 	private String jobNumber;
 
 	private String teamId;
@@ -86,6 +83,7 @@ public class BookingDto {
 	private String officeId;
 
 	@NotNull(message = "Rate cannot be null")
+	@Pattern(regexp = "[0-9]+", message = "Contractor Rate Per Day should be numeric only")
 	private String rate;
 
 	private String jobDeptName;

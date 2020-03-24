@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
 import com.imagination.cbs.security.GoogleIDTokenValidationFilter;
-import com.imagination.cbs.util.SecurityConstants;
 
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {

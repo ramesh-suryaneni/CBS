@@ -1,8 +1,6 @@
 package com.imagination.cbs.mapper;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,6 +9,7 @@ import org.mapstruct.Named;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.dto.BookingDto;
+import com.imagination.cbs.util.DateUtils;
 
 @Mapper(componentModel = "spring")
 public interface BookingMapper {
@@ -22,15 +21,7 @@ public interface BookingMapper {
 
 	@Named("stringToTimeStamp")
 	public static Timestamp stringToTimeStampConverter(String date) {
-		Timestamp timeStamp = null;
-		SimpleDateFormat parseDate = new SimpleDateFormat("dd/MM/yyyy");
-		try {
-			Date parsedDate = parseDate.parse(date);
-			timeStamp = new java.sql.Timestamp(parsedDate.getTime());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return timeStamp;
+		return DateUtils.convertDateToTimeStamp(date);
 	}
 
 	@Named("timeStampToString")

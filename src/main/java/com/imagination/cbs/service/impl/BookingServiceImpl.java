@@ -8,10 +8,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
@@ -72,6 +73,7 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private LoggedInUserService loggedInUserService;
 
+	@Transactional
 	@Override
 	public BookingDto addBookingDetails(BookingDto booking) {
 
@@ -82,52 +84,55 @@ public class BookingServiceImpl implements BookingService {
 
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
 
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		Team team = new Team();
-
 		ContractorRoleDto cestResponse = roleService.getCESToutcome(Long.parseLong(booking.getRoleId()));
 
 		String jobNo = booking.getJobNumber();
 		bookingRevision.setJobNumber(jobNo);
 		if (jobNo != null) {
-			JobDataDto jobDetails = maconomyService.getJobDetails(booking.getJobNumber());
-			String deptName = jobDetails.getData().getText3();
-			bookingRevision.setJobDeptName(deptName);
-			ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
+			try {
+				JobDataDto jobDetails = maconomyService.getJobDetails(booking.getJobNumber());
+				String deptName = jobDetails.getData().getText3();
+				bookingRevision.setJobDeptName(deptName);
+				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
 
-			String remark3 = approverTeamDetails.getData().getRemark3();
-			Team teamOne = teamRepository.findByTeamName(remark3);
-			team.setTeamId(teamOne.getTeamId());
-			bookingRevision.setTeamId(teamOne.getTeamId());
+				String remark3 = approverTeamDetails.getData().getRemark3();
+				Team teamOne = teamRepository.findByTeamName(remark3);
+				bookingDomain.setTeamId(teamOne.getTeamId());
+				bookingRevision.setTeamId(teamOne.getTeamId());
+
+			} catch (Exception e) {
+				bookingDomain.setTeamId(null);
+			}
 		}
-		approvalStatusDm.setApprovalStatusId(1001L);
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
 		bookingRevision.setChangedBy(booking.getChangedBy());
 		bookingRevision.setRevisionNumber(1L);
 		bookingDomain.addBookingRevision(bookingRevision);
-		bookingDomain.setApprovalStatusDm(approvalStatusDm);
+		bookingDomain.setStatusId(1001L);
 		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(booking.getRoleId()));
 		bookingRevision.setInsideIr35(Boolean.valueOf(cestResponse.isInsideIr35()).toString());
-		bookingDomain.setTeam(team);
+		// bookingDomain.setTeam(team);
 
 		Booking savedBooking = bookingRepository.save(bookingDomain);
 
 		BookingDto bookingDto = bookingMapper
 				.toBookingDtoFromBookingRevision(savedBooking.getBookingRevisions().get(0));
 		bookingDto.setBookingId(savedBooking.getBookingId().toString());
-		bookingDto.setTeamId(savedBooking.getTeam().getTeamId().toString());
-		bookingDto.setApprovalStatusId(savedBooking.getApprovalStatusDm().getApprovalStatusId().toString());
+		// bookingDto.setTeamId(String.valueOf(savedBooking.getTeam().getTeamId()));
+		bookingDto.setTeamId(String.valueOf(savedBooking.getTeamId()));
+		bookingDto.setApprovalStatusId(savedBooking.getStatusId().toString());
 		bookingDto.setChangedBy(savedBooking.getChangedBy());
 		bookingDto.setChangedDate(savedBooking.getChangedDate().toString());
 		bookingDto.setBookingDescription(savedBooking.getBookingDescription());
 		return bookingDto;
 	}
 
+	@Transactional
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking) {
 
-		String loggedInUser =	 loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(booking);
 		bookingRevision.setChangedBy(loggedInUser);
@@ -197,14 +202,15 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setWorkTasks(workTasks);
 		bookingDto.setWorkDays(monthlyWorkdays);
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		bookingDto.setTeamId(bookingDetails.getTeam().getTeamId().toString());
-		bookingDto.setApprovalStatusId(bookingDetails.getApprovalStatusDm().getApprovalStatusId().toString());
+		bookingDto.setTeamId(String.valueOf(bookingDetails.getTeamId()));
+		bookingDto.setApprovalStatusId(bookingDetails.getStatusId().toString());
 		bookingDto.setChangedBy(bookingDetails.getChangedBy());
 		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
 		return bookingDto;
 	}
 
+	@Transactional
 	@Override
 	public BookingDto processBookingDetails(Long bookingId, BookingDto booking) {
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
@@ -221,7 +227,9 @@ public class BookingServiceImpl implements BookingService {
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		bookingRevision.setRevisionNumber(++revisionNumber);
-		// Need to Write method to update status id;
+
+		bookingRepository.updateStatusOfBooking(bookingId, 1002L);
+
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
 
 		List<BookingWorkTask> bookingWorkTasks = booking.getWorkTasks().stream().map(work -> {
@@ -278,8 +286,8 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setWorkTasks(workTasks);
 		bookingDto.setWorkDays(monthlyWorkdays);
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		bookingDto.setTeamId(bookingDetails.getTeam().getTeamId().toString());
-		bookingDto.setApprovalStatusId(bookingDetails.getApprovalStatusDm().getApprovalStatusId().toString());
+		bookingDto.setTeamId(String.valueOf(bookingDetails.getTeamId()));
+		bookingDto.setApprovalStatusId(bookingDetails.getStatusId().toString());
 		bookingDto.setChangedBy(bookingDetails.getChangedBy());
 		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
