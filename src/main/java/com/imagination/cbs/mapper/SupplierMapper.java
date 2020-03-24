@@ -7,9 +7,9 @@ import org.mapstruct.Mapper;
 import com.imagination.cbs.domain.SupplierTypeDm;
 import com.imagination.cbs.dto.SupplierDto;
 
-@Mapper(componentModel = "Spring")
+@Mapper(componentModel = "spring")
 public interface SupplierMapper {
 
-	public List<SupplierDto> toListOfSupplierDto(List<SupplierTypeDm> listOfSupplier);
+	public List<SupplierDto> toListOfSupplierDTO(List<SupplierTypeDm> listOfSupplierTypeDM);
 
 }
