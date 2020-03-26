@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -137,10 +138,10 @@ public class BookingRevision implements Serializable {
 	@Column(name = "supplier_work_location_type")
 	private Long supplierWorkLocationType;
 
-	@ManyToOne
+	@ManyToOne(fetch= FetchType.LAZY)
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
-
+	
 	public Long getTeamId() {
 		return teamId;
 	}
@@ -447,4 +448,5 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
+	
 }
