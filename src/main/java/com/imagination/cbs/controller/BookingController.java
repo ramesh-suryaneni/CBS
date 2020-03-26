@@ -3,9 +3,6 @@
  */
 package com.imagination.cbs.controller;
 
-import java.util.List;
-
-import javax.persistence.Tuple;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,6 @@ import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.exception.CBSValidationException;
-import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.service.BookingService;
 
 /**
@@ -42,9 +38,6 @@ public class BookingController {
 
 	@Autowired
 	private BookingService bookingServiceImpl;
-
-	@Autowired
-	private BookingRevisionRepository bookingRevisionRepository;
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
