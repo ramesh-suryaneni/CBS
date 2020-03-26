@@ -20,6 +20,7 @@ import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
+import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.dto.WorkDaysDto;
@@ -75,14 +76,14 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto addBookingDetails(BookingDto booking) {
+	public BookingDto addBookingDetails(BookingRequest booking) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
-		booking.setChangedBy(loggedInUser);
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(booking);
+		bookingDomain.setChangedBy(loggedInUser);
 
 		ContractorRoleDto cestResponse = roleService.getCESToutcome(Long.parseLong(booking.getRoleId()));
 
@@ -106,20 +107,18 @@ public class BookingServiceImpl implements BookingService {
 		}
 		bookingRevision.setContractedFromDate(BookingMapper.stringToTimeStampConverter(booking.getStartDate()));
 		bookingRevision.setContractedToDate(BookingMapper.stringToTimeStampConverter(booking.getEndDate()));
-		bookingRevision.setChangedBy(booking.getChangedBy());
+		bookingRevision.setChangedBy(loggedInUser);
 		bookingRevision.setRevisionNumber(1L);
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setStatusId(1001L);
 		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(booking.getRoleId()));
 		bookingRevision.setInsideIr35(Boolean.valueOf(cestResponse.isInsideIr35()).toString());
-		// bookingDomain.setTeam(team);
 
 		Booking savedBooking = bookingRepository.save(bookingDomain);
 
 		BookingDto bookingDto = bookingMapper
 				.toBookingDtoFromBookingRevision(savedBooking.getBookingRevisions().get(0));
 		bookingDto.setBookingId(savedBooking.getBookingId().toString());
-		// bookingDto.setTeamId(String.valueOf(savedBooking.getTeam().getTeamId()));
 		bookingDto.setTeamId(String.valueOf(savedBooking.getTeamId()));
 		bookingDto.setApprovalStatusId(savedBooking.getStatusId().toString());
 		bookingDto.setChangedBy(savedBooking.getChangedBy());
@@ -130,7 +129,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto updateBookingDetails(Long bookingId, BookingDto booking) {
+	public BookingDto updateBookingDetails(Long bookingId, BookingRequest booking) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
@@ -212,7 +211,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto processBookingDetails(Long bookingId, BookingDto booking) {
+	public BookingDto processBookingDetails(Long bookingId, BookingRequest booking) {
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(booking);
 

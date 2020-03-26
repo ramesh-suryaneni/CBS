@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.BookingDto;
+import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.service.BookingService;
@@ -44,21 +45,21 @@ public class BookingController {
 
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
-	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingDto booking) {
+	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
 		BookingDto draftBooking = bookingServiceImpl.addBookingDetails(booking);
 		return new ResponseEntity<BookingDto>(draftBooking, HttpStatus.CREATED);
 	}
 
 	@PatchMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> updateBookingDetails(@PathVariable("booking_id") Long bookingId,
-			@RequestBody BookingDto booking) {
+			@RequestBody BookingRequest booking) {
 		BookingDto updatedBooking = bookingServiceImpl.updateBookingDetails(bookingId, booking);
 		return new ResponseEntity<BookingDto>(updatedBooking, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> processBookingDetails(@PathVariable("booking_id") Long bookingId,
-			@Valid @RequestBody BookingDto booking, BindingResult result) {
+			@Valid @RequestBody BookingRequest booking, BindingResult result) {
 		if (result.hasErrors()) {
 			throw new CBSValidationException(result.getFieldError().getDefaultMessage());
 		}
