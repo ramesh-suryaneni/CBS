@@ -47,10 +47,16 @@ public class CBSGlobalExceptionHandler {
 	
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<CBSErrorMessage> handleResourceNotFoundException(RuntimeException runtimeException) {
-		CBSErrorMessage cbsErrorMessage =  new CBSErrorMessage();
-		cbsErrorMessage.setErrorMessage(runtimeException.getMessage());
+	public ResponseEntity<CBSApplicationException> handleResourceNotFoundException(RuntimeException runtimeException) {
+		CBSApplicationException cbsErrorMessage =  new CBSApplicationException(runtimeException.getMessage());
 		return new ResponseEntity<>(cbsErrorMessage, HttpStatus.NOT_FOUND);
+
+	}
+	
+	@ExceptionHandler(CBSValidationException.class)
+	public ResponseEntity<CBSApplicationException> handleValidationException(RuntimeException runtimeException) {
+		CBSApplicationException cbsErrorMessage =  new CBSApplicationException(runtimeException.getMessage());
+		return new ResponseEntity<>(cbsErrorMessage, HttpStatus.BAD_REQUEST);
 
 	}
 	
