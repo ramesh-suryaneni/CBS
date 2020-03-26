@@ -292,4 +292,19 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
 		return bookingDto;
 	}
+
+	@Override
+	public BookingDto retrieveBookingDetails(Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId).get();
+
+		BookingRevision bookingRevision = bookingRevisionRepository
+				.fetchBookingRevisionByBookingId(booking.getBookingId());
+		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(bookingRevision);
+		bookingDto.setBookingDescription(booking.getBookingDescription());
+		bookingDto.setTeamId(booking.getTeamId().toString());
+		bookingDto.setApprovalStatusId(booking.getStatusId().toString());
+		bookingDto.setChangedBy(booking.getChangedBy());
+		bookingDto.setChangedDate(booking.getChangedDate().toString());
+		return bookingDto;
+	}
 }

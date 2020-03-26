@@ -16,4 +16,6 @@ public interface BookingService {
 	public BookingDto updateBookingDetails(Long bookingId, BookingRequest booking);
 
 	public BookingDto processBookingDetails(Long bookingId, BookingRequest booking);
+
+	public BookingDto retrieveBookingDetails(Long bookingId);
 }

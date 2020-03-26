@@ -11,8 +11,6 @@ import lombok.Data;
 public class BookingRequest {
 	private String roleId;
 
-	private String disciplineId;
-
 	@NotNull(message = "Start Date cannot be null")
 	private String startDate;
 
@@ -24,8 +22,6 @@ public class BookingRequest {
 
 	@Pattern(regexp = "[0-9]+", message = "Contractor Id should be numeric only")
 	private String contractorId;
-
-	private String contractorEmployeeName;
 
 	@NotNull(message = "Supplier Type Id cannot be null")
 	@Pattern(regexp = "[0-9]+", message = "Supplier Type Id should be numeric only")

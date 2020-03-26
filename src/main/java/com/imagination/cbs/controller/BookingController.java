@@ -39,10 +39,9 @@ public class BookingController {
 
 	@Autowired
 	private BookingService bookingServiceImpl;
-	
+
 	@Autowired
 	private BookingRevisionRepository bookingRevisionRepository;
-
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
@@ -66,21 +65,20 @@ public class BookingController {
 		BookingDto processedBooking = bookingServiceImpl.processBookingDetails(bookingId, booking);
 		return new ResponseEntity<BookingDto>(processedBooking, HttpStatus.OK);
 	}
-	
-	//aashoo and akshay will work
-	//give proper method name
+
+	// aashoo and akshay will work
+	// give proper method name
 	@GetMapping("/test")
-	public void getDashBoard(){
-		
+	public void getDashBoard() {
 		List<Tuple> test = bookingRevisionRepository.test();
-		
-		System.out.println("ttttt "+test);
-		
-		//[1028, Draft, JLR Experience Center, 2020-04-02 20:48:05.123, 2020-03-11 20:48:05.123, Pappu, 3215, 2D Senior]
-		
-		//[1028, Draft, JLR Experience Center, 2020-04-02 20:48:05.123, 2020-03-11 20:48:05.123, Pappu, 3215, 2D Senior, 2020-03-11 20:48:05.123, Pappu]
+
+		System.out.println("ttttt " + test);
+	}
+
+	@GetMapping(value = "/{booking_id}", produces = "application/json")
+	public ResponseEntity<BookingDto> fetchBookingDetails(@PathVariable("booking_id") Long bookingId) {
+		BookingDto bookingDetails = bookingServiceImpl.retrieveBookingDetails(bookingId);
+		return new ResponseEntity<BookingDto>(bookingDetails, HttpStatus.OK);
 	}
 
 }
-
-
