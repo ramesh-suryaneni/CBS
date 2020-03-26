@@ -20,7 +20,7 @@ public class SupplierServiceImpl implements SupplierService {
 	private SupplierRepository supplierRepository;
 
 	@Override
-	public List<SupplierDto> getAllSupplierTypeDM() {
+	public List<SupplierDto> getAllSupplierTypes() {
 
 		return supplierMapper.toListOfSupplierDTO(supplierRepository.findAll());
 

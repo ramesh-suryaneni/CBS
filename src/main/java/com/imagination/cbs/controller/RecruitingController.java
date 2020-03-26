@@ -13,7 +13,7 @@ import com.imagination.cbs.service.RecruitingService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping(value = "/recruiting")
+@RequestMapping("/recruiting_reasons")
 public class RecruitingController {
 
 	@Autowired

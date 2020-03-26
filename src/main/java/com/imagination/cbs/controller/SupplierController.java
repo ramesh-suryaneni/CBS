@@ -13,7 +13,7 @@ import com.imagination.cbs.service.SupplierService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/supplier")
+@RequestMapping("/supplier_types")
 public class SupplierController {
 
 	@Autowired
@@ -29,8 +29,8 @@ public class SupplierController {
 	 */
 
 	@GetMapping
-	public List<SupplierDto> getAllSupplierTypeDM() {
-		return supplierService.getAllSupplierTypeDM();
+	public List<SupplierDto> getAllSupplierTypes() {
+		return supplierService.getAllSupplierTypes();
 	}
 
 }
