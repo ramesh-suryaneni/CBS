@@ -4,13 +4,22 @@
 package com.imagination.cbs.service.impl;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Booking;
@@ -19,6 +28,7 @@ import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.ApproverTeamDto;
+import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.JobDataDto;
@@ -293,4 +303,46 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
 		return bookingDto;
 	}
+
+	@Override
+	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String loggedInUser, String status, int pageNo,
+			int pageSize) {
+		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
+		List<Tuple> bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
+		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
+	}
+	
+	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
+		Sort sort = null;
+		if (sortingOrder.equals("ASC")) {
+			sort = Sort.by(Direction.ASC, sortingField);
+		}
+		if (sortingOrder.equals("DESC")) {
+			sort = Sort.by(Direction.DESC, sortingField);
+		}
+		
+		return PageRequest.of(pageNo, pageSize, sort);
+	}
+	
+	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions){
+		List<BookingDashBoardDto> bookingDashboradDtos = new ArrayList<>();
+		bookingRevisions.forEach((bookingRevision)->{
+			BookingDashBoardDto bookingDashboardDto = new BookingDashBoardDto();
+			
+			bookingDashboardDto.setStatus(bookingRevision.get("status", String.class));
+			bookingDashboardDto.setJobname(bookingRevision.get("jobName",String.class));
+			bookingDashboardDto.setRoleName(bookingRevision.get("role", String.class));//contractorEmployeeRole.getRoleDm().getRoleName());
+			bookingDashboardDto.setContractorName(bookingRevision.get("contractor",String.class));
+			bookingDashboardDto.setContractedFromDate(bookingRevision.get("startDate", Timestamp.class));
+			bookingDashboardDto.setContractedToDate(bookingRevision.get("endDate", Timestamp.class));
+			bookingDashboardDto.setChangedBy(bookingRevision.get("changedBy",String.class)); 
+			bookingDashboardDto.setChangedDate(bookingRevision.get("changedDate", Timestamp.class));
+
+			bookingDashboradDtos.add(bookingDashboardDto);
+		});
+		
+		return bookingDashboradDtos;
+	}
+
 }
