@@ -9,6 +9,8 @@ import javax.persistence.Tuple;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.repository.BookingRevisionRepository;
@@ -68,16 +72,15 @@ public class BookingController {
 	
 	//aashoo and akshay will work
 	//give proper method name
-	@GetMapping("/test")
-	public void getDashBoard(){
-		
-		List<Tuple> test = bookingRevisionRepository.test();
-		
-		System.out.println("ttttt "+test);
-		
-		//[1028, Draft, JLR Experience Center, 2020-04-02 20:48:05.123, 2020-03-11 20:48:05.123, Pappu, 3215, 2D Senior]
-		
-		//[1028, Draft, JLR Experience Center, 2020-04-02 20:48:05.123, 2020-03-11 20:48:05.123, Pappu, 3215, 2D Senior, 2020-03-11 20:48:05.123, Pappu]
+	@GetMapping("")
+	public Page<BookingDashBoardDto> getAllDrafrBookings(@RequestParam String status,
+										@RequestParam int page,
+										@RequestParam int limit)
+	{
+
+		String logInUser = "Pravin";
+		return bookingServiceImpl.getAllBookingsForDraft(status,logInUser,page,limit) ;
+
 	}
 
 }

@@ -4,21 +4,25 @@
 package com.imagination.cbs.service.impl;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javax.persistence.Tuple;
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.ApproverTeamDto;
+import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.JobDataDto;
@@ -292,5 +296,31 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
 		return bookingDto;
+	}
+	
+	@Override
+	public Page<BookingDashBoardDto> getAllBookingsForDraft(String status,String logInUser,Integer page,Integer limit)
+	{
+		BookingDashBoardDto dashBoardDto = new BookingDashBoardDto();
+		
+		List<BookingDashBoardDto> listOfDashBoardDto = new ArrayList<BookingDashBoardDto>();
+		
+		List<Tuple> listTuple = bookingRevisionRepository.getAllDraftBookings(status,logInUser);
+		
+			for(Tuple tuple:listTuple)
+			{
+				dashBoardDto.setBookingId(tuple.get("id", Long.class));
+				dashBoardDto.setChangedBy(tuple.get("change",String.class));
+				dashBoardDto.setChangedDate(tuple.get("cdate", Timestamp.class));
+				dashBoardDto.setContractedFromDate(tuple.get("strtdate", Timestamp.class));
+				dashBoardDto.setContractedToDate(tuple.get("enddate", Timestamp.class));
+				dashBoardDto.setContractorName(tuple.get("cname", String.class));
+				dashBoardDto.setJobname(tuple.get("job", String.class));
+				dashBoardDto.setRoleName(tuple.get("rname", String.class));
+			
+				listOfDashBoardDto.add(dashBoardDto);
+			}
+		
+		return new PageImpl<>(listOfDashBoardDto,PageRequest.of(page,limit),listOfDashBoardDto.size());
 	}
 }
