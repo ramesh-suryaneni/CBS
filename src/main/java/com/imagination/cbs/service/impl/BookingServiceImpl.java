@@ -304,8 +304,9 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String loggedInUser, String status, int pageNo,
-			int pageSize) {
+	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize) {
+		
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
 		List<Tuple> bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
 		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);

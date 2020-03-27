@@ -64,12 +64,10 @@ public class BookingController {
 
 	@GetMapping()
 	public Page<BookingDashBoardDto> getDraftedUserBookings(			
-			@RequestParam String loggedInUser,
 			@RequestParam String status,
 			@RequestParam(defaultValue = "0") Integer pageNo, 
             @RequestParam(defaultValue = "5") Integer pageSize){
-		
-		return bookingServiceImpl.getDraftOrCancelledBookings(loggedInUser, status, pageNo, pageSize);
+		return bookingServiceImpl.getDraftOrCancelledBookings(status, pageNo, pageSize);
 	}
 
   @GetMapping(value = "/{booking_id}", produces = "application/json")

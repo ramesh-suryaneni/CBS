@@ -23,5 +23,5 @@ public interface BookingService {
     
     public BookingDto retrieveBookingDetails(Long bookingId);
 	
-	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String loggedInUser, String status, int pageNo, int pageSize);
+	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize);
 }
