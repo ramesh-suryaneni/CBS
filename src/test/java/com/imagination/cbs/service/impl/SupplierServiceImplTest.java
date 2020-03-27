@@ -36,7 +36,7 @@ public class SupplierServiceImplTest {
 		when(supplierRepository.findAll()).thenReturn(listOfSupplierTypeDM);
 		when(supplierMapper.toListOfSupplierDTO(listOfSupplierTypeDM)).thenReturn(getListOfSupplierDto());
 
-		List<SupplierDto> actualListOfSupplierDto = supplierServiceImpl.getAllSupplierTypeDM();
+		List<SupplierDto> actualListOfSupplierDto = supplierServiceImpl.getAllSupplierTypes();
 		assertEquals(2L, actualListOfSupplierDto.get(0).getId());
 		assertEquals("Yash", actualListOfSupplierDto.get(0).getName());
 		assertEquals("Test Data", actualListOfSupplierDto.get(0).getDescription());
