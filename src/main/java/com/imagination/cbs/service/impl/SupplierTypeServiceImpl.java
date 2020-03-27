@@ -5,22 +5,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.imagination.cbs.dto.SupplierDto;
-import com.imagination.cbs.mapper.SupplierMapper;
-import com.imagination.cbs.repository.SupplierRepository;
-import com.imagination.cbs.service.SupplierService;
+import com.imagination.cbs.dto.SupplierTypeDto;
+import com.imagination.cbs.mapper.SupplierTypeMapper;
+import com.imagination.cbs.repository.SupplierTypeRepository;
+import com.imagination.cbs.service.SupplierTypeService;
 
 @Service("supplierService")
-public class SupplierServiceImpl implements SupplierService {
+public class SupplierTypeServiceImpl implements SupplierTypeService {
 
 	@Autowired
-	private SupplierMapper supplierMapper;
+	private SupplierTypeMapper supplierMapper;
 
 	@Autowired
-	private SupplierRepository supplierRepository;
+	private SupplierTypeRepository supplierRepository;
 
 	@Override
-	public List<SupplierDto> getAllSupplierTypes() {
+	public List<SupplierTypeDto> getAllSupplierTypes() {
 
 		return supplierMapper.toListOfSupplierDTO(supplierRepository.findAll());
 
