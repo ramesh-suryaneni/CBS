@@ -61,7 +61,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/webhooks/**", 
         		"/v2/**",
                 "/configuration/**",
-                "/migration/**",
                 "/swagger-resources/**",
                 "/swagger-ui.html",
                 "/webjars/**");
@@ -72,32 +71,34 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		logger.info("Security enabled");
 		
-		http.cors().and().csrf().disable().
-        authorizeRequests()
+		if(securityEnabled) {
+			
+			http.cors().and().csrf().disable().
+	        authorizeRequests()
 
-		/** ALL USER CAN ACCESS **/
-        .antMatchers("/bookings/**", "/contractors/**", "/countries/**", "/disciplines/**", 
-        		"/macanomy/**","/recruiting/**", "/roles/**", "/suppliers/**").authenticated()
-        
-        /** ONLY ADMIN CAN ACCESS **/
-        //.antMatchers("/registraton/*").hasRole(SecurityConstants.ROLE_ADMIN_WITHOUT_PREFIX)
+			/** ALL USER CAN ACCESS **/
+	        .antMatchers("/bookings/**", "/contractors/**", "/contractor_employees/**", "/supplier_location_types/**", 
+	        		
+	        		"/disciplines/**","/regions/**","/tax_rates/**",
+	        		
+	        		"/macanomy/**","/recruiting_reasons/**", "/roles/**", "/supplier_types/**", "/currencies/**").authenticated()
+	        
+	        /** ONLY ADMIN CAN ACCESS **/
+	        //.antMatchers("/registraton/*").hasRole(SecurityConstants.ROLE_ADMIN_WITHOUT_PREFIX)
 
-        .anyRequest().authenticated()
-        .and()
-        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
-		http
-            .addFilterBefore(googleIDTokenValidationFilter, UsernamePasswordAuthenticationFilter.class);
-
-		/*
-		 * } else {
-		 * 
-		 * logger.info("Security Disabled");
-		 * 
-		 * http.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").
-		 * permitAll(); }
-		 */
+	        .anyRequest().authenticated()
+	        .and()
+	        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			
+			http
+	            .addFilterBefore(googleIDTokenValidationFilter, UsernamePasswordAuthenticationFilter.class);
+			
+		} else {
+			
+			logger.info("Security Disabled");
+			http.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").permitAll(); 
+		}
 
 	}
 
