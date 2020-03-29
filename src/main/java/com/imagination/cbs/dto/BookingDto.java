@@ -114,4 +114,6 @@ public class BookingDto {
 
 	private String supplierWorkLocationType;
 
+	private TeamDto team;
+
 }

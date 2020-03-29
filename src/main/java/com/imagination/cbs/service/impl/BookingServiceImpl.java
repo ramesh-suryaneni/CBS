@@ -36,6 +36,7 @@ import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
 import com.imagination.cbs.mapper.BookingMapper;
+import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.BookingWorkTaskRepository;
@@ -83,6 +84,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private LoggedInUserService loggedInUserService;
+
+	@Autowired
+	private TeamMapper teamMapper;
 
 	@Transactional
 	@Override
@@ -305,14 +309,15 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize) {
-		
+
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
-		List<Tuple> bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+		List<Tuple> bookingRevisions = bookingRevisionRepository
+				.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
 		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
 		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
 	}
-	
+
 	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Sort sort = null;
 		if (sortingOrder.equals("ASC")) {
@@ -321,41 +326,79 @@ public class BookingServiceImpl implements BookingService {
 		if (sortingOrder.equals("DESC")) {
 			sort = Sort.by(Direction.DESC, sortingField);
 		}
-		
+
 		return PageRequest.of(pageNo, pageSize, sort);
 	}
-	
-	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions){
-		List<BookingDashBoardDto> bookingDashboradDtos = new ArrayList<>();
-		bookingRevisions.forEach((bookingRevision)->{
-			BookingDashBoardDto bookingDashboardDto = new BookingDashBoardDto();
-			
-			bookingDashboardDto.setStatus(bookingRevision.get("status", String.class));
-			bookingDashboardDto.setJobname(bookingRevision.get("jobName",String.class));
-			bookingDashboardDto.setRoleName(bookingRevision.get("role", String.class));//contractorEmployeeRole.getRoleDm().getRoleName());
-			bookingDashboardDto.setContractorName(bookingRevision.get("contractor",String.class));
-			bookingDashboardDto.setContractedFromDate(bookingRevision.get("startDate", Timestamp.class));
-			bookingDashboardDto.setContractedToDate(bookingRevision.get("endDate", Timestamp.class));
-			bookingDashboardDto.setChangedBy(bookingRevision.get("changedBy",String.class)); 
-			bookingDashboardDto.setChangedDate(bookingRevision.get("changedDate", Timestamp.class));
 
-			bookingDashboradDtos.add(bookingDashboardDto);
+	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
+		List<BookingDashBoardDto> bookingDashboradDtos = new ArrayList<>();
+		bookingRevisions.forEach((bookingRevision) -> {
+			BookingDashBoardDto bookingDashBoardDto = new BookingDashBoardDto();
+
+			bookingDashBoardDto.setStatus(bookingRevision.get("status", String.class));
+			bookingDashBoardDto.setJobname(bookingRevision.get("jobName", String.class));
+			bookingDashBoardDto.setRoleName(bookingRevision.get("role", String.class));// contractorEmployeeRole.getRoleDm().getRoleName());
+			bookingDashBoardDto.setContractorName(bookingRevision.get("contractor", String.class));
+			bookingDashBoardDto.setContractedFromDate(bookingRevision.get("startDate", Timestamp.class));
+			bookingDashBoardDto.setContractedToDate(bookingRevision.get("endDate", Timestamp.class));
+			bookingDashBoardDto.setChangedBy(bookingRevision.get("changedBy", String.class));
+			bookingDashBoardDto.setChangedDate(bookingRevision.get("changedDate", Timestamp.class));
+
+			bookingDashboradDtos.add(bookingDashBoardDto);
 		});
-		
+
 		return bookingDashboradDtos;
 	}
 
+	@Override
 	public BookingDto retrieveBookingDetails(Long bookingId) {
 		Booking booking = bookingRepository.findById(bookingId).get();
 
 		BookingRevision bookingRevision = bookingRevisionRepository
 				.fetchBookingRevisionByBookingId(booking.getBookingId());
+
+		Team team = teamRepository.findById(booking.getTeamId()).get();
+
+		List<BookingWorkTask> bookingWorkTasks = bookingWorkTaskRepository
+				.findByBookingRevisionId(bookingRevision.getBookingRevisionId());
+
+		List<ContractorMonthlyWorkDay> contractorMonthlyWorkDays = contractorMonthlyWorkDayRepository
+				.findByBookingRevisionId(bookingRevision.getBookingRevisionId());
+
+		List<WorkTasksDto> workTasks = bookingWorkTasks.stream().map(work -> {
+			WorkTasksDto workTasksDto = new WorkTasksDto();
+			workTasksDto.setTaskName(work.getTaskName());
+			workTasksDto.setTaskDeliveryDate(work.getTaskDeliveryDate().toString());
+			workTasksDto.setTaskDateRate(work.getTaskDateRate().toString());
+			workTasksDto.setTaskTotalDays(work.getTaskTotalDays().toString());
+			workTasksDto.setTaskTotalAmount(work.getTaskTotalAmount().toString());
+			workTasksDto.setChangedBy(work.getChangedBy());
+			workTasksDto.setChangedDate(work.getChangedDate().toString());
+			workTasksDto.setBookingRevisionId(work.getBookingRevisionId().toString());
+			return workTasksDto;
+		}).collect(Collectors.toList());
+
+		List<WorkDaysDto> monthlyWorkDays = contractorMonthlyWorkDays.stream().map(work -> {
+			WorkDaysDto workDaysDto = new WorkDaysDto();
+			workDaysDto.setMonthName(work.getMonthName());
+			workDaysDto.setMonthWorkingDays(work.getMonthWorkingDays().toString());
+			workDaysDto.setChangedBy(work.getChangedBy());
+			workDaysDto.setChangedDate(work.getChangedDatetime().toString());
+			workDaysDto.setBookingRevisionId(work.getBookingRevisionId().toString());
+			return workDaysDto;
+		}).collect(Collectors.toList());
+
 		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(bookingRevision);
+		bookingDto.setBookingId(booking.getBookingId().toString());
 		bookingDto.setBookingDescription(booking.getBookingDescription());
 		bookingDto.setTeamId(booking.getTeamId().toString());
 		bookingDto.setApprovalStatusId(booking.getStatusId().toString());
 		bookingDto.setChangedBy(booking.getChangedBy());
 		bookingDto.setChangedDate(booking.getChangedDate().toString());
+
+		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
+		bookingDto.setWorkDays(monthlyWorkDays);
+		bookingDto.setWorkTasks(workTasks);
 		return bookingDto;
 	}
 }

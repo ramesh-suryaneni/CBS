@@ -35,14 +35,6 @@ public class Booking implements Serializable {
 	@Column(name = "booking_description")
 	private String bookingDescription;
 
-	public Long getTeamId() {
-		return teamId;
-	}
-
-	public void setTeamId(Long teamId) {
-		this.teamId = teamId;
-	}
-
 	@Column(name = "changed_by")
 	private String changedBy;
 
@@ -58,6 +50,14 @@ public class Booking implements Serializable {
 
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<BookingRevision> bookingRevisions;
+
+	public Long getTeamId() {
+		return teamId;
+	}
+
+	public void setTeamId(Long teamId) {
+		this.teamId = teamId;
+	}
 
 	public Long getStatusId() {
 		return statusId;

@@ -60,6 +60,8 @@ public class BookingRequest {
 
 	private String supplierWorkLocationType;
 
+	private String currencyId;
+
 	private List<WorkTasksDto> workTasks;
 
 	private String bookingDescription;
