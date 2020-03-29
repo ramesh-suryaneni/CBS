@@ -116,4 +116,5 @@ public class BookingDto {
 
 	private TeamDto team;
 
+	private ApprovalStatusDmDto approvalStatusDm;
 }
