@@ -12,4 +12,6 @@ public interface SupplierTypeMapper {
 
 	public List<SupplierTypeDto> toListOfSupplierDTO(List<SupplierTypeDm> listOfSupplierTypeDM);
 
+	public SupplierTypeDto toSupplierTypeDtoFromSupplierTypeDomain(SupplierTypeDm supplierTypeDm);
+
 }

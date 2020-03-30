@@ -27,7 +27,16 @@ import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
+import com.imagination.cbs.domain.Contractor;
+import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
+import com.imagination.cbs.domain.CurrencyDm;
+import com.imagination.cbs.domain.Discipline;
+import com.imagination.cbs.domain.OfficeDm;
+import com.imagination.cbs.domain.ReasonsForRecruiting;
+import com.imagination.cbs.domain.RoleDm;
+import com.imagination.cbs.domain.SupplierTypeDm;
+import com.imagination.cbs.domain.SupplierWorkLocationTypeDm;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDashBoardDto;
@@ -39,12 +48,30 @@ import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
 import com.imagination.cbs.mapper.ApprovalStatusDmMapper;
 import com.imagination.cbs.mapper.BookingMapper;
+import com.imagination.cbs.mapper.ContractorEmployeeMapper;
+import com.imagination.cbs.mapper.ContractorMapper;
+import com.imagination.cbs.mapper.CurrencyMapper;
+import com.imagination.cbs.mapper.DisciplineMapper;
+import com.imagination.cbs.mapper.OfficeMapper;
+import com.imagination.cbs.mapper.RecruitingMapper;
+import com.imagination.cbs.mapper.RoleMapper;
+import com.imagination.cbs.mapper.SupplierTypeMapper;
+import com.imagination.cbs.mapper.SupplierWorkLocationTypeMapper;
 import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.BookingWorkTaskRepository;
+import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorMonthlyWorkDayRepository;
+import com.imagination.cbs.repository.ContractorRepository;
+import com.imagination.cbs.repository.CurrencyRepository;
+import com.imagination.cbs.repository.DisciplineRepository;
+import com.imagination.cbs.repository.OfficeRepository;
+import com.imagination.cbs.repository.RecruitingRepository;
+import com.imagination.cbs.repository.RoleRepository;
+import com.imagination.cbs.repository.SupplierTypeRepository;
+import com.imagination.cbs.repository.SupplierWorkLocationTypeRepository;
 import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.LoggedInUserService;
@@ -91,6 +118,33 @@ public class BookingServiceImpl implements BookingService {
 	private ApprovalStatusDmRepository approvalStatusDmRepository;
 
 	@Autowired
+	private RoleRepository roleRepository;
+
+	@Autowired
+	private DisciplineRepository disciplineRepository;
+
+	@Autowired
+	private ContractorRepository contractorRepository;
+
+	@Autowired
+	private SupplierWorkLocationTypeRepository supplierWorkLocationTypeRepository;
+
+	@Autowired
+	private SupplierTypeRepository supplierTypeRepository;
+
+	@Autowired
+	private RecruitingRepository recruitingRepository;
+
+	@Autowired
+	private OfficeRepository officeRepository;
+
+	@Autowired
+	private CurrencyRepository currencyRepository;
+
+	@Autowired
+	private ContractorEmployeeRepository contractorEmployeeRepository;
+
+	@Autowired
 	private LoggedInUserService loggedInUserService;
 
 	@Autowired
@@ -99,18 +153,48 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private ApprovalStatusDmMapper approvalStatusDmMapper;
 
+	@Autowired
+	private RoleMapper roleMapper;
+
+	@Autowired
+	private DisciplineMapper disciplineMapper;
+
+	@Autowired
+	private ContractorMapper contractorMapper;
+
+	@Autowired
+	private SupplierWorkLocationTypeMapper supplierWorkLocationTypeMapper;
+
+	@Autowired
+	private SupplierTypeMapper supplierTypeMapper;
+
+	@Autowired
+	private RecruitingMapper recruitingMapper;
+
+	@Autowired
+	private OfficeMapper officeMapper;
+
+	@Autowired
+	private CurrencyMapper currencyMapper;
+
+	@Autowired
+	private ContractorEmployeeMapper contractorEmployeeMapper;
+
 	@Transactional
 	@Override
 	public BookingDto addBookingDetails(BookingRequest bookingRequest) {
 
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		// String loggedInUser =
+		// loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		String loggedInUser = "pravin.budage";
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(bookingRequest);
 		bookingDomain.setChangedBy(loggedInUser);
 
-		ContractorRoleDto cestResponse = roleService.getCESToutcome(Long.parseLong(bookingRequest.getRoleId()));
+		Long roleId = Long.parseLong(bookingRequest.getContractorEmployeeRoleId());
+		ContractorRoleDto cestResponse = roleService.getCESToutcome(roleId);
 
 		String jobNo = bookingRequest.getJobNumber();
 		bookingRevision.setJobNumber(jobNo);
@@ -130,13 +214,13 @@ public class BookingServiceImpl implements BookingService {
 				bookingDomain.setTeamId(null);
 			}
 		}
-		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getStartDate()));
-		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getEndDate()));
+		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
 		bookingRevision.setRevisionNumber(1L);
 		bookingDomain.addBookingRevision(bookingRevision);
 		bookingDomain.setStatusId(1001L);
-		bookingRevision.setContractorEmployeeRoleId(Long.parseLong(bookingRequest.getRoleId()));
+		bookingRevision.setContractorEmployeeRoleId(roleId);
 		bookingRevision.setInsideIr35(Boolean.valueOf(cestResponse.isInsideIr35()).toString());
 
 		Booking savedBooking = bookingRepository.save(bookingDomain);
@@ -149,6 +233,8 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setChangedBy(savedBooking.getChangedBy());
 		bookingDto.setChangedDate(savedBooking.getChangedDate().toString());
 		bookingDto.setBookingDescription(savedBooking.getBookingDescription());
+		RoleDm roleDm = roleRepository.findById(roleId).get();
+		bookingDto.setDisciplineId(roleDm.getDiscipline().getDisciplineId().toString());
 		return bookingDto;
 	}
 
@@ -156,8 +242,10 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingRequest bookingRequest) {
 
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		// String loggedInUser =
+		// loggedInUserService.getLoggedInUserDetails().getDisplayName();
 
+		String loggedInUser = "pravin.budage";
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 
 		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(bookingRequest);
@@ -170,10 +258,8 @@ public class BookingServiceImpl implements BookingService {
 		bookingRevision.setBooking(book);
 		bookingRevision.setRevisionNumber(++revisionNumber);
 		bookingRevision.setContractorId(Long.parseLong(bookingRequest.getContractorId()));
-		bookingRevision.setContractedFromDate(
-				BookingMapper.stringToTimeStampConverter(bookingRequest.getContractedFromDate()));
-		bookingRevision
-				.setContractedToDate(BookingMapper.stringToTimeStampConverter(bookingRequest.getContractedToDate()));
+		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
 
 		List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest, savedBookingRevision);
@@ -213,10 +299,8 @@ public class BookingServiceImpl implements BookingService {
 		book.setBookingId(bookingId);
 		bookingRevision.setBooking(book);
 		bookingRevision.setContractorId(Long.parseLong(bookingRequest.getContractorId()));
-		bookingRevision.setContractedFromDate(
-				BookingMapper.stringToTimeStampConverter(bookingRequest.getContractedFromDate()));
-		bookingRevision
-				.setContractedToDate(BookingMapper.stringToTimeStampConverter(bookingRequest.getContractedToDate()));
+		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(bookingDetails.getChangedBy());
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
@@ -286,18 +370,19 @@ public class BookingServiceImpl implements BookingService {
 	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
-		
+
 		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
 		List<Tuple> bookingRevisions = null;
-		
-		if(status.equalsIgnoreCase("Submitted")) {
+
+		if (status.equalsIgnoreCase("Submitted")) {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, pageable);
-		}else {
-			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+		} else {
+			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser,
+					status, pageable);
 		}
-		 
+
 		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
-		
+
 		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
 	}
 
@@ -350,9 +435,25 @@ public class BookingServiceImpl implements BookingService {
 		List<ContractorMonthlyWorkDay> contractorMonthlyWorkDays = contractorMonthlyWorkDayRepository
 				.findByBookingRevisionId(bookingRevision.getBookingRevisionId());
 
-		List<WorkTasksDto> workTasks = toWorkTasksDtoFromWorkTaskDomain(bookingWorkTasks);
+		RoleDm roleDm = roleRepository.findById(bookingRevision.getContractorEmployeeRoleId()).get();
 
-		List<WorkDaysDto> monthlyWorkDays = toWorkDaysDtoFromMonthlyWorkDaysDomain(contractorMonthlyWorkDays);
+		Discipline discipline = disciplineRepository.findById(roleDm.getDiscipline().getDisciplineId()).get();
+
+		Contractor contractor = contractorRepository.findById(bookingRevision.getContractorId()).get();
+
+		SupplierWorkLocationTypeDm supplierWorkLocationTypeDm = supplierWorkLocationTypeRepository
+				.findById(bookingRevision.getSupplierWorkLocationType()).get();
+		SupplierTypeDm supplierTypeDm = supplierTypeRepository.findById(bookingRevision.getSupplierTypeId()).get();
+
+		ReasonsForRecruiting reasonsForRecruiting = recruitingRepository
+				.findById(bookingRevision.getReasonForRecruiting()).get();
+
+		OfficeDm officeDm = officeRepository.findById(bookingRevision.getCommisioningOffice()).get();
+
+		CurrencyDm currencyDm = currencyRepository.findById(bookingRevision.getCurrencyId()).get();
+
+		ContractorEmployee contractorEmployee = contractorEmployeeRepository
+				.findById(bookingRevision.getContractEmployeeId()).get();
 
 		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(bookingRevision);
 		bookingDto.setBookingId(booking.getBookingId().toString());
@@ -365,8 +466,21 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
 		bookingDto.setApprovalStatusDm(
 				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
-		bookingDto.setWorkDays(monthlyWorkDays);
-		bookingDto.setWorkTasks(workTasks);
+		bookingDto.setWorkDays(toWorkDaysDtoFromMonthlyWorkDaysDomain(contractorMonthlyWorkDays));
+		bookingDto.setWorkTasks(toWorkTasksDtoFromWorkTaskDomain(bookingWorkTasks));
+		bookingDto.setContractorRole(roleMapper.toRoleDTO(roleDm));
+		bookingDto.setDiscipline(disciplineMapper.toDisciplineDtoFromDisciplineDomain(discipline));
+		bookingDto.setContractor(contractorMapper.toContractorDtoFromContractorDomain(contractor));
+		bookingDto.setSupplierWorkLocation(supplierWorkLocationTypeMapper
+				.toSupplierWorkLocationTypeDtoFromSupplierWorkLocationTypeDomain(supplierWorkLocationTypeDm));
+		bookingDto.setSupplierType(supplierTypeMapper.toSupplierTypeDtoFromSupplierTypeDomain(supplierTypeDm));
+		bookingDto.setRecruitingReason(
+				recruitingMapper.toRecruitingDtoFromReasonsForRecruitingDomain(reasonsForRecruiting));
+		bookingDto.setOffice(officeMapper.toOfficeDtoFromOfficeDomain(officeDm));
+		bookingDto.setCurrency(currencyMapper.toCurrencyDtoFromCurrencyDm(currencyDm));
+		bookingDto.setContractorEmployee(
+				contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee));
+		bookingDto.setContractWorkLocation(officeDm.getOfficeId().toString());
 		return bookingDto;
 	}
 

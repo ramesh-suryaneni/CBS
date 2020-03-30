@@ -17,7 +17,10 @@ import com.imagination.cbs.dto.SupplierWorkLocationTypeDto;
 
 @Mapper(componentModel = "spring")
 public interface SupplierWorkLocationTypeMapper {
-	
+
 	public List<SupplierWorkLocationTypeDto> convertToList(List<SupplierWorkLocationTypeDm> domains);
+
+	public SupplierWorkLocationTypeDto toSupplierWorkLocationTypeDtoFromSupplierWorkLocationTypeDomain(
+			SupplierWorkLocationTypeDm SupplierWorkLocationTypeDm);
 
 }
