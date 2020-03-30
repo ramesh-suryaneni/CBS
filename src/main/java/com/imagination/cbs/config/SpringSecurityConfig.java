@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
 import com.imagination.cbs.security.GoogleIDTokenValidationFilter;
+import com.imagination.cbs.util.SecurityConstants;
 
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -84,8 +86,25 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	        		"/macanomy/**","/recruiting_reasons/**", "/roles/**", "/supplier_types/**", "/currencies/**").authenticated()
 	        
 	        /** ONLY ADMIN CAN ACCESS **/
-	        //.antMatchers("/registraton/*").hasRole(SecurityConstants.ROLE_ADMIN_WITHOUT_PREFIX)
-
+					/*
+					 * .antMatchers(HttpMethod.GET, "/bookings/**").authenticated()
+					 * 
+					 * //Bookings can be created either Creator, HR or Admin users
+					 * .antMatchers(HttpMethod.POST,
+					 * "/bookings").hasAnyRole(SecurityConstants.ROLE_BOOKING_CREATOR,
+					 * SecurityConstants.ROLE_CONTRACT_MGT, SecurityConstants.ROLE_PO_MGT,
+					 * SecurityConstants.ROLE_ADMIN) .antMatchers(HttpMethod.PUT,
+					 * "/bookings/**").hasAnyRole(SecurityConstants.ROLE_BOOKING_CREATOR,
+					 * SecurityConstants.ROLE_CONTRACT_MGT, SecurityConstants.ROLE_PO_MGT,
+					 * SecurityConstants.ROLE_ADMIN) .antMatchers(HttpMethod.PATCH,
+					 * "/bookings/**").hasAnyRole(SecurityConstants.ROLE_BOOKING_CREATOR,
+					 * SecurityConstants.ROLE_CONTRACT_MGT, SecurityConstants.ROLE_PO_MGT,
+					 * SecurityConstants.ROLE_ADMIN) .antMatchers(HttpMethod.DELETE,
+					 * "/bookings/**").hasAnyRole(SecurityConstants.ROLE_BOOKING_CREATOR,
+					 * SecurityConstants.ROLE_CONTRACT_MGT, SecurityConstants.ROLE_PO_MGT,
+					 * SecurityConstants.ROLE_ADMIN)
+					 */
+            
 	        .anyRequest().authenticated()
 	        .and()
 	        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

@@ -25,7 +25,7 @@ public UserDetails loadUserByUsername(String email) throws UsernameNotFoundExcep
 
 		EmployeeMapping employeeMapping = employeeMappingService.getEmployeeMappingByGoogleAccount(email);
 		 if (employeeMapping == null) {
-	            throw new UsernameNotFoundException(email);
+	            throw new UsernameNotFoundException("User with email " + email + " was not found in the database");
 	     }
 		 else {
 
