@@ -286,10 +286,18 @@ public class BookingServiceImpl implements BookingService {
 	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		
 		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
-		List<Tuple> bookingRevisions = bookingRevisionRepository
-				.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+		List<Tuple> bookingRevisions = null;
+		
+		if(status.equalsIgnoreCase("Submitted")) {
+			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, pageable);
+		}else {
+			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+		}
+		 
 		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
+		
 		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
 	}
 
