@@ -194,9 +194,7 @@ public class BookingServiceImpl implements BookingService {
 		Long roleId = Long.parseLong(bookingRequest.getContractorEmployeeRoleId());
 		ContractorRoleDto cestResponse = roleService.getCESToutcome(roleId);
 
-		String jobNo = bookingRequest.getJobNumber();
-		bookingRevision.setJobNumber(jobNo);
-		if (jobNo != null) {
+		if (bookingRequest.getJobNumber() != null) {
 			try {
 				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
 				String deptName = jobDetails.getData().getText3();
@@ -226,13 +224,20 @@ public class BookingServiceImpl implements BookingService {
 		BookingDto bookingDto = bookingMapper
 				.toBookingDtoFromBookingRevision(savedBooking.getBookingRevisions().get(0));
 		bookingDto.setBookingId(savedBooking.getBookingId().toString());
-		bookingDto.setTeamId(String.valueOf(savedBooking.getTeamId()));
-		bookingDto.setApprovalStatusId(savedBooking.getStatusId().toString());
+		Team team = new Team();
+		team.setTeamId(savedBooking.getTeamId());
+		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
+		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
+		approvalStatusDm.setApprovalStatusId(savedBooking.getStatusId());
+		bookingDto.setApprovalStatusDm(
+				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
 		bookingDto.setChangedBy(savedBooking.getChangedBy());
 		bookingDto.setChangedDate(savedBooking.getChangedDate().toString());
 		bookingDto.setBookingDescription(savedBooking.getBookingDescription());
 		RoleDm roleDm = roleRepository.findById(roleId).get();
-		bookingDto.setDisciplineId(roleDm.getDiscipline().getDisciplineId().toString());
+		Discipline discipline = new Discipline();
+		discipline.setDisciplineId(roleDm.getDiscipline().getDisciplineId());
+		bookingDto.setDiscipline(disciplineMapper.toDisciplineDtoFromDisciplineDomain(discipline));
 		return bookingDto;
 	}
 
@@ -249,6 +254,20 @@ public class BookingServiceImpl implements BookingService {
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 
+		if (bookingRequest.getJobNumber() != null) {
+			try {
+				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+				String deptName = jobDetails.getData().getText3();
+				bookingRevision.setJobDeptName(deptName);
+				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
+
+				String remark3 = approverTeamDetails.getData().getRemark3();
+				Team teamOne = teamRepository.findByTeamName(remark3);
+				bookingRevision.setTeamId(teamOne.getTeamId());
+			} catch (Exception e) {
+				bookingRevision.setTeamId(null);
+			}
+		}
 		Booking book = new Booking();
 		book.setBookingId(bookingId);
 		bookingRevision.setBooking(book);
@@ -280,8 +299,13 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setWorkTasks(workTasks);
 		bookingDto.setWorkDays(monthlyWorkdays);
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		bookingDto.setTeamId(String.valueOf(bookingDetails.getTeamId()));
-		bookingDto.setApprovalStatusId(bookingDetails.getStatusId().toString());
+		Team team = new Team();
+		team.setTeamId(bookingDetails.getTeamId());
+		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
+		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
+		approvalStatusDm.setApprovalStatusId(bookingDetails.getStatusId());
+		bookingDto.setApprovalStatusDm(
+				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
 		bookingDto.setChangedBy(bookingDetails.getChangedBy());
 		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
@@ -307,6 +331,17 @@ public class BookingServiceImpl implements BookingService {
 
 		bookingRepository.updateStatusOfBooking(bookingId, 1002L);
 
+		if (bookingRequest.getJobNumber() != null) {
+			JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+			String deptName = jobDetails.getData().getText3();
+			bookingRevision.setJobDeptName(deptName);
+			ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
+
+			String remark3 = approverTeamDetails.getData().getRemark3();
+			Team teamOne = teamRepository.findByTeamName(remark3);
+			bookingRevision.setTeamId(teamOne.getTeamId());
+		}
+
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
 
 		List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest, savedBookingRevision);
@@ -328,8 +363,13 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setWorkTasks(workTasks);
 		bookingDto.setWorkDays(monthlyWorkdays);
 		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		bookingDto.setTeamId(String.valueOf(bookingDetails.getTeamId()));
-		bookingDto.setApprovalStatusId(bookingDetails.getStatusId().toString());
+		Team team = new Team();
+		team.setTeamId(bookingDetails.getTeamId());
+		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
+		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
+		approvalStatusDm.setApprovalStatusId(bookingDetails.getStatusId());
+		bookingDto.setApprovalStatusDm(
+				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
 		bookingDto.setChangedBy(bookingDetails.getChangedBy());
 		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
 		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
@@ -457,8 +497,6 @@ public class BookingServiceImpl implements BookingService {
 		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(bookingRevision);
 		bookingDto.setBookingId(booking.getBookingId().toString());
 		bookingDto.setBookingDescription(booking.getBookingDescription());
-		bookingDto.setTeamId(booking.getTeamId().toString());
-		bookingDto.setApprovalStatusId(booking.getStatusId().toString());
 		bookingDto.setChangedBy(booking.getChangedBy());
 		bookingDto.setChangedDate(booking.getChangedDate().toString());
 

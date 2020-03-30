@@ -9,6 +9,7 @@ import lombok.Data;
 
 @Data
 public class BookingRequest {
+	@NotNull(message = "Role Id cannot be null")
 	private String contractorEmployeeRoleId;
 
 	@NotNull(message = "Job Number cannot be null")
@@ -72,8 +73,8 @@ public class BookingRequest {
 	private List<WorkDaysDto> workDays;
 
 	private String contractEmployeeId;
-	
+
 	private String insideIr35;
-	
+
 	private String jobDeptName;
 }

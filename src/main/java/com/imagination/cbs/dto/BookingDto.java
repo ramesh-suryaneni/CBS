@@ -11,16 +11,11 @@ public class BookingDto {
 	private String changedBy;
 	private String changedDate;
 
-	private String disciplineId;
-
 	private String jobNumber;
-
-	private String teamId;
 
 	private String bookingRevisionId;
 	private String agreementDocumentId;
 	private String agreementId;
-	private String approvalStatusId;
 
 	private String contractAmountAftertax;
 
@@ -55,12 +50,6 @@ public class BookingDto {
 	private String employerTaxPercent;
 
 	private String insideIr35;
-
-	private String knownAs;
-
-	private String officeDescription;
-
-	private String officeId;
 
 	private String rate;
 
