@@ -6,16 +6,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,12 +22,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.imagination.cbs.dto.ContractorDto;
-import com.imagination.cbs.service.impl.ContractorServiceImpl;
+import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//@WebMvcTest(ContractorController.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ContractorControllerTest {
 
@@ -41,7 +36,7 @@ public class ContractorControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private ContractorServiceImpl contractorServiceImpl;
+	private ContractorService contractorService;
 
 	@Before
     public void setup() {
@@ -56,24 +51,24 @@ public class ContractorControllerTest {
 		
 		List<ContractorDto> contractorDtos = getContractorDtos();
 
-		when(contractorServiceImpl.getContractorsByContractorName("Im")).thenReturn(contractorDtos);
+		when(contractorService.getContractorsByContractorName("Im")).thenReturn(contractorDtos);
 
 		mockMvc.perform(get("/contractors/Im").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].contractorName", comparesEqualTo("Imagination")));
 
-		verify(contractorServiceImpl).getContractorsByContractorName("Im");
+		verify(contractorService).getContractorsByContractorName("Im");
 	}
 
 	@Test
 	public void shouldReturnEmptyContractListIfContractorNameIsNotPresentInDB() throws Exception {
 		List<ContractorDto> contractorDtos = new ArrayList<>();
 
-		when(contractorServiceImpl.getContractorsByContractorName(Mockito.anyString())).thenReturn(contractorDtos);
+		when(contractorService.getContractorsByContractorName(Mockito.anyString())).thenReturn(contractorDtos);
 
 		mockMvc.perform(get("/contractors/Test").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$").isEmpty());
 
-		verify(contractorServiceImpl).getContractorsByContractorName("Test");
+		verify(contractorService).getContractorsByContractorName("Test");
 	}
 
 	public List<ContractorDto> getContractorDtos() {

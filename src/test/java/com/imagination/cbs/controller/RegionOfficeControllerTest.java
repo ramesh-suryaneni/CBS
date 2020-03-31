@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import com.imagination.cbs.dto.OfficeDto;
 import com.imagination.cbs.dto.RegionDto;
+import com.imagination.cbs.service.RegionOfficeService;
 import com.imagination.cbs.service.impl.RegionOfficeServiceImpl;
 
 
@@ -36,7 +37,7 @@ public class RegionOfficeControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private RegionOfficeServiceImpl regionOfficeServiceImpl;
+	private RegionOfficeService regionOfficeService;
 
 	@Before
     public void setup() {
@@ -52,12 +53,12 @@ public class RegionOfficeControllerTest {
 		List<RegionDto> listOfRegionDto = new ArrayList<RegionDto>();
 		listOfRegionDto.add(createRegionDto());
 
-		when(regionOfficeServiceImpl.getAllRegions()).thenReturn(listOfRegionDto);
+		when(regionOfficeService.getAllRegions()).thenReturn(listOfRegionDto);
 
 		this.mockMvc.perform(get("/regions").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].regionName", comparesEqualTo("EMEA")));
 
-		verify(regionOfficeServiceImpl).getAllRegions();
+		verify(regionOfficeService).getAllRegions();
 	}
 
 	@Test
@@ -67,12 +68,12 @@ public class RegionOfficeControllerTest {
 		listOfficeDtos.add(createOfficeDto());
 
 		long regionId = 2;
-		when(regionOfficeServiceImpl.getAllOfficesInRegion(regionId)).thenReturn(listOfficeDtos);
+		when(regionOfficeService.getAllOfficesInRegion(regionId)).thenReturn(listOfficeDtos);
 
-		this.mockMvc.perform(get("/regions/7000/offices").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockMvc.perform(get("/regions/2/offices").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].officeName", comparesEqualTo("Melbourne")));
 
-		verify(regionOfficeServiceImpl).getAllOfficesInRegion(regionId);
+		verify(regionOfficeService).getAllOfficesInRegion(regionId);
 
 	}
 

@@ -62,13 +62,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		logger.info("Security enabled");
+	/*	logger.info("Security enabled");
 
 		if (securityEnabled) {
 
 			http.cors().and().csrf().disable().authorizeRequests()
 
-					/** ALL USER CAN ACCESS **/
+					*//** ALL USER CAN ACCESS **//*
 					.antMatchers("/bookings/**", "/contractors/**", "/contractor_employees/**",
 							"/supplier_location_types/**",
 
@@ -78,8 +78,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 							"/currencies/**")
 					.authenticated()
 
-					/** ONLY ADMIN CAN ACCESS **/
-					/*
+					*//** ONLY ADMIN CAN ACCESS **//*
+					
 					 * .antMatchers(HttpMethod.GET,
 					 * "/bookings/**").authenticated()
 					 * 
@@ -108,7 +108,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 					 * SecurityConstants.ROLE_CONTRACT_MGT,
 					 * SecurityConstants.ROLE_PO_MGT,
 					 * SecurityConstants.ROLE_ADMIN)
-					 */
+					 
 
 					.anyRequest().authenticated().and().exceptionHandling()
 					.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
@@ -121,7 +121,31 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			logger.info("Security Disabled");
 			http.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").permitAll();
 		}
-
+*/
+		logger.info("Security enabled");
+		if(securityEnabled) {
+			http.cors().and().csrf().disable().
+			authorizeRequests()
+			/** ALL USER CAN ACCESS **/
+			.antMatchers("/bookings/**", "/contractors/**", "/countries/**", "/disciplines/**",
+					"/macanomy/**","/recruiting/**", "/roles/**", "/suppliers/**").authenticated()
+			/** ONLY ADMIN CAN ACCESS **/
+			//.antMatchers("/registraton/*").hasRole(SecurityConstants.ROLE_ADMIN_WITHOUT_PREFIX)
+			.anyRequest().authenticated()
+			.and()
+			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			http
+			.addFilterBefore(googleIDTokenValidationFilter, UsernamePasswordAuthenticationFilter.class);
+		}
+		else {
+			logger.info("Security Disabled");
+			http.cors().and().csrf().disable().authorizeRequests().antMatchers("/**").
+			permitAll();
+			}
 	}
-
+		
 }
+
+	
+

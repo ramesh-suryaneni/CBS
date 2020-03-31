@@ -1,6 +1,7 @@
 package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.service.DisciplineService;
-import com.imagination.cbs.service.RoleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -62,7 +62,7 @@ public class DisciplineControllerTest {
 		 .andExpect(jsonPath("$[0].disciplineName",
 		 comparesEqualTo("Creative")));
 		
-		// verify(disciplineService).getAllDisciplines();
+		 verify(disciplineService).getAllDisciplines();
 	}
 
 	@Test
