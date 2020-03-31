@@ -30,28 +30,19 @@ public class ContractorController {
 	@Autowired
 	private ContractorService contractorService;
 
-	@GetMapping("/{contractorName}")
-	public List<ContractorDto> getContractorsByContractorName(@PathVariable("contractorName") String contractorName){
-		
-		return contractorService.getContractorsByContractorName(contractorName);
-	}
-	
-	@GetMapping("/index")
-	public Page<ContractorIndexDto> getContractorIndexDeatils(
+	@GetMapping("/search")
+	public Page<ContractorEmployeeDto> getContractorEmployeeDetails(
+			@RequestParam Long role,
+			@RequestParam(defaultValue = "") String name,
 			@RequestParam(defaultValue = "0") Integer pageNo, 
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(defaultValue = "contractorName") String sortingField,
-            @RequestParam(defaultValue = "ASC") String sortingOrder){
-		return contractorService.getContractorIndexDeatils(pageNo, pageSize, sortingField, sortingOrder);
-	}
+			@RequestParam(defaultValue = "roleId") String sortingField,
+			@RequestParam(defaultValue = "ASC") String sortingOrder){
 	
-	@GetMapping("/index/{contractorName}")
-	public Page<ContractorIndexDto> getContractorIndexDeatilsByContractor(@PathVariable("contractorName") String contractorName,
-			@RequestParam(defaultValue = "0") Integer pageNo, 
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(defaultValue = "contractorName") String sortingField,
-            @RequestParam(defaultValue = "ASC") String sortingOrder){
-		return contractorService.getContractorIndexDeatilsByContractorName(contractorName, pageNo, pageSize, sortingField, sortingOrder);
+		if(name.equals("")) {
+			return contractorService.geContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingField, sortingOrder);
+		}
+		return contractorService.geContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingField, sortingOrder);
 	}
-	
+
 }
