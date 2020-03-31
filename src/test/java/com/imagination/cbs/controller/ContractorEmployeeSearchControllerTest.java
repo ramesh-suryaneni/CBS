@@ -34,7 +34,7 @@ import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ContractorControllerTest {
+public class ContractorEmployeeSearchControllerTest {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -56,7 +56,7 @@ public class ContractorControllerTest {
 		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleId(Mockito.anyLong(), Mockito.anyInt(),
 				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(createPagedData());
 
-		mockMvc.perform(get("/contractors/search").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/contractor-employees").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
 				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
 
@@ -70,7 +70,7 @@ public class ContractorControllerTest {
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
 						.thenReturn(createPagedData());
 
-		mockMvc.perform(get("/contractors/search").param("name", "Al").param("role", "1000")
+		mockMvc.perform(get("/contractor-employees").param("name", "Al").param("role", "1000")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
 
@@ -86,7 +86,7 @@ public class ContractorControllerTest {
 				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(
 						new PageImpl<>(new ArrayList<ContractorEmployeeSearchDto>(), PageRequest.of(0, 5), 0));
 
-		mockMvc.perform(get("/contractors/search").param("name", "Test").param("role", "1000")
+		mockMvc.perform(get("/contractor-employees").param("name", "Test").param("role", "1000")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content").isEmpty());
 
