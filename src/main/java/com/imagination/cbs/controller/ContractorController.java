@@ -35,7 +35,7 @@ public class ContractorController {
 			@RequestParam(defaultValue = "roleId") String sortingField,
 			@RequestParam(defaultValue = "ASC") String sortingOrder){
 	
-		if(name.equals("")){
+		if(!name.equals("")){
 			return contractorService.geContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingField, sortingOrder);
 		}
 		return contractorService.geContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingField, sortingOrder);
