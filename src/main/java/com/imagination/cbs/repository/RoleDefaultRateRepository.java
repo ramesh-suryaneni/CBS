@@ -14,7 +14,7 @@ import com.imagination.cbs.domain.RoleDefaultRate;
  */
 @Repository("roleDefaultRateRepository")
 public interface RoleDefaultRateRepository extends JpaRepository<RoleDefaultRate, Long> {
-	
-	public RoleDefaultRate findByRoleId(Long roleId);
+
+	public RoleDefaultRate findByDefaultRateId(Long roleId);
 
 }

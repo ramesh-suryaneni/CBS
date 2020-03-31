@@ -245,8 +245,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingRequest bookingRequest) {
 
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
-
+		String loggedInUser =	 loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 
 		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(bookingRequest);
@@ -343,37 +342,20 @@ public class BookingServiceImpl implements BookingService {
 		}
 
 		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
+		if (bookingRequest.getWorkTasks() != null) {
+			List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest,
+					savedBookingRevision);
 
-		List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest, savedBookingRevision);
+			bookingWorkTaskRepository.saveAll(bookingWorkTasks);
+		}
+		if (bookingRequest.getWorkDays() != null) {
+			List<ContractorMonthlyWorkDay> monthlyWorkDays = toMonthlyWorkDaysDomainFromWorkDaysDto(bookingRequest,
+					savedBookingRevision);
 
-		List<BookingWorkTask> savedBookingWorkTasks = bookingWorkTaskRepository.saveAll(bookingWorkTasks);
+			contractorMonthlyWorkDayRepository.saveAll(monthlyWorkDays);
+		}
 
-		List<WorkTasksDto> workTasks = toWorkTasksDtoFromWorkTaskDomain(savedBookingWorkTasks);
-
-		List<ContractorMonthlyWorkDay> monthlyWorkDays = toMonthlyWorkDaysDomainFromWorkDaysDto(bookingRequest,
-				savedBookingRevision);
-
-		List<ContractorMonthlyWorkDay> savedMonthlyWorkDays = contractorMonthlyWorkDayRepository
-				.saveAll(monthlyWorkDays);
-
-		List<WorkDaysDto> monthlyWorkdays = toWorkDaysDtoFromMonthlyWorkDaysDomain(savedMonthlyWorkDays);
-
-		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(savedBookingRevision);
-
-		bookingDto.setWorkTasks(workTasks);
-		bookingDto.setWorkDays(monthlyWorkdays);
-		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		Team team = new Team();
-		team.setTeamId(bookingDetails.getTeamId());
-		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalStatusId(bookingDetails.getStatusId());
-		bookingDto.setApprovalStatusDm(
-				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
-		bookingDto.setChangedBy(bookingDetails.getChangedBy());
-		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
-		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
-		return bookingDto;
+		return retrieveBookingDetails(bookingId);
 	}
 
 	private List<ContractorMonthlyWorkDay> toMonthlyWorkDaysDomainFromWorkDaysDto(BookingRequest bookingRequest,

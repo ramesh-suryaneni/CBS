@@ -63,17 +63,8 @@ public class BookingController {
 	}
 
 	@GetMapping()
-	public Page<BookingDashBoardDto> getDraftedUserBookings(			
-			@RequestParam String status,
-			@RequestParam(defaultValue = "0") Integer pageNo, 
-            @RequestParam(defaultValue = "5") Integer pageSize){
+	public Page<BookingDashBoardDto> getDraftedUserBookings(@RequestParam String status,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "5") Integer pageSize) {
 		return bookingServiceImpl.getDraftOrCancelledBookings(status, pageNo, pageSize);
 	}
-
-  @GetMapping(value = "/{booking_id}", produces = "application/json")
-	public ResponseEntity<BookingDto> fetchBookingDetails(@PathVariable("booking_id") Long bookingId) {
-		BookingDto bookingDetails = bookingServiceImpl.retrieveBookingDetails(bookingId);
-		return new ResponseEntity<BookingDto>(bookingDetails, HttpStatus.OK);
-	}
-
 }
