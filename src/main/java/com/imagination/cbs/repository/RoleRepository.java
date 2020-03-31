@@ -15,5 +15,4 @@ import com.imagination.cbs.domain.RoleDm;
 
 @Repository("roleRepository")
 public interface RoleRepository extends JpaRepository<RoleDm, Long> {
-
 }

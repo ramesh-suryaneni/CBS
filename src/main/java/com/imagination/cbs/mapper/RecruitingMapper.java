@@ -12,4 +12,6 @@ public interface RecruitingMapper {
 
 	public List<RecruitingDto> toListRecruitingDto(List<ReasonsForRecruiting> listOfRecruiting);
 
+	public RecruitingDto toRecruitingDtoFromReasonsForRecruitingDomain(ReasonsForRecruiting reasonsForRecruiting);
+
 }

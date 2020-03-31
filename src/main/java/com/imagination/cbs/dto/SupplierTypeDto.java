@@ -3,7 +3,7 @@ package com.imagination.cbs.dto;
 import lombok.Data;
 
 @Data
-public class SupplierDto {
+public class SupplierTypeDto {
 
 	private long id;
 

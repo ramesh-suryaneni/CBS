@@ -16,5 +16,5 @@ public class ContractorEmployeeDto {
 	private String company;
 	private int noOfBookingsInPast;
 	private String recommandations;
-	
+
 }

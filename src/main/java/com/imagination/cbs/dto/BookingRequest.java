@@ -9,13 +9,8 @@ import lombok.Data;
 
 @Data
 public class BookingRequest {
-	private String roleId;
-
-	@NotNull(message = "Start Date cannot be null")
-	private String startDate;
-
-	@NotNull(message = "End Date cannot be null")
-	private String endDate;
+	@NotNull(message = "Role Id cannot be null")
+	private String contractorEmployeeRoleId;
 
 	@NotNull(message = "Job Number cannot be null")
 	private String jobNumber;
@@ -60,15 +55,26 @@ public class BookingRequest {
 
 	private String supplierWorkLocationType;
 
+	@NotNull(message = "Currency Id cannot be null")
+	private String currencyId;
+
 	private List<WorkTasksDto> workTasks;
 
 	private String bookingDescription;
 
+	@NotNull(message = "Start Date cannot be null")
 	private String contractedFromDate;
 
+	@NotNull(message = "End Date cannot be null")
 	private String contractedToDate;
 
 	private String contractorSignedDate;
 
 	private List<WorkDaysDto> workDays;
+
+	private String contractEmployeeId;
+
+	private String insideIr35;
+
+	private String jobDeptName;
 }

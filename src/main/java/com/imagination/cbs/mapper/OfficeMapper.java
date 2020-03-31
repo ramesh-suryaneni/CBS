@@ -11,4 +11,6 @@ import com.imagination.cbs.dto.OfficeDto;
 public interface OfficeMapper {
 
 	public List<OfficeDto> toListOfficeDTO(List<OfficeDm> listOfOffices);
+
+	public OfficeDto toOfficeDtoFromOfficeDomain(OfficeDm officeDm);
 }

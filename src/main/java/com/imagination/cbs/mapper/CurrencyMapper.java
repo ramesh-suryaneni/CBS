@@ -16,7 +16,9 @@ import com.imagination.cbs.dto.CurrencyDto;
  */
 @Mapper(componentModel = "spring")
 public interface CurrencyMapper {
-	
+
 	public List<CurrencyDto> convertToList(List<CurrencyDm> domains);
+
+	public CurrencyDto toCurrencyDtoFromCurrencyDm(CurrencyDm currencyDm);
 
 }

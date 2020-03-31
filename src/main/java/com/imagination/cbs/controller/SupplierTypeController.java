@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.dto.SupplierDto;
-import com.imagination.cbs.service.SupplierService;
+import com.imagination.cbs.dto.SupplierTypeDto;
+import com.imagination.cbs.service.SupplierTypeService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/supplier_types")
-public class SupplierController {
+public class SupplierTypeController {
 
 	@Autowired
-	private SupplierService supplierService;
+	private SupplierTypeService supplierService;
 
 	/*
 	 * @GetMapping("/{name}") public List<SupplierDto>
@@ -29,7 +29,7 @@ public class SupplierController {
 	 */
 
 	@GetMapping
-	public List<SupplierDto> getAllSupplierTypes() {
+	public List<SupplierTypeDto> getAllSupplierTypes() {
 		return supplierService.getAllSupplierTypes();
 	}
 
