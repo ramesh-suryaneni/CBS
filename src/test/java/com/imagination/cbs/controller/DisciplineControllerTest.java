@@ -30,7 +30,6 @@ import com.imagination.cbs.service.RoleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-//@WebMvcTest(DisciplineController.class)
 public class DisciplineControllerTest {
 
 	@Autowired
