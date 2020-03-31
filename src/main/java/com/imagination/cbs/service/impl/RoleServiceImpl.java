@@ -40,10 +40,10 @@ public class RoleServiceImpl implements RoleService {
 			String link = (dto.isInsideIr35())? "https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf" : "https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf";
 			dto.setCestDownloadLink(link);
 			//Fetch role default rate; UI will use if as default day rate if no contractor employee selected.
-			RoleDefaultRate rate = roleDefaultRateRepository.findByRoleId(roleId);
-			if(rate!=null) {
-				dto.setRoleDefaultRate(String.valueOf(rate.getRate()));
-			}
+			/*
+			 * RoleDefaultRate rate = roleDefaultRateRepository.findByRoleId(roleId);
+			 * if(rate!=null) { dto.setRoleDefaultRate(String.valueOf(rate.getRate())); }
+			 */
 			
 			return dto;
 		}
