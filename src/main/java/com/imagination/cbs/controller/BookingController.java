@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
-import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.service.BookingService;
+import com.imagination.cbs.util.BookingValidator;
 
 /**
  * @author Ramesh.Suryaneni
@@ -38,6 +39,9 @@ public class BookingController {
 
 	@Autowired
 	private BookingService bookingServiceImpl;
+
+	@Autowired
+	private BookingValidator bookingValidator;
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
@@ -54,11 +58,12 @@ public class BookingController {
 
 	@PutMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> processBookingDetails(@PathVariable("booking_id") Long bookingId,
-			@Valid @RequestBody BookingRequest booking, BindingResult result) {
+			@Valid @RequestBody BookingRequest booking, BindingResult result) throws MethodArgumentNotValidException {
+		bookingValidator.validate(booking, result);
 		if (result.hasErrors()) {
-			throw new CBSValidationException(result.getFieldError().getDefaultMessage());
+			throw new MethodArgumentNotValidException(null, result);
 		}
-		BookingDto processedBooking = bookingServiceImpl.processBookingDetails(bookingId, booking);
+		BookingDto processedBooking = bookingServiceImpl.submitBookingDetails(bookingId, booking);
 		return new ResponseEntity<BookingDto>(processedBooking, HttpStatus.OK);
 	}
 

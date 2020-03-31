@@ -5,6 +5,7 @@ package com.imagination.cbs.service.impl;
 
 import static java.util.stream.Collectors.toList;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
@@ -31,7 +33,6 @@ import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.CurrencyDm;
-import com.imagination.cbs.domain.Discipline;
 import com.imagination.cbs.domain.OfficeDm;
 import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.domain.RoleDm;
@@ -183,208 +184,192 @@ public class BookingServiceImpl implements BookingService {
 	@Transactional
 	@Override
 	public BookingDto addBookingDetails(BookingRequest bookingRequest) {
+		Booking bookingDomain = populateBooking(bookingRequest, 1L);
+		Booking savedBooking = bookingRepository.save(bookingDomain);
 
+		return retrieveBookingDetails(savedBooking.getBookingId());
+	}
+
+	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber) {
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(bookingRequest);
 		bookingDomain.setChangedBy(loggedInUser);
-
+		// Adding Role
 		Long roleId = Long.parseLong(bookingRequest.getContractorEmployeeRoleId());
 		ContractorRoleDto cestResponse = roleService.getCESToutcome(roleId);
-
+		bookingRevision.setInsideIr35(String.valueOf(cestResponse.isInsideIr35()));
+		RoleDm role = new RoleDm();
+		role.setRoleId(roleId);
+		bookingRevision.setRole(role);
+		// Booking Status
+		ApprovalStatusDm status = new ApprovalStatusDm();
+		status.setApprovalStatusId(1001L);
+		bookingDomain.setApprovalStatus(status);
+		bookingRevision.setApprovalStatusId(1001L);
+		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
 				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
 				String deptName = jobDetails.getData().getText3();
 				bookingRevision.setJobDeptName(deptName);
+				bookingRevision.setJobname(jobDetails.getData().getJobName());
+				bookingRequest.setJobNumber(jobDetails.getData().getJobNumber());
 				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
 
 				String remark3 = approverTeamDetails.getData().getRemark3();
 				Team teamOne = teamRepository.findByTeamName(remark3);
-				bookingDomain.setTeamId(teamOne.getTeamId());
-				bookingRevision.setTeamId(teamOne.getTeamId());
-
+				bookingDomain.setTeam(teamOne);
 			} catch (Exception e) {
-				bookingDomain.setTeamId(null);
+				bookingDomain.setTeam(null);
 			}
 		}
+
 		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
 		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
-		bookingRevision.setRevisionNumber(1L);
+		bookingRevision.setRevisionNumber(revisionNumber);
+		// Contractor Details
+		if (!StringUtils.isEmpty(bookingRequest.getContractorId())) {
+			Contractor contractor = contractorRepository.findById(Long.parseLong(bookingRequest.getContractorId()))
+					.get();
+			bookingRevision.setContractor(contractor);
+			bookingRevision.setContractorName(contractor.getContractorName());
+			bookingRevision.setContractorType(contractor.getCompanyType());
+			bookingRevision.setContractorContactDetails(contractor.getContactDetails());
+		}
+		// Employee details
+		if (!StringUtils.isEmpty(bookingRequest.getContractEmployeeId())) {
+			ContractorEmployee contractorEmployee = contractorEmployeeRepository
+					.findById(Long.valueOf(bookingRequest.getContractEmployeeId())).get();
+			bookingRevision.setContractEmployee(contractorEmployee);
+			bookingRevision.setContractorEmployeeName(contractorEmployee.getEmployeeName());
+			bookingRevision.setContractorContactDetails(contractorEmployee.getContactDetails());
+			bookingRevision.setKnownAs(contractorEmployee.getKnownAs());
+		}
+		// Office Details
+		if (!StringUtils.isEmpty(bookingRequest.getCommisioningOffice())) {
+			OfficeDm commisioningOffice = officeRepository
+					.findById(Long.valueOf(bookingRequest.getCommisioningOffice())).get();
+			bookingRevision.setCommisioningOffice(commisioningOffice);
+		}
+		// Work Location
+		if (!StringUtils.isEmpty(bookingRequest.getContractWorkLocation())) {
+			OfficeDm workLocation = officeRepository.findById(Long.valueOf(bookingRequest.getContractWorkLocation()))
+					.get();
+			bookingRevision.setContractWorkLocation(workLocation);
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getSupplierTypeId())) {
+			SupplierTypeDm supplierType = supplierTypeRepository
+					.findById(Long.valueOf(bookingRequest.getSupplierTypeId())).get();
+			bookingRevision.setSupplierType(supplierType);
+		}
+		// Reason for recruting details
+		if (!StringUtils.isEmpty(bookingRequest.getReasonForRecruiting())) {
+			ReasonsForRecruiting reasonsForRecruiting = recruitingRepository
+					.findById(Long.valueOf(bookingRequest.getReasonForRecruiting())).get();
+			bookingRevision.setReasonForRecruiting(reasonsForRecruiting);
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getContractorTotalAvailableDays())) {
+			bookingRevision
+					.setContractorTotalAvailableDays(Long.valueOf(bookingRequest.getContractorTotalAvailableDays()));
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getContractorTotalWorkingDays())) {
+			bookingRevision.setContractorTotalWorkingDays(Long.valueOf(bookingRequest.getContractorTotalWorkingDays()));
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getRate())) {
+			bookingRevision.setRate(new BigDecimal(bookingRequest.getRate()));
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getContractAmountBeforetax())) {
+			bookingRevision.setContractAmountBeforetax(new BigDecimal(bookingRequest.getContractAmountBeforetax()));
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getContractAmountAftertax())) {
+			bookingRevision.setContractAmountAftertax(new BigDecimal(bookingRequest.getContractAmountAftertax()));
+		}
+		if (!StringUtils.isEmpty(bookingRequest.getEmployerTaxPercent())) {
+			bookingRevision.setEmployerTaxPercent(new BigDecimal(bookingRequest.getEmployerTaxPercent()));
+		} else {
+			bookingRevision.setEmployerTaxPercent(new BigDecimal(12));
+		}
+		// Currency Details
+		if (!StringUtils.isEmpty(bookingRequest.getCurrencyId())) {
+			CurrencyDm currency = currencyRepository.findById(Long.valueOf(bookingRequest.getCurrencyId())).get();
+			bookingRevision.setCurrencyDm(currency);
+		}
+		// Contractor Work Location Type
+		if (!StringUtils.isEmpty(bookingRequest.getSupplierWorkLocationType())) {
+			SupplierWorkLocationTypeDm supplierWorkLocationType = supplierWorkLocationTypeRepository
+					.findById(Long.valueOf(bookingRequest.getSupplierWorkLocationType())).get();
+			bookingRevision.setSupplierWorkLocationType(supplierWorkLocationType);
+		}
+		// Work Days
+		populateMonthlyWorkDays(bookingRequest, bookingRevision);
+		// Work Tasks
+		populateWorkTasks(bookingRequest, bookingRevision);
 		bookingDomain.addBookingRevision(bookingRevision);
-		bookingDomain.setStatusId(1001L);
-		bookingRevision.setContractorEmployeeRoleId(roleId);
-		bookingRevision.setInsideIr35(Boolean.valueOf(cestResponse.isInsideIr35()).toString());
-
-		Booking savedBooking = bookingRepository.save(bookingDomain);
-
-		BookingDto bookingDto = bookingMapper
-				.toBookingDtoFromBookingRevision(savedBooking.getBookingRevisions().get(0));
-		bookingDto.setBookingId(savedBooking.getBookingId().toString());
-		Team team = new Team();
-		team.setTeamId(savedBooking.getTeamId());
-		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalStatusId(savedBooking.getStatusId());
-		bookingDto.setApprovalStatusDm(
-				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
-		bookingDto.setChangedBy(savedBooking.getChangedBy());
-		bookingDto.setChangedDate(savedBooking.getChangedDate().toString());
-		bookingDto.setBookingDescription(savedBooking.getBookingDescription());
-		RoleDm roleDm = roleRepository.findById(roleId).get();
-		Discipline discipline = new Discipline();
-		discipline.setDisciplineId(roleDm.getDiscipline().getDisciplineId());
-		bookingDto.setDiscipline(disciplineMapper.toDisciplineDtoFromDisciplineDomain(discipline));
-		return bookingDto;
+		return bookingDomain;
 	}
 
 	@Transactional
 	@Override
 	public BookingDto updateBookingDetails(Long bookingId, BookingRequest bookingRequest) {
-
-		String loggedInUser =	 loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
-
-		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(bookingRequest);
-		bookingRevision.setChangedBy(loggedInUser);
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
-
-		if (bookingRequest.getJobNumber() != null) {
-			try {
-				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
-				String deptName = jobDetails.getData().getText3();
-				bookingRevision.setJobDeptName(deptName);
-				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
-
-				String remark3 = approverTeamDetails.getData().getRemark3();
-				Team teamOne = teamRepository.findByTeamName(remark3);
-				bookingRevision.setTeamId(teamOne.getTeamId());
-			} catch (Exception e) {
-				bookingRevision.setTeamId(null);
-			}
-		}
-		Booking book = new Booking();
-		book.setBookingId(bookingId);
-		bookingRevision.setBooking(book);
-		bookingRevision.setRevisionNumber(++revisionNumber);
-		bookingRevision.setContractorId(Long.parseLong(bookingRequest.getContractorId()));
-		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
-		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
-		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
-		List<WorkTasksDto> workTasks = null;
-		if (bookingRequest.getWorkTasks() != null) {
-			List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest,
-					savedBookingRevision);
-			List<BookingWorkTask> savedBookingWorkTasks = bookingWorkTaskRepository.saveAll(bookingWorkTasks);
-			workTasks = toWorkTasksDtoFromWorkTaskDomain(savedBookingWorkTasks);
-		}
-		List<WorkDaysDto> monthlyWorkdays = null;
-		if (bookingRequest.getWorkDays() != null) {
-			List<ContractorMonthlyWorkDay> monthlyWorkDays = toMonthlyWorkDaysDomainFromWorkDaysDto(bookingRequest,
-					savedBookingRevision);
-
-			List<ContractorMonthlyWorkDay> savedMonthlyWorkDays = contractorMonthlyWorkDayRepository
-					.saveAll(monthlyWorkDays);
-
-			monthlyWorkdays = toWorkDaysDtoFromMonthlyWorkDaysDomain(savedMonthlyWorkDays);
-
-		}
-		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(savedBookingRevision);
-
-		bookingDto.setWorkTasks(workTasks);
-		bookingDto.setWorkDays(monthlyWorkdays);
-		bookingDto.setBookingId(bookingDetails.getBookingId().toString());
-		Team team = new Team();
-		team.setTeamId(bookingDetails.getTeamId());
-		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalStatusId(bookingDetails.getStatusId());
-		bookingDto.setApprovalStatusDm(
-				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
-		bookingDto.setChangedBy(bookingDetails.getChangedBy());
-		bookingDto.setChangedDate(bookingDetails.getChangedDate().toString());
-		bookingDto.setBookingDescription(bookingDetails.getBookingDescription());
-		return bookingDto;
+		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber);
+		newBookingDomain.setBookingId(bookingId);
+		bookingRepository.save(newBookingDomain);
+		return retrieveBookingDetails(bookingId);
 	}
 
 	@Transactional
 	@Override
-	public BookingDto processBookingDetails(Long bookingId, BookingRequest bookingRequest) {
+	public BookingDto submitBookingDetails(Long bookingId, BookingRequest bookingRequest) {
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
-		BookingRevision bookingRevision = bookingMapper.toBookingRevisionFromBookingDto(bookingRequest);
-
-		Booking book = new Booking();
-		book.setBookingId(bookingId);
-		bookingRevision.setBooking(book);
-		bookingRevision.setContractorId(Long.parseLong(bookingRequest.getContractorId()));
-		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
-		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
-		bookingRevision.setChangedBy(bookingDetails.getChangedBy());
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
-		bookingRevision.setRevisionNumber(++revisionNumber);
-
-		bookingRepository.updateStatusOfBooking(bookingId, 1002L);
-
-		if (bookingRequest.getJobNumber() != null) {
-			JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
-			String deptName = jobDetails.getData().getText3();
-			bookingRevision.setJobDeptName(deptName);
-			ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
-
-			String remark3 = approverTeamDetails.getData().getRemark3();
-			Team teamOne = teamRepository.findByTeamName(remark3);
-			bookingRevision.setTeamId(teamOne.getTeamId());
-		}
-
-		BookingRevision savedBookingRevision = bookingRevisionRepository.save(bookingRevision);
-		if (bookingRequest.getWorkTasks() != null) {
-			List<BookingWorkTask> bookingWorkTasks = toWorkTaskDomainFromWorkTasksDto(bookingRequest,
-					savedBookingRevision);
-
-			bookingWorkTaskRepository.saveAll(bookingWorkTasks);
-		}
-		if (bookingRequest.getWorkDays() != null) {
-			List<ContractorMonthlyWorkDay> monthlyWorkDays = toMonthlyWorkDaysDomainFromWorkDaysDto(bookingRequest,
-					savedBookingRevision);
-
-			contractorMonthlyWorkDayRepository.saveAll(monthlyWorkDays);
-		}
-
+		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber);
+		newBookingDomain.setBookingId(bookingId);
+		ApprovalStatusDm status = new ApprovalStatusDm();
+		status.setApprovalStatusId(1002L);
+		newBookingDomain.setApprovalStatus(status);
+		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
+
 	}
 
-	private List<ContractorMonthlyWorkDay> toMonthlyWorkDaysDomainFromWorkDaysDto(BookingRequest bookingRequest,
-			BookingRevision savedBookingRevision) {
-		List<ContractorMonthlyWorkDay> monthlyWorkDays = bookingRequest.getWorkDays().stream().map(work -> {
-			ContractorMonthlyWorkDay monthlyWorkday = new ContractorMonthlyWorkDay();
-			monthlyWorkday.setMonthName(work.getMonthName());
-			monthlyWorkday.setMonthWorkingDays(Long.parseLong(work.getMonthWorkingDays()));
-			monthlyWorkday.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
-			monthlyWorkday.setChangedBy(savedBookingRevision.getChangedBy());
-			return monthlyWorkday;
-		}).collect(toList());
-		return monthlyWorkDays;
+	private void populateMonthlyWorkDays(BookingRequest bookingRequest, BookingRevision savedBookingRevision) {
+		if (bookingRequest.getWorkDays() != null) {
+			List<ContractorMonthlyWorkDay> monthlyWorkDays = bookingRequest.getWorkDays().stream().map(work -> {
+				ContractorMonthlyWorkDay monthlyWorkday = new ContractorMonthlyWorkDay();
+				monthlyWorkday.setMonthName(work.getMonthName());
+				monthlyWorkday.setMonthWorkingDays(Long.parseLong(work.getMonthWorkingDays()));
+				// monthlyWorkday.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
+				monthlyWorkday.setChangedBy(savedBookingRevision.getChangedBy());
+				return monthlyWorkday;
+			}).collect(toList());
+			savedBookingRevision.setMonthlyWorkDays(monthlyWorkDays);
+		}
+
 	}
 
-	private List<BookingWorkTask> toWorkTaskDomainFromWorkTasksDto(BookingRequest bookingRequest,
-			BookingRevision savedBookingRevision) {
-		List<BookingWorkTask> bookingWorkTasks = bookingRequest.getWorkTasks().stream().map(work -> {
-			BookingWorkTask bookingWorkTask = new BookingWorkTask();
-			bookingWorkTask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
-			bookingWorkTask.setTaskName(work.getTaskName());
-			bookingWorkTask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
-			bookingWorkTask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));
-			bookingWorkTask.setTaskTotalAmount(Double.parseDouble(work.getTaskTotalAmount()));
-			bookingWorkTask.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
-			bookingWorkTask.setChangedBy(savedBookingRevision.getChangedBy());
-			return bookingWorkTask;
-		}).collect(toList());
-		return bookingWorkTasks;
+	private void populateWorkTasks(BookingRequest bookingRequest, BookingRevision savedBookingRevision) {
+		if (bookingRequest.getWorkTasks() != null) {
+			List<BookingWorkTask> bookingWorkTasks = bookingRequest.getWorkTasks().stream().map(work -> {
+				BookingWorkTask bookingWorkTask = new BookingWorkTask();
+				bookingWorkTask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
+				bookingWorkTask.setTaskName(work.getTaskName());
+				bookingWorkTask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
+				bookingWorkTask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));
+				bookingWorkTask.setTaskTotalAmount(Double.parseDouble(work.getTaskTotalAmount()));
+				// bookingWorkTask.setBookingRevisionId(savedBookingRevision.getBookingRevisionId());
+				bookingWorkTask.setChangedBy(savedBookingRevision.getChangedBy());
+				return bookingWorkTask;
+			}).collect(toList());
+			savedBookingRevision.setBookingWorkTasks(bookingWorkTasks);
+		}
 	}
 
 	@Override
@@ -443,64 +428,12 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDto retrieveBookingDetails(Long bookingId) {
 		Booking booking = bookingRepository.findById(bookingId).get();
 
-		BookingRevision bookingRevision = bookingRevisionRepository
-				.fetchBookingRevisionByBookingId(booking.getBookingId());
-
-		Team team = teamRepository.findById(booking.getTeamId()).get();
-
-		ApprovalStatusDm approvalStatusDm = approvalStatusDmRepository.findById(booking.getStatusId()).get();
-
-		List<BookingWorkTask> bookingWorkTasks = bookingWorkTaskRepository
-				.findByBookingRevisionId(bookingRevision.getBookingRevisionId());
-
-		List<ContractorMonthlyWorkDay> contractorMonthlyWorkDays = contractorMonthlyWorkDayRepository
-				.findByBookingRevisionId(bookingRevision.getBookingRevisionId());
-
-		RoleDm roleDm = roleRepository.findById(bookingRevision.getContractorEmployeeRoleId()).get();
-
-		Discipline discipline = disciplineRepository.findById(roleDm.getDiscipline().getDisciplineId()).get();
-
-		Contractor contractor = contractorRepository.findById(bookingRevision.getContractorId()).get();
-
-		SupplierWorkLocationTypeDm supplierWorkLocationTypeDm = supplierWorkLocationTypeRepository
-				.findById(bookingRevision.getSupplierWorkLocationType()).get();
-		SupplierTypeDm supplierTypeDm = supplierTypeRepository.findById(bookingRevision.getSupplierTypeId()).get();
-
-		ReasonsForRecruiting reasonsForRecruiting = recruitingRepository
-				.findById(bookingRevision.getReasonForRecruiting()).get();
-
-		OfficeDm officeDm = officeRepository.findById(bookingRevision.getCommisioningOffice()).get();
-
-		CurrencyDm currencyDm = currencyRepository.findById(bookingRevision.getCurrencyId()).get();
-
-		ContractorEmployee contractorEmployee = contractorEmployeeRepository
-				.findById(bookingRevision.getContractEmployeeId()).get();
-
-		BookingDto bookingDto = bookingMapper.toBookingDtoFromBookingRevision(bookingRevision);
-		bookingDto.setBookingId(booking.getBookingId().toString());
-		bookingDto.setBookingDescription(booking.getBookingDescription());
-		bookingDto.setChangedBy(booking.getChangedBy());
-		bookingDto.setChangedDate(booking.getChangedDate().toString());
-
-		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(team));
-		bookingDto.setApprovalStatusDm(
-				approvalStatusDmMapper.toApprovalStatusDmDtoFromApprovalStatusDmDomain(approvalStatusDm));
-		bookingDto.setWorkDays(toWorkDaysDtoFromMonthlyWorkDaysDomain(contractorMonthlyWorkDays));
-		bookingDto.setWorkTasks(toWorkTasksDtoFromWorkTaskDomain(bookingWorkTasks));
-		bookingDto.setContractorRole(roleMapper.toRoleDTO(roleDm));
-		bookingDto.setDiscipline(disciplineMapper.toDisciplineDtoFromDisciplineDomain(discipline));
-		bookingDto.setContractor(contractorMapper.toContractorDtoFromContractorDomain(contractor));
-		bookingDto.setSupplierWorkLocation(supplierWorkLocationTypeMapper
-				.toSupplierWorkLocationTypeDtoFromSupplierWorkLocationTypeDomain(supplierWorkLocationTypeDm));
-		bookingDto.setSupplierType(supplierTypeMapper.toSupplierTypeDtoFromSupplierTypeDomain(supplierTypeDm));
-		bookingDto.setRecruitingReason(
-				recruitingMapper.toRecruitingDtoFromReasonsForRecruitingDomain(reasonsForRecruiting));
-		bookingDto.setOffice(officeMapper.toOfficeDtoFromOfficeDomain(officeDm));
-		bookingDto.setCurrency(currencyMapper.toCurrencyDtoFromCurrencyDm(currencyDm));
-		bookingDto.setContractorEmployee(
-				contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee));
-		bookingDto.setContractWorkLocation(officeDm.getOfficeId().toString());
+		BookingRevision bookingRevision = booking.getBookingRevisions().stream()
+				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get();
+		BookingDto bookingDto = bookingMapper.convertToDto(bookingRevision);
+		bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
 		return bookingDto;
+
 	}
 
 	private List<WorkTasksDto> toWorkTasksDtoFromWorkTaskDomain(List<BookingWorkTask> bookingWorkTasks) {
@@ -513,7 +446,7 @@ public class BookingServiceImpl implements BookingService {
 			workTasksDto.setTaskTotalAmount(work.getTaskTotalAmount().toString());
 			workTasksDto.setChangedBy(work.getChangedBy());
 			workTasksDto.setChangedDate(work.getChangedDate().toString());
-			workTasksDto.setBookingRevisionId(work.getBookingRevisionId().toString());
+			// workTasksDto.setBookingRevisionId(work.getBookingRevisionId().toString());
 			return workTasksDto;
 		}).collect(toList());
 		return workTasks;
@@ -527,7 +460,7 @@ public class BookingServiceImpl implements BookingService {
 			workDaysDto.setMonthWorkingDays(work.getMonthWorkingDays().toString());
 			workDaysDto.setChangedBy(work.getChangedBy());
 			workDaysDto.setChangedDate(work.getChangedDatetime().toString());
-			workDaysDto.setBookingRevisionId(work.getBookingRevisionId().toString());
+			// workDaysDto.setBookingRevisionId(work.getBookingRevisionId().toString());
 			return workDaysDto;
 		}).collect(toList());
 		return monthlyWorkDays;

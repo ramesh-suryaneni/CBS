@@ -13,7 +13,7 @@ import com.imagination.cbs.domain.Booking;
  */
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-	@Modifying
-	@Query("update Booking b set b.statusId=:statusId where b.bookingId=:bookingId")
-	void updateStatusOfBooking(@Param("bookingId") Long bookingId, @Param("statusId") Long statusId);
+//	@Modifying
+//	@Query("update Booking b set b.statusId=:statusId where b.bookingId=:bookingId")
+//	void updateStatusOfBooking(@Param("bookingId") Long bookingId, @Param("statusId") Long statusId);
 }

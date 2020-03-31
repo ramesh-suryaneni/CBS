@@ -12,5 +12,5 @@ import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
  *
  */
 public interface ContractorMonthlyWorkDayRepository extends JpaRepository<ContractorMonthlyWorkDay, Long> {
-	List<ContractorMonthlyWorkDay> findByBookingRevisionId(@Param("bookingRevisionId") Long bookingRevisionId);
+	//List<ContractorMonthlyWorkDay> findByBookingRevisionId(@Param("bookingRevisionId") Long bookingRevisionId);
 }

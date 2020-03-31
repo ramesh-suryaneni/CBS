@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +23,7 @@ public class BookingWorkTask implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "booking_work_id")
-	private Long bookingWorkId;
+	private Long taskId;
 
 	@Column(name = "task_name")
 	private String taskName;
@@ -48,23 +50,32 @@ public class BookingWorkTask implements Serializable {
 	@Column(name = "changed_by")
 	private String changedBy;
 
-	public Long getBookingRevisionId() {
-		return bookingRevisionId;
+	@ManyToOne
+	@JoinColumn(name = "booking_revision_id")
+	private BookingRevision bookingRevision;
+
+	public Long getTaskId() {
+		return taskId;
 	}
 
-	public void setBookingRevisionId(Long bookingRevisionId) {
-		this.bookingRevisionId = bookingRevisionId;
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
 	}
 
-	@Column(name = "booking_revision_id")
-	private Long bookingRevisionId;
+	public BookingRevision getBookingRevision() {
+		return bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
+	}
 
 	public Long getBookingWorkId() {
-		return bookingWorkId;
+		return taskId;
 	}
 
 	public void setBookingWorkId(Long bookingWorkId) {
-		this.bookingWorkId = bookingWorkId;
+		this.taskId = bookingWorkId;
 	}
 
 	public String getTaskName() {

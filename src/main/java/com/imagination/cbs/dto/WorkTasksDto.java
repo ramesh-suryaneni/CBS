@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class WorkTasksDto {
+	private String taskId;;
 	private String taskName;
 
 	private String taskDeliveryDate;

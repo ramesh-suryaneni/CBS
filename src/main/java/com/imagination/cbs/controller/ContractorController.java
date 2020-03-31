@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.service.ContractorService;
 
 /**
@@ -27,7 +27,7 @@ public class ContractorController {
 	private ContractorService contractorService;
 
 	@GetMapping("/search")
-	public Page<ContractorEmployeeDto> getContractorEmployeeDetails(
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetails(
 			@RequestParam Long role,
 			@RequestParam(defaultValue = "") String name,
 			@RequestParam(defaultValue = "0") Integer pageNo, 

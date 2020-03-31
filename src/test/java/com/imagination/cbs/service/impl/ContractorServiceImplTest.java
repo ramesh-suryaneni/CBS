@@ -23,7 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
-import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.mapper.ContractorMapper;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 
@@ -43,7 +43,7 @@ public class ContractorServiceImplTest {
 	public void geContractorEmployeeDetailsByRoleIdIfRoleIdExistsInDB() {
 	
 		when(contractorEmployeeRepository.findByRoleId(Mockito.anyLong(), Mockito.any())).thenReturn(createPagedData());
-		Page<ContractorEmployeeDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleId(1000L,0, 5,"roleId","ASC");
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleId(1000L,0, 5,"roleId","ASC");
 
 		verify(contractorEmployeeRepository, times(1)).findByRoleId(1000L, PageRequest.of(0, 5, Sort.by(Direction.ASC,"roleId")));
 		String role = contractorEmployeeDto.getContent().get(0).getRole();
@@ -56,7 +56,7 @@ public class ContractorServiceImplTest {
 		Page<ContractorEmployeeSearch> contractorEmployeeSearch = new PageImpl<>(new ArrayList<ContractorEmployeeSearch>(),PageRequest.of(0,5),0); 
 		when(contractorEmployeeRepository.findByRoleId(Mockito.anyLong(), Mockito.any())).thenReturn(contractorEmployeeSearch);
 
-		Page<ContractorEmployeeDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleId(1001L,0, 5,"roleId","DESC");
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleId(1001L,0, 5,"roleId","DESC");
 
 		verify(contractorEmployeeRepository, times(1)).findByRoleId(1001L, PageRequest.of(0, 5, Sort.by(Direction.DESC,"roleId")));
 		assertTrue(contractorEmployeeDto.getContent().isEmpty());
@@ -68,7 +68,7 @@ public class ContractorServiceImplTest {
 		when(contractorEmployeeRepository.findByRoleIdAndContractorEmployeeNameContains(Mockito.anyLong(), Mockito.anyString(), Mockito.any()))
 		.thenReturn(createPagedDataForName());
 
-		Page<ContractorEmployeeDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(1000L,"Alex",0, 5,"dayRate","ASC");
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(1000L,"Alex",0, 5,"dayRate","ASC");
 
 		verify(contractorEmployeeRepository, times(1)).findByRoleIdAndContractorEmployeeNameContains(1000L, "Alex", PageRequest.of(0, 5, Sort.by(Direction.ASC,"dayRate")));
 		String contractorEmployeeName = contractorEmployeeDto.getContent().get(0).getContractorEmployeeName();
@@ -82,7 +82,7 @@ public class ContractorServiceImplTest {
 		when(contractorEmployeeRepository.findByRoleIdAndContractorEmployeeNameContains(Mockito.anyLong(), Mockito.anyString(), Mockito.any()))
 		.thenReturn(contractorEmployeeSearch);
 
-		Page<ContractorEmployeeDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(1000L,"Test",0, 5,"dayRate","ASC");
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(1000L,"Test",0, 5,"dayRate","ASC");
 		verify(contractorEmployeeRepository, times(1)).findByRoleIdAndContractorEmployeeNameContains(1000L,"Test", PageRequest.of(0, 5, Sort.by(Direction.ASC,"dayRate")));
 		assertTrue(contractorEmployeeDto.getContent().isEmpty());
 	}

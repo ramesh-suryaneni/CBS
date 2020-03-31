@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,9 +28,6 @@ public class ContractorMonthlyWorkDay implements Serializable {
 	@Column(name = "work_days_id")
 	private Long workDaysId;
 
-	@Column(name = "booking_revision_id")
-	private Long bookingRevisionId;
-
 	@Column(name = "changed_by")
 	private String changedBy;
 
@@ -42,6 +41,18 @@ public class ContractorMonthlyWorkDay implements Serializable {
 	@Column(name = "month_working_days")
 	private Long monthWorkingDays;
 
+	@ManyToOne
+	@JoinColumn(name = "booking_revision_id")
+	private BookingRevision bookingRevision;
+
+	public BookingRevision getBookingRevision() {
+		return bookingRevision;
+	}
+
+	public void setBookingRevision(BookingRevision bookingRevision) {
+		this.bookingRevision = bookingRevision;
+	}
+
 	public ContractorMonthlyWorkDay() {
 	}
 
@@ -51,14 +62,6 @@ public class ContractorMonthlyWorkDay implements Serializable {
 
 	public void setWorkDaysId(Long workDaysId) {
 		this.workDaysId = workDaysId;
-	}
-
-	public Long getBookingRevisionId() {
-		return this.bookingRevisionId;
-	}
-
-	public void setBookingRevisionId(Long bookingRevisionId) {
-		this.bookingRevisionId = bookingRevisionId;
 	}
 
 	public String getChangedBy() {

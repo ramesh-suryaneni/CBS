@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
-import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.service.ContractorService;
 
@@ -20,7 +20,7 @@ public class ContractorServiceImpl implements ContractorService {
 	private ContractorEmployeeSearchRepository contractorEmployeeSearchRepository;
 
 	@Override
-	public Page<ContractorEmployeeDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize, String sortingField,
+	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize, String sortingField,
 			String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId, pageable);
@@ -29,7 +29,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName,
+	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName,
 			int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
@@ -49,9 +49,9 @@ public class ContractorServiceImpl implements ContractorService {
 		return PageRequest.of(pageNo, pageSize, sort);
 	}
 		
-	private Page<ContractorEmployeeDto> toContractorEmployeeDto(Page<ContractorEmployeeSearch> contractorEmployeePage){
+	private Page<ContractorEmployeeSearchDto> toContractorEmployeeDto(Page<ContractorEmployeeSearch> contractorEmployeePage){
 		return contractorEmployeePage.map((contractorEmployeeSearched)->{
-			ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
+			ContractorEmployeeSearchDto contractorEmployeeDto = new ContractorEmployeeSearchDto();
 			contractorEmployeeDto.setContractorEmployeeId(contractorEmployeeSearched.getContractorEmployeeId());
 			contractorEmployeeDto.setContractorEmployeeName(contractorEmployeeSearched.getContractorEmployeeName());
 			contractorEmployeeDto.setDayRate(contractorEmployeeSearched.getDayRate());

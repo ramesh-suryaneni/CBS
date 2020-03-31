@@ -1,7 +1,5 @@
 package com.imagination.cbs.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,29 +37,27 @@ import com.imagination.cbs.service.ContractorService;
 public class ContractorControllerTest {
 
 	@Autowired
-    private WebApplicationContext context;
-	
+	private WebApplicationContext context;
+
 	private MockMvc mockMvc;
 
 	@MockBean
 	private ContractorService contractorServiceImpl;
 
 	@Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders
-          .webAppContextSetup(context)
-          .apply(SecurityMockMvcConfigurers.springSecurity())
-          .build();
-    }
-	
+	public void setup() {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity())
+				.build();
+	}
+
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleId() throws Exception {
-		
-		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleId(Mockito.anyLong(), Mockito.anyInt()
-				, Mockito.anyInt(),Mockito.anyString(),Mockito.anyString())).thenReturn(createPagedData());
 
-		mockMvc.perform(get("/contractors/search").param("role", "1000").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleId(Mockito.anyLong(), Mockito.anyInt(),
+				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(createPagedData());
+
+		mockMvc.perform(get("/contractors/search").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
 				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
 
 		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");
@@ -69,52 +65,55 @@ public class ContractorControllerTest {
 
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleIdAndName() throws Exception {
-		
 
-		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt()
-		, Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(createPagedData());
-				
-		mockMvc.perform(get("/contractors/search").param("name", "Al")
-				.param("role", "1000").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
+		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(),
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
+						.thenReturn(createPagedData());
 
-		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId", "ASC");
+		mockMvc.perform(get("/contractors/search").param("name", "Al").param("role", "1000")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
+
+		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId",
+				"ASC");
 	}
 
 	@Test
-	public void shouldReturnEmptyPageResponseOfContractorEmployeeDtoIfContractorNameIsNotPresentInDB() throws Exception {
+	public void shouldReturnEmptyPageResponseOfContractorEmployeeDtoIfContractorNameIsNotPresentInDB()
+			throws Exception {
 
-		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt()
-				, Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
-		.thenReturn(new PageImpl<>(new ArrayList<ContractorEmployeeDto>(), PageRequest.of(0, 5), 0));
-		
-		mockMvc.perform(get("/contractors/search").param("name", "Test")
-				.param("role", "1000").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(),
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(
+						new PageImpl<>(new ArrayList<ContractorEmployeeSearchDto>(), PageRequest.of(0, 5), 0));
+
+		mockMvc.perform(get("/contractors/search").param("name", "Test").param("role", "1000")
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content").isEmpty());
 
-		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10, "roleId", "ASC");	
+		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,
+				"roleId", "ASC");
 	}
 
-	private Page<ContractorEmployeeDto>createPagedData() {
-		List<ContractorEmployeeDto> contractorEmployeeDtoList = new ArrayList<>();
-		
-		ContractorEmployeeDto ce1 = new ContractorEmployeeDto();
+	private Page<ContractorEmployeeSearchDto> createPagedData() {
+		List<ContractorEmployeeSearchDto> contractorEmployeeSearchDtoList = new ArrayList<>();
+
+		ContractorEmployeeSearchDto ce1 = new ContractorEmployeeSearchDto();
 		ce1.setContractorEmployeeName("Alex");
 		ce1.setDayRate(new BigDecimal(100));
 		ce1.setRole("2D");
 		ce1.setCompany("Imagination");
 		ce1.setNoOfBookingsInPast(3);
-		contractorEmployeeDtoList.add(ce1);
+		contractorEmployeeSearchDtoList.add(ce1);
 
-		ContractorEmployeeDto ce2 = new ContractorEmployeeDto();
+		ContractorEmployeeSearchDto ce2 = new ContractorEmployeeSearchDto();
 		ce2.setContractorEmployeeName("Albert");
 		ce2.setDayRate(new BigDecimal(200));
 		ce2.setRole("2D Senior");
 		ce2.setCompany("Imagination");
 		ce2.setNoOfBookingsInPast(2);
-		contractorEmployeeDtoList.add(ce2);
-		
-		return new PageImpl<>(contractorEmployeeDtoList, PageRequest.of(0, 5), 2);
+		contractorEmployeeSearchDtoList.add(ce2);
+
+		return new PageImpl<>(contractorEmployeeSearchDtoList, PageRequest.of(0, 5), 2);
 	}
 
 }

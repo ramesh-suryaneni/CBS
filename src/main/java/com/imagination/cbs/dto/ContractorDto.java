@@ -5,14 +5,18 @@ import lombok.Data;
 @Data
 public class ContractorDto {
 
-	private long contractorId;
-	
+	private String contractorId;
+
+	private String changedBy;
+
+	private String changedDate;
+
+	private String companyType;
+
+	private String contactDetails;
+
 	private String contractorName;
 
-	@Override
-	public String toString() {
-		return "ContractorDto [contractorId=" + contractorId + ", contractorName=" + contractorName + "]";
-	}
-	
-	
+	private String status;
+
 }

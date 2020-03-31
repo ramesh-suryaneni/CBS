@@ -3,7 +3,9 @@ package com.imagination.cbs.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,7 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -64,11 +67,13 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contractor_employee_name")
 	private String contractorEmployeeName;
 
-	@Column(name = "contractor_employee_role_id")
-	private Long contractorEmployeeRoleId;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "role_id")
+	private RoleDm role;
 
-	@Column(name = "contractor_id")
-	private Long contractorId;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contractor_id")
+	private Contractor contractor;
 
 	@Column(name = "contractor_name")
 	private String contractorName;
@@ -85,8 +90,9 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contractor_type")
 	private String contractorType;
 
-	@Column(name = "currency_id")
-	private Long currencyId;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "currency_id")
+	private CurrencyDm currencyDm;
 
 	@Column(name = "employee_contact_details")
 	private String employeeContactDetails;
@@ -111,118 +117,80 @@ public class BookingRevision implements Serializable {
 	@Column(name = "job_dept_name")
 	private String jobDeptName;
 
-	@Column(name = "supplier_type_id")
-	private Long supplierTypeId;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "supplier_type_id")
+	private SupplierTypeDm supplierType;
 
 	@Column(name = "appprover_comments")
 	private String approverComments;
 
-	@Column(name = "commissioning_office")
-	private Long commisioningOffice;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "commissioning_office")
+	private OfficeDm commisioningOffice;
 
-	@Column(name = "contract_work_location")
-	private Long contractWorkLocation;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contract_work_location")
+	private OfficeDm contractWorkLocation;
 
-	@Column(name = "reason_for_recruiting")
-	private Long reasonForRecruiting;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "reason_for_recruiting")
+	private ReasonsForRecruiting reasonForRecruiting;
 
-	@Column(name = "contract_employee_id")
-	private Long contractEmployeeId;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contract_employee_id")
+	private ContractorEmployee contractEmployee;
 
-	@Column(name = "team_id")
-	private Long teamId;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "team_id")
+	private Team team;
 
 	@Column(name = "job_name")
 	private String jobname;
 
-	@Column(name = "supplier_work_location_type")
-	private Long supplierWorkLocationType;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "supplier_work_location_type")
+	private SupplierWorkLocationTypeDm supplierWorkLocationType;
 
-	@ManyToOne(fetch= FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
-	
-	public Long getTeamId() {
-		return teamId;
+
+	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
+	private List<ContractorMonthlyWorkDay> monthlyWorkDays;
+
+	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
+	private List<BookingWorkTask> bookingWorkTasks;
+
+	public List<ContractorMonthlyWorkDay> getMonthlyWorkDays() {
+		return monthlyWorkDays;
 	}
 
-	public void setTeamId(Long teamId) {
-		this.teamId = teamId;
+	public void setMonthlyWorkDays(List<ContractorMonthlyWorkDay> monthlyWorkDays) {
+		this.monthlyWorkDays = monthlyWorkDays;
 	}
 
-	public String getJobname() {
-		return jobname;
+	public List<BookingWorkTask> getBookingWorkTasks() {
+		return bookingWorkTasks;
 	}
 
-	public void setJobname(String jobname) {
-		this.jobname = jobname;
+	public void setBookingWorkTasks(List<BookingWorkTask> bookingWorkTasks) {
+		this.bookingWorkTasks = bookingWorkTasks;
 	}
 
-	public Long getSupplierWorkLocationType() {
-		return supplierWorkLocationType;
+	public CurrencyDm getCurrencyDm() {
+		return currencyDm;
 	}
 
-	public void setSupplierWorkLocationType(Long supplierWorkLocationType) {
-		this.supplierWorkLocationType = supplierWorkLocationType;
+	public void setCurrencyDm(CurrencyDm currencyDm) {
+		this.currencyDm = currencyDm;
 	}
 
-	public Long getSupplierTypeId() {
-		return supplierTypeId;
+	public RoleDm getRole() {
+		return role;
 	}
 
-	public void setSupplierTypeId(Long supplierTypeId) {
-		this.supplierTypeId = supplierTypeId;
-	}
-
-	public Long getCommisioningOffice() {
-		return commisioningOffice;
-	}
-
-	public void setCommisioningOffice(Long commisioningOffice) {
-		this.commisioningOffice = commisioningOffice;
-	}
-
-	public Long getContractWorkLocation() {
-		return contractWorkLocation;
-	}
-
-	public void setContractWorkLocation(Long contractWorkLocation) {
-		this.contractWorkLocation = contractWorkLocation;
-	}
-
-	public Long getReasonForRecruiting() {
-		return reasonForRecruiting;
-	}
-
-	public void setReasonForRecruiting(Long reasonForRecruiting) {
-		this.reasonForRecruiting = reasonForRecruiting;
-	}
-
-	public Long getContractEmployeeId() {
-		return contractEmployeeId;
-	}
-
-	public void setContractEmployeeId(Long contractEmployeeId) {
-		this.contractEmployeeId = contractEmployeeId;
-	}
-
-	public String getJobDeptName() {
-		return jobDeptName;
-	}
-
-	public void setJobDeptName(String jobDeptName) {
-		this.jobDeptName = jobDeptName;
-	}
-
-	public String getApproverComments() {
-		return approverComments;
-	}
-
-	public void setApproverComments(String approverComments) {
-		this.approverComments = approverComments;
-	}
-
-	public BookingRevision() {
+	public void setRole(RoleDm role) {
+		this.role = role;
 	}
 
 	public Long getBookingRevisionId() {
@@ -321,20 +289,12 @@ public class BookingRevision implements Serializable {
 		this.contractorEmployeeName = contractorEmployeeName;
 	}
 
-	public Long getContractorEmployeeRoleId() {
-		return contractorEmployeeRoleId;
+	public Contractor getContractor() {
+		return contractor;
 	}
 
-	public void setContractorEmployeeRoleId(Long contractorEmployeeRoleId) {
-		this.contractorEmployeeRoleId = contractorEmployeeRoleId;
-	}
-
-	public Long getContractorId() {
-		return contractorId;
-	}
-
-	public void setContractorId(Long contractorId) {
-		this.contractorId = contractorId;
+	public void setContractor(Contractor contractor) {
+		this.contractor = contractor;
 	}
 
 	public String getContractorName() {
@@ -375,14 +335,6 @@ public class BookingRevision implements Serializable {
 
 	public void setContractorType(String contractorType) {
 		this.contractorType = contractorType;
-	}
-
-	public Long getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(Long currencyId) {
-		this.currencyId = currencyId;
 	}
 
 	public String getEmployeeContactDetails() {
@@ -441,6 +393,86 @@ public class BookingRevision implements Serializable {
 		this.revisionNumber = revisionNumber;
 	}
 
+	public String getJobDeptName() {
+		return jobDeptName;
+	}
+
+	public void setJobDeptName(String jobDeptName) {
+		this.jobDeptName = jobDeptName;
+	}
+
+	public SupplierTypeDm getSupplierType() {
+		return supplierType;
+	}
+
+	public void setSupplierType(SupplierTypeDm supplierType) {
+		this.supplierType = supplierType;
+	}
+
+	public String getApproverComments() {
+		return approverComments;
+	}
+
+	public void setApproverComments(String approverComments) {
+		this.approverComments = approverComments;
+	}
+
+	public OfficeDm getCommisioningOffice() {
+		return commisioningOffice;
+	}
+
+	public void setCommisioningOffice(OfficeDm commisioningOffice) {
+		this.commisioningOffice = commisioningOffice;
+	}
+
+	public OfficeDm getContractWorkLocation() {
+		return contractWorkLocation;
+	}
+
+	public void setContractWorkLocation(OfficeDm contractWorkLocation) {
+		this.contractWorkLocation = contractWorkLocation;
+	}
+
+	public ReasonsForRecruiting getReasonForRecruiting() {
+		return reasonForRecruiting;
+	}
+
+	public void setReasonForRecruiting(ReasonsForRecruiting reasonForRecruiting) {
+		this.reasonForRecruiting = reasonForRecruiting;
+	}
+
+	public ContractorEmployee getContractEmployee() {
+		return contractEmployee;
+	}
+
+	public void setContractEmployee(ContractorEmployee contractEmployee) {
+		this.contractEmployee = contractEmployee;
+	}
+
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
+	public String getJobname() {
+		return jobname;
+	}
+
+	public void setJobname(String jobname) {
+		this.jobname = jobname;
+	}
+
+	public SupplierWorkLocationTypeDm getSupplierWorkLocationType() {
+		return supplierWorkLocationType;
+	}
+
+	public void setSupplierWorkLocationType(SupplierWorkLocationTypeDm supplierWorkLocationType) {
+		this.supplierWorkLocationType = supplierWorkLocationType;
+	}
+
 	public Booking getBooking() {
 		return booking;
 	}
@@ -448,5 +480,5 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
-	
+
 }

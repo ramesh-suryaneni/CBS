@@ -14,14 +14,14 @@ import com.imagination.cbs.dto.BookingRequest;
  *
  */
 public interface BookingService {
-	
+
 	public BookingDto addBookingDetails(BookingRequest booking);
 
 	public BookingDto updateBookingDetails(Long bookingId, BookingRequest booking);
 
-    public BookingDto processBookingDetails(Long bookingId, BookingRequest booking);
-    
-    public BookingDto retrieveBookingDetails(Long bookingId);
-	
+	public BookingDto submitBookingDetails(Long bookingId, BookingRequest booking);
+
+	public BookingDto retrieveBookingDetails(Long bookingId);
+
 	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize);
 }

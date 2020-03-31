@@ -12,5 +12,5 @@ import com.imagination.cbs.domain.BookingWorkTask;
  *
  */
 public interface BookingWorkTaskRepository extends JpaRepository<BookingWorkTask, Long> {
-	List<BookingWorkTask> findByBookingRevisionId(@Param("bookingRevisionId") Long bookingRevisionId);
+	//List<BookingWorkTask> findByBookingRevisionId(@Param("bookingRevisionId") Long bookingRevisionId);
 }

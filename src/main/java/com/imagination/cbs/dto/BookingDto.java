@@ -29,10 +29,6 @@ public class BookingDto {
 
 	private String contractorEmployeeName;
 
-	private String contractorEmployeeRoleId;
-
-	private String contractorId;
-
 	private String contractorName;
 
 	private String contractorSignedDate;
@@ -43,29 +39,15 @@ public class BookingDto {
 
 	private String contractorType;
 
-	private String currencyId;
-
 	private String employeeContactDetails;
 
 	private String employerTaxPercent;
-
-	private String insideIr35;
 
 	private String rate;
 
 	private String jobDeptName;
 
-	private String supplierTypeId;
-
 	private String approverComments;
-
-	private String commisioningOffice;
-
-	private String contractWorkLocation;
-
-	private String reasonForRecruiting;
-
-	private String contractEmployeeId;
 
 	private List<WorkDaysDto> workDays;
 
@@ -73,13 +55,11 @@ public class BookingDto {
 
 	private String jobname;
 
-	private String supplierWorkLocationType;
-
 	private TeamDto team;
 
-	private ApprovalStatusDmDto approvalStatusDm;
+	private ApprovalStatusDmDto approvalStatus;
 
-	private ContractorRoleDto contractorRole;
+	private ContractorRoleDto role;
 
 	private DisciplineDto discipline;
 
@@ -87,13 +67,15 @@ public class BookingDto {
 
 	private SupplierTypeDto supplierType;
 
-	private SupplierWorkLocationTypeDto supplierWorkLocation;
+	private SupplierWorkLocationTypeDto supplierWorkLocationType;
 
-	private RecruitingDto recruitingReason;
+	private RecruitingDto reasonForRecruiting;
 
-	private OfficeDto office;
+	private OfficeDto commisioningOffice;
+
+	private OfficeDto contractWorkLocation;
 
 	private CurrencyDto currency;
 
-	private ContractorEmployeeDto contractorEmployee;
+	private ContractorEmployeeSearchDto contractEmployee;
 }

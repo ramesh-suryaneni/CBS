@@ -38,4 +38,5 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " group by booking_id) as irn INNER JOIN cbs.booking_revision br on br.booking_id=irn.booking_id and br.revision_number=irn.maxRevision"
 			+ " WHERE br.contractor_employee_role_id = cer.contractor_employee_role_id and cer.role_id = rd.role_id and br.approval_status_id = asd.approval_status_id", nativeQuery = true)
 	public List<Tuple> retrieveBookingRevisionForSubmitted(@Param("loggedInUser") String loggedInUser, Pageable pageable);
+	
 }
