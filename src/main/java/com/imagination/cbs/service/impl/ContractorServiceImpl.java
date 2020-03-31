@@ -1,7 +1,5 @@
 package com.imagination.cbs.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,53 +7,34 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import com.imagination.cbs.domain.ContractorIndex;
-import com.imagination.cbs.dto.ContractorDto;
-import com.imagination.cbs.dto.ContractorIndexDto;
-import com.imagination.cbs.mapper.ContractorMapper;
-import com.imagination.cbs.repository.ContractorIndexRepository;
-import com.imagination.cbs.repository.ContractorRepository;
+
+import com.imagination.cbs.domain.ContractorEmployeeSearch;
+import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.service.ContractorService;
 
 @Service("contractorService")
 public class ContractorServiceImpl implements ContractorService {
 
 	@Autowired
-	private ContractorRepository contractorRepository;
-	
-	@Autowired
-	private ContractorIndexRepository contractorIndexRepository;
-	
-	@Autowired
-	private ContractorMapper contractorMapper;
+	private ContractorEmployeeSearchRepository contractorEmployeeSearchRepository;
 
 	@Override
-	public List<ContractorDto> getContractorsByContractorName(String contractorName) {
-		
-		return contractorMapper.toListOfContractorDto(contractorRepository.findByContractorNameContains(contractorName));
-	}
-
-
-	@Override
-	public Page<ContractorIndexDto> getContractorIndexDeatils(int pageNo, int pageSize,
-			String sortingField, String sortingOrder) {
-		
+	public Page<ContractorEmployeeDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize, String sortingField,
+			String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorIndex> contractorIndexPage = contractorIndexRepository.findAll(pageable);
-		Page<ContractorIndexDto> contractorIndexDtoPage = toContractorindexDto(contractorIndexPage);
-		
-		return contractorIndexDtoPage;
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId, pageable);
+
+		return toContractorEmployeeDto(contractorEmployeePage);
 	}
 
 	@Override
-	public Page<ContractorIndexDto> getContractorIndexDeatilsByContractorName(String contractorName, int pageNo,
-		int pageSize, String sortingField, String sortingOrder) {
-		
+	public Page<ContractorEmployeeDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName,
+			int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorIndex> contractorIndexPage = contractorIndexRepository.findByContractorNameContains(contractorName, pageable);
-		Page<ContractorIndexDto> contractorIndexDtoPage = toContractorindexDto(contractorIndexPage);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
 
-		return contractorIndexDtoPage;
+		return toContractorEmployeeDto(contractorEmployeePage);
 	}
 	
 	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
@@ -69,17 +48,20 @@ public class ContractorServiceImpl implements ContractorService {
 		
 		return PageRequest.of(pageNo, pageSize, sort);
 	}
-	
-	private Page<ContractorIndexDto> toContractorindexDto(Page<ContractorIndex> contractorIndexPage){
-		return contractorIndexPage.map((contractorIndex)->{
-			ContractorIndexDto contractorIndexDto = new ContractorIndexDto();
-			contractorIndexDto.setContractorName(contractorIndex.getContractorName());
-			contractorIndexDto.setAlias(contractorIndex.getAlias());
-			contractorIndexDto.setRole(contractorIndex.getRole());
-			contractorIndexDto.setDiscipline(contractorIndex.getDiscipline());
-			contractorIndexDto.setRate(contractorIndex.getRate());
-			contractorIndexDto.setRating(contractorIndex.getRating());
-			return contractorIndexDto;
+		
+	private Page<ContractorEmployeeDto> toContractorEmployeeDto(Page<ContractorEmployeeSearch> contractorEmployeePage){
+		return contractorEmployeePage.map((contractorEmployeeSearched)->{
+			ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
+			contractorEmployeeDto.setContractorEmployeeId(contractorEmployeeSearched.getContractorEmployeeId());
+			contractorEmployeeDto.setContractorEmployeeName(contractorEmployeeSearched.getContractorEmployeeName());
+			contractorEmployeeDto.setDayRate(contractorEmployeeSearched.getDayRate());
+			contractorEmployeeDto.setRoleId(contractorEmployeeSearched.getRoleId());
+			contractorEmployeeDto.setRole(contractorEmployeeSearched.getRole());
+			contractorEmployeeDto.setContractorId(contractorEmployeeSearched.getContractorId());
+			contractorEmployeeDto.setCompany(contractorEmployeeSearched.getCompany());
+			contractorEmployeeDto.setNoOfBookingsInPast(contractorEmployeeSearched.getNoOfBookingsInPast());
+
+			return contractorEmployeeDto;
 		});
 	}
 }
