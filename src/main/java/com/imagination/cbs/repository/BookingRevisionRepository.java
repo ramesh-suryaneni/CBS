@@ -34,7 +34,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	public BookingRevision fetchBookingRevisionByBookingId(@Param("bookingId") Long bookingId);
 	
 	@Query(value = BOOKING_REVISIONQU_DETAILS_QUERY
-			+ " and approval_status_id = (SELECT approval_status_id from cbs.approval_status_dm where approval_name != 'Draft' OR approval_name != 'Cancelled')"
+			+ " and approval_status_id in (SELECT approval_status_id from cbs.approval_status_dm where approval_name != 'Draft' AND approval_name != 'Cancelled')"
 			+ " group by booking_id) as irn INNER JOIN cbs.booking_revision br on br.booking_id=irn.booking_id and br.revision_number=irn.maxRevision"
 			+ " WHERE br.contractor_employee_role_id = cer.contractor_employee_role_id and cer.role_id = rd.role_id and br.approval_status_id = asd.approval_status_id", nativeQuery = true)
 	public List<Tuple> retrieveBookingRevisionForSubmitted(@Param("loggedInUser") String loggedInUser, Pageable pageable);
