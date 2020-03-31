@@ -1,10 +1,11 @@
 package com.imagination.cbs.repository;
 
 import java.util.List;
-
 import javax.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import com.imagination.cbs.domain.BookingRevision;
 
 /**
@@ -13,17 +14,27 @@ import com.imagination.cbs.domain.BookingRevision;
  */
 public interface BookingRevisionRepository extends JpaRepository<BookingRevision, Long> {
 	
-	@Query("SELECT r.roleName as rname,b.booking.bookingId as id,b.jobname AS job,b.contractorName AS cname, " 
-			+"b.contractedToDate AS enddate,b.contractedFromDate AS strtdate,"
-			+"b.changedBy AS change,b.changedDate AS cdate "
-			+"FROM BookingRevision b,RoleDm r,ContractorEmployeeRole cer "
-			+"WHERE b.contractorEmployeeRoleId=cer.contractorEmployeeRoleId and "
-			+"r.roleId=cer.roleDm.roleId and b.changedBy=?2 and b.approvalStatusId =("
-			+"SELECT a.approvalStatusId FROM ApprovalStatusDm a "
-			+"WHERE a.approvalName=?1)"
-			+"order by b.changedDate DESC")
+
+	public static final String BOOKING_REVISIONQU_DETAILS_QUERY = "SELECT asd.approval_name as status, br.job_name as jobName, rd.role_name as role, br.contractor_name as contractor,"
+			+ " br.contracted_from_date as startDate, br.contracted_to_date as endDate, br.changed_by as changedBy, br.changed_date as changedDate"
+			+ " FROM cbs.approval_status_dm asd, cbs.contractor_employee_role cer , cbs.role_dm rd,"
+			+ " (Select booking_id, Max(revision_number) as maxRevision from cbs.booking_revision WHERE changed_by = :loggedInUser";
+
+	@Query(value = BOOKING_REVISIONQU_DETAILS_QUERY
+			+ " and approval_status_id = (SELECT approval_status_id from cbs.approval_status_dm where approval_name = :status)"
+			+ " group by booking_id) as irn INNER JOIN cbs.booking_revision br on br.booking_id=irn.booking_id and br.revision_number=irn.maxRevision"
+			+ " WHERE br.contractor_employee_role_id = cer.contractor_employee_role_id and cer.role_id = rd.role_id and br.approval_status_id = asd.approval_status_id", nativeQuery = true)
+	public List<Tuple> retrieveBookingRevisionForDraftOrCancelled(@Param("loggedInUser") String loggedInUser,
+			@Param("status") String status, Pageable pageable);
+
+	@Query(value = "SELECT * FROM cbs.booking_revision br where br.booking_id=:bookingId AND br.revision_number="
+			+ "(SELECT MAX(revision_number) FROM cbs.booking_revision br where br.booking_Id=:bookingId)", nativeQuery = true)
+	public BookingRevision fetchBookingRevisionByBookingId(@Param("bookingId") Long bookingId);
 	
-		public List<Tuple> getAllDraftBookings(String status,String logInUser);
-	
-	
+	@Query(value = BOOKING_REVISIONQU_DETAILS_QUERY
+			+ " and approval_status_id in (SELECT approval_status_id from cbs.approval_status_dm where approval_name != 'Draft' AND approval_name != 'Cancelled')"
+			+ " group by booking_id) as irn INNER JOIN cbs.booking_revision br on br.booking_id=irn.booking_id and br.revision_number=irn.maxRevision"
+			+ " WHERE br.contractor_employee_role_id = cer.contractor_employee_role_id and cer.role_id = rd.role_id and br.approval_status_id = asd.approval_status_id", nativeQuery = true)
+	public List<Tuple> retrieveBookingRevisionForSubmitted(@Param("loggedInUser") String loggedInUser, Pageable pageable);
+
 }

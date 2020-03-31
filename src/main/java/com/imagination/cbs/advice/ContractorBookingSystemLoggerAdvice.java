@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class ContractorBookingSystemLoggerAdvice {
 	
-	private final Logger logger = LoggerFactory.getLogger(ContractorBookingSystemExceptionAdvice.class);
+	private final Logger logger = LoggerFactory.getLogger(ContractorBookingSystemLoggerAdvice.class);
 	
 	@Around("@within(org.springframework.stereotype.Service) || @within(org.springframework.stereotype.Repository) || @within(org.springframework.stereotype.Controller)")
 	public Object logBefore(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{

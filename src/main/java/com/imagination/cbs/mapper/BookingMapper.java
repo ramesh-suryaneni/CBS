@@ -9,15 +9,15 @@ import org.mapstruct.Named;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.dto.BookingDto;
+import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.util.DateUtils;
 
 @Mapper(componentModel = "spring")
 public interface BookingMapper {
 
-	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp", ignore = true)
-	public Booking toBookingDomainFromBookingDto(BookingDto bookingDto);
+	public Booking toBookingDomainFromBookingDto(BookingRequest bookingDto);
 
-	public BookingDto toBookingDtoFromBooking(Booking bookingDto);
+	public BookingDto toBookingDtoFromBooking(Booking booking);
 
 	@Named("stringToTimeStamp")
 	public static Timestamp stringToTimeStampConverter(String date) {
@@ -38,10 +38,9 @@ public interface BookingMapper {
 	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "timeStampToString")
 	public BookingDto toBookingDtoFromBookingRevision(BookingRevision bookingRevisionDto);
 
-	@Mapping(source = "changedDate", target = "changedDate", qualifiedByName = "stringToTimeStamp", ignore = true)
 	@Mapping(source = "contractedFromDate", target = "contractedFromDate", qualifiedByName = "stringToTimeStamp")
 	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "stringToTimeStamp")
 	@Mapping(source = "contractorSignedDate", target = "contractorSignedDate", qualifiedByName = "stringToTimeStamp")
-	public BookingRevision toBookingRevisionFromBookingDto(BookingDto bookingDto);
+	public BookingRevision toBookingRevisionFromBookingDto(BookingRequest bookingDto);
 
 }

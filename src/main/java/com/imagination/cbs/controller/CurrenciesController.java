@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.imagination.cbs.controller;
 
 import java.util.List;
@@ -8,20 +11,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.dto.RecruitingDto;
-import com.imagination.cbs.service.RecruitingService;
+import com.imagination.cbs.dto.CurrencyDto;
+import com.imagination.cbs.service.CurrencyService;
 
+/**
+ * @author Ramesh.Suryaneni
+ *
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/recruiting_reasons")
-public class RecruitingController {
-
+@RequestMapping("/currencies")
+public class CurrenciesController {
+	
 	@Autowired
-	private RecruitingService recruitingService;
-
+	private CurrencyService currencyService;
+	
 	@GetMapping
-	public List<RecruitingDto> getAllReasonForRecruiting() {
-		return recruitingService.getAllReasonForRecruiting();
+	public List<CurrencyDto> getAllCurrencies() throws Exception {
+		
+		return currencyService.getAllCurrencies();
+		
 	}
 
 }

@@ -13,5 +13,5 @@ spring:
                use_jdbc_metadata_defaults:   false
        
 cbssecurity:
-     enabled: false              
+     enabled: true              
                

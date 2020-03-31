@@ -19,12 +19,12 @@ public class SecurityConstants {
     /** SECURITY ROLES ***/
     public static final String ROLE_ = "ROLE_";
     
-    public static final String ROLE_APPROVER = "1";
-    public static final String ROLE_BOOKING_CREATOR = "2";
-    public static final String ROLE_BOOKING_VIEWER = "3";
-    public static final String ROLE_INDEX = "4";
-    public static final String ROLE_CONTRACT_MGT = "5";
-    public static final String ROLE_PO_MGT = "6";
-    public static final String ROLE_ADMIN = "7";
+    public static final String ROLE_APPROVER = "Approver";
+    public static final String ROLE_BOOKING_CREATOR = "Booking Creator";
+    public static final String ROLE_BOOKING_VIEWER = "Booking Viewer";
+    public static final String ROLE_INDEX = "Index Access";
+    public static final String ROLE_CONTRACT_MGT = "Contract Management";
+    public static final String ROLE_PO_MGT = "PO Management";
+    public static final String ROLE_ADMIN = "Admin";
     
 }

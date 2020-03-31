@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.imagination.cbs.domain.SupplierTypeDm;
 
 @Repository("supplierRepository")
-public interface SupplierRepository extends JpaRepository<SupplierTypeDm, Long> {
+public interface SupplierTypeRepository extends JpaRepository<SupplierTypeDm, Long> {
 
 }

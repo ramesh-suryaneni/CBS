@@ -22,6 +22,8 @@ public class ContractorRoleDto {
 	private String cestDownloadLink;
 	
 	private boolean insideIr35;
+	
+	private String roleDefaultRate;
 
 	@Override
 	public String toString() {

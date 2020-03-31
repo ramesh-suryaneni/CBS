@@ -12,5 +12,7 @@ import com.imagination.cbs.security.CBSUser;
 public interface LoggedInUserService {
 	
 	public CBSUser getLoggedInUserDetails();
+	
+	public boolean isCurrentUserInHRRole();
 
 }

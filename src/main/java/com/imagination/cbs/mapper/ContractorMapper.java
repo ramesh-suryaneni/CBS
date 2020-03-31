@@ -9,8 +9,9 @@ import com.imagination.cbs.dto.ContractorDto;
 
 @Mapper(componentModel = "spring")
 public interface ContractorMapper {
-	
+
 	public List<ContractorDto> toListOfContractorDto(List<Contractor> listOfContractors);
 
-}
+	public ContractorDto toContractorDtoFromContractorDomain(Contractor contractor);
 
+}

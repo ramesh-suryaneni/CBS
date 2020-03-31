@@ -9,7 +9,9 @@ import com.imagination.cbs.dto.DisciplineDto;
 
 @Mapper(componentModel = "spring")
 public interface DisciplineMapper {
-	
+
 	public List<DisciplineDto> toListOfDisciplineDTO(List<Discipline> listOfDiscipline);
+
+	public DisciplineDto toDisciplineDtoFromDisciplineDomain(Discipline discipline);
 
 }

@@ -7,13 +7,12 @@ import lombok.Data;
 @Data
 public class BookingDashBoardDto {
 	
-	private Long bookingId;
+	private String status;
 	private String jobname;
+	private String roleName;
+	private String contractorName;
 	private Timestamp contractedFromDate;
 	private Timestamp contractedToDate;
-	private String contractorName;
-	private String roleName;
 	private String changedBy;
-	private Timestamp changedDate ;
-		
+	private Timestamp changedDate;
 }

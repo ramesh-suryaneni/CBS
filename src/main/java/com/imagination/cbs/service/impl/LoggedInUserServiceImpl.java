@@ -3,11 +3,15 @@
  */
 package com.imagination.cbs.service.impl;
 
+import java.util.Optional;
+
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.LoggedInUserService;
+import com.imagination.cbs.util.SecurityConstants;
 
 /**
  * @author Ramesh.Suryaneni
@@ -24,5 +28,15 @@ public class LoggedInUserServiceImpl implements LoggedInUserService {
 		
 		return user;
 	}
+
+	@Override
+	public boolean isCurrentUserInHRRole() {
+		
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+            .map(authentication -> authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equalsIgnoreCase(SecurityConstants.ROLE_CONTRACT_MGT)))
+            .orElse(false);
+    }
 
 }
