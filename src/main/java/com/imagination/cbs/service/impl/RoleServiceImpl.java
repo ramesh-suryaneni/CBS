@@ -3,9 +3,11 @@
  */
 package com.imagination.cbs.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.RoleDefaultRate;
@@ -31,19 +33,27 @@ public class RoleServiceImpl implements RoleService {
 	
 	@Autowired
 	RoleMapper roleMapper;
+	
+	@Value("${cest_outcome.inside_ir35_pdf}")
+	private String insideIR35CestPDF;
+	
+	@Value("${cest_outcome.outside_ir35_pdf}")
+	private String outsideIR35CestPDF;
 
 	@Override
 	public ContractorRoleDto getCESToutcome(Long roleId) {
 		Optional<RoleDm> optionalRole = roleRepository.findById(roleId);
 		if(optionalRole.isPresent()) {
 			ContractorRoleDto dto = roleMapper.toRoleDTO(optionalRole.get());
-			String link = (dto.isInsideIr35())? "https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf" : "https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf";
+			String link = (dto.isInsideIr35())? insideIR35CestPDF : outsideIR35CestPDF;
 			dto.setCestDownloadLink(link);
+			
 			//Fetch role default rate; UI will use if as default day rate if no contractor employee selected.
-			/*
-			 * RoleDefaultRate rate = roleDefaultRateRepository.findByRoleId(roleId);
-			 * if(rate!=null) { dto.setRoleDefaultRate(String.valueOf(rate.getRate())); }
-			 */
+			List<RoleDefaultRate> rates = roleDefaultRateRepository.findAllByRoleId(roleId);
+			if(!rates.isEmpty()) { 
+				dto.setRoleDefaultRate(String.valueOf(rates.get(0).getRate())); 
+				dto.setRoleCurrencyId(String.valueOf(rates.get(0).getCurrencyId()));
+			}
 			
 			return dto;
 		}
