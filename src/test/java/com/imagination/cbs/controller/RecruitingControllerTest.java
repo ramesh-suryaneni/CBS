@@ -52,7 +52,7 @@ public class RecruitingControllerTest {
 
 		when(recruitingService.getAllReasonForRecruiting()).thenReturn(getRecruitingDto());
 
-		mockMvc.perform(get("/recruiting").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/recruiting_reasons").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].reasonName", comparesEqualTo("Specific skills required")));
 
 		verify(recruitingService).getAllReasonForRecruiting();
