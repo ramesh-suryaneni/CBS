@@ -1,5 +1,6 @@
 package com.imagination.cbs.dto;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import lombok.Data;
@@ -15,5 +16,6 @@ public class BookingDashBoardDto {
 	private Timestamp contractedToDate;
 	private String changedBy;
 	private Timestamp changedDate;
+	private BigInteger bookingId;
 	
 }
