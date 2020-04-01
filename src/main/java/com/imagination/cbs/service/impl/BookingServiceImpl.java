@@ -164,9 +164,8 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
-		// String loggedInUser =
-		// loggedInUserService.getLoggedInUserDetails().getDisplayName();
-		String loggedInUser = "pravin";
+		
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
