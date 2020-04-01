@@ -5,14 +5,14 @@ import java.sql.Timestamp;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
-import com.imagination.cbs.util.DateUtils;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BookingMapper {
 
 	public Booking toBookingDomainFromBookingDto(BookingRequest bookingDto);
@@ -21,26 +21,12 @@ public interface BookingMapper {
 
 	@Named("stringToTimeStamp")
 	public static Timestamp stringToTimeStampConverter(String date) {
-		return DateUtils.convertDateToTimeStamp(date);
+		return Timestamp.valueOf(date);
 	}
 
-	@Named("timeStampToString")
-	public static String timeStampToStringConverter(Timestamp timeStamp) {
-		return timeStamp.toString();
-	}
-
-	@Named("longToString")
-	public static String longToStringConverter(String domainValue) {
-		return domainValue.toString();
-	}
-
-	@Mapping(source = "contractedFromDate", target = "contractedFromDate", qualifiedByName = "timeStampToString")
-	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "timeStampToString")
-	public BookingDto toBookingDtoFromBookingRevision(BookingRevision bookingRevisionDto);
-
-	@Mapping(source = "contractedFromDate", target = "contractedFromDate", qualifiedByName = "stringToTimeStamp")
-	@Mapping(source = "contractedToDate", target = "contractedToDate", qualifiedByName = "stringToTimeStamp")
-	@Mapping(source = "contractorSignedDate", target = "contractorSignedDate", qualifiedByName = "stringToTimeStamp")
-	public BookingRevision toBookingRevisionFromBookingDto(BookingRequest bookingDto);
+	@Mapping(source = "contractedFromDate", dateFormat = "dd/MM/yyyy", target = "contractedFromDate")
+	@Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target = "contractedToDate")
+	@Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy", target = "contractorSignedDate")
+	public BookingDto convertToDto(BookingRevision bookingRevision);
 
 }

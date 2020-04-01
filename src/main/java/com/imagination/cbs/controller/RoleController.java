@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.imagination.cbs.dto.ContractorRoleDto;
+import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.service.RoleService;
 
 /**
@@ -30,7 +30,7 @@ public class RoleController {
 	RoleService roleService;
 	
 	@GetMapping("/{role_id}/cestoutcome")
-	public ContractorRoleDto getRoleCESToutcome(@PathVariable("role_id") Long roleId) {
+	public RoleDto getRoleCESToutcome(@PathVariable("role_id") Long roleId) {
 		
 		if(roleService.getCESToutcome(roleId) == null)
 			throw new ResponseStatusException(

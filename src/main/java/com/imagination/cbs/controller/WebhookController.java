@@ -33,7 +33,7 @@ public class WebhookController {
 	@Autowired
 	ConfigService configService;
 	
-	@PostMapping("/adobesign_callback")
+	@PostMapping("/adobesign-callback")
 	public String adobeSignCallback(@RequestHeader Map<String, String> headers) {
 	    headers.forEach((key, value) -> {
 	        System.out.println(String.format("Header '%s' = %s", key, value));
@@ -43,7 +43,7 @@ public class WebhookController {
 		
 	}
 	
-	@GetMapping("/adobesign_callback")
+	@GetMapping("/adobesign-callback")
 	public AdobeSignResponse webhookVerification(@RequestHeader Map<String, String> headers) {
 		AdobeSignResponse response = new AdobeSignResponse();
 		

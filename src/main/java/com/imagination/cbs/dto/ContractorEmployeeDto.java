@@ -20,5 +20,4 @@ public class ContractorEmployeeDto {
 	private String knownAs;
 
 	private String status;
-
 }

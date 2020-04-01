@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.dto.ContractorRoleDto;
+import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.service.DisciplineService;
 
@@ -33,7 +33,7 @@ public class DisciplineController {
 	}
 
 	@GetMapping("/{disciplineId}/roles")
-	public List<ContractorRoleDto> findAllContractorRoles(@PathVariable Long disciplineId) {
+	public List<RoleDto> findAllContractorRoles(@PathVariable Long disciplineId) {
 
 		return disciplineService.findAllContractorRoles(disciplineId);
 

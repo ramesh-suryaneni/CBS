@@ -12,7 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,29 +44,31 @@ public class Booking implements Serializable {
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name = "team_id")
-	private Long teamId;
+	@OneToOne
+	@JoinColumn(name = "team_id")
+	private Team team;
 
-	@Column(name = "status_id")
-	private Long statusId;
+	@OneToOne
+	@JoinColumn(name = "status_id")
+	private ApprovalStatusDm approvalStatus;
 
 	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<BookingRevision> bookingRevisions;
 
-	public Long getTeamId() {
-		return teamId;
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setTeamId(Long teamId) {
-		this.teamId = teamId;
+	public void setTeam(Team team) {
+		this.team = team;
 	}
 
-	public Long getStatusId() {
-		return statusId;
+	public ApprovalStatusDm getApprovalStatus() {
+		return approvalStatus;
 	}
 
-	public void setStatusId(Long statusId) {
-		this.statusId = statusId;
+	public void setApprovalStatus(ApprovalStatusDm approvalStatus) {
+		this.approvalStatus = approvalStatus;
 	}
 
 	public Booking() {

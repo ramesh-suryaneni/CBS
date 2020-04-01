@@ -20,7 +20,7 @@ import com.imagination.cbs.service.SupplierWorkLocationTypeService;
  */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/supplier_location_types")
+@RequestMapping("/supplier-location-types")
 public class SupplierWorkLocationTypeController {
 	
 	@Autowired

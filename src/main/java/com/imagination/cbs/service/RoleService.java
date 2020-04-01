@@ -3,7 +3,7 @@
  */
 package com.imagination.cbs.service;
 
-import com.imagination.cbs.dto.ContractorRoleDto;
+import com.imagination.cbs.dto.RoleDto;
 
 /**
  * @author Ramesh.Suryaneni
@@ -11,5 +11,5 @@ import com.imagination.cbs.dto.ContractorRoleDto;
  */
 public interface RoleService {
 	
-	public ContractorRoleDto getCESToutcome(Long roleId);
+	public RoleDto getCESToutcome(Long roleId);
 }
