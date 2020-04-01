@@ -31,16 +31,16 @@ public class ContractorServiceImpl implements ContractorService {
 	private ContractorRepository contractorRepository;
 
 	@Autowired
-	private ContractorMapper contractorMapper;
-	
-	@Autowired
 	private ContractorEmployeeSearchRepository contractorEmployeeSearchRepository;
-	
+
 	@Autowired
 	private ContractorEmployeeRepository contractorEmployeeRepository;
-	
+
 	@Autowired
 	private ContractorEmployeeMapper contractorEmployeeMapper;
+
+	@Autowired
+	private ContractorMapper contractorMapper;
 
 	@Override
 	public Page<ContractorDto> getContractorDeatils(int pageNo, int pageSize, String sortingField,
@@ -48,53 +48,55 @@ public class ContractorServiceImpl implements ContractorService {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		return toContractorDtoPage(contractorRepository.findAll(pageable));
 	}
-	
+
 	@Override
-	public Page<ContractorDto> getContractorDeatilsContainingName(String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder) {
+	public Page<ContractorDto> getContractorDeatilsContainingName(String contractorName, int pageNo, int pageSize,
+			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		return toContractorDtoPage(contractorRepository.findByContractorNameContains(contractorName, pageable));
 	}
-	
+
 	@Override
-	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize, String sortingField,
-			String sortingOrder) {
+	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize,
+			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId, pageable);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId,
+				pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName,
-			int pageNo, int pageSize, String sortingField, String sortingOrder) {
+	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId,
+			String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository
+				.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
 	}
-	
+
 	@Override
 	public ContractorDto getContractorByContractorId(Long id) {
-		
-		Optional<Contractor> optionalContractor=contractorRepository.findById(id);
-		
-		if(!optionalContractor.isPresent()){
-			throw new ResourceNotFoundException("Contactor Not Found with Id:- "+id);
+
+		Optional<Contractor> optionalContractor = contractorRepository.findById(id);
+
+		if (!optionalContractor.isPresent()) {
+			throw new ResourceNotFoundException("Contactor Not Found with Id:- " + id);
 		}
-		
+
 		return contractorMapper.toContractorDtoFromContractorDomain(optionalContractor.get());
 	}
-	
-	
+
 	@Override
 	public ContractorEmployeeDto getContractorEmployeeByContractorIdAndEmployeeId(Long contractorId, Long employeeId) {
-		
-		ContractorEmployee contractorEmployee=contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
-		
-				
+
+		ContractorEmployee contractorEmployee = contractorEmployeeRepository
+				.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
+
 		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
 	}
-	
+
 	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Sort sort = null;
 		if (sortingOrder.equals("ASC")) {
@@ -103,12 +105,13 @@ public class ContractorServiceImpl implements ContractorService {
 		if (sortingOrder.equals("DESC")) {
 			sort = Sort.by(Direction.DESC, sortingField);
 		}
-		
+
 		return PageRequest.of(pageNo, pageSize, sort);
 	}
-		
-	private Page<ContractorEmployeeSearchDto> toContractorEmployeeDtoPage(Page<ContractorEmployeeSearch> contractorEmployeePage){
-		return contractorEmployeePage.map((contractorEmployeeSearched)->{
+
+	private Page<ContractorEmployeeSearchDto> toContractorEmployeeDtoPage(
+			Page<ContractorEmployeeSearch> contractorEmployeePage) {
+		return contractorEmployeePage.map((contractorEmployeeSearched) -> {
 			ContractorEmployeeSearchDto contractorEmployeeDto = new ContractorEmployeeSearchDto();
 			contractorEmployeeDto.setContractorEmployeeId(contractorEmployeeSearched.getContractorEmployeeId());
 			contractorEmployeeDto.setContractorEmployeeName(contractorEmployeeSearched.getContractorEmployeeName());
@@ -123,31 +126,30 @@ public class ContractorServiceImpl implements ContractorService {
 		});
 	}
 
-	private Page<ContractorDto> toContractorDtoPage(Page<Contractor> contractorPage){
-		return contractorPage.map((contractor)->{
+	private Page<ContractorDto> toContractorDtoPage(Page<Contractor> contractorPage) {
+		return contractorPage.map((contractor) -> {
 			ContractorDto contractorDto = new ContractorDto();
 
-	        contractorDto.setContractorId( contractor.getContractorId() );
-	        contractorDto.setContractorName( contractor.getContractorName() );
-	        contractorDto.setCompanyType( contractor.getCompanyType() );
-	        contractorDto.setContactDetails( contractor.getContactDetails() );
-	        contractorDto.setChangedDate( contractor.getChangedDate() );
-	        contractorDto.setChangedBy( contractor.getChangedBy() );
-	        contractorDto.setStatus( contractor.getStatus() );
-	        contractorDto.setMaconomyVendorNumber( contractor.getMaconomyVendorNumber() );
-	        contractorDto.setAddressLine1( contractor.getAddressLine1() );
-	        contractorDto.setAddresLine2( contractor.getAddresLine2() );
-	        contractorDto.setAddresLine3( contractor.getAddresLine3() );
-	        contractorDto.setPostalDistrict( contractor.getPostalDistrict() );
-	        contractorDto.setPostalCode( contractor.getPostalCode() );
-	        contractorDto.setCountry( contractor.getCountry() );
-	        contractorDto.setAttention( contractor.getAttention() );
-	        contractorDto.setEmail( contractor.getEmail() );
-	        contractorDto.setOnPreferredSupplierList( contractor.getOnPreferredSupplierList() );
-	        
+			contractorDto.setContractorId(contractor.getContractorId());
+			contractorDto.setContractorName(contractor.getContractorName());
+			contractorDto.setCompanyType(contractor.getCompanyType());
+			contractorDto.setContactDetails(contractor.getContactDetails());
+			contractorDto.setChangedDate(contractor.getChangedDate());
+			contractorDto.setChangedBy(contractor.getChangedBy());
+			contractorDto.setStatus(contractor.getStatus());
+			contractorDto.setMaconomyVendorNumber(contractor.getMaconomyVendorNumber());
+			contractorDto.setAddressLine1(contractor.getAddressLine1());
+			contractorDto.setAddresLine2(contractor.getAddresLine2());
+			contractorDto.setAddresLine3(contractor.getAddresLine3());
+			contractorDto.setPostalDistrict(contractor.getPostalDistrict());
+			contractorDto.setPostalCode(contractor.getPostalCode());
+			contractorDto.setCountry(contractor.getCountry());
+			contractorDto.setAttention(contractor.getAttention());
+			contractorDto.setEmail(contractor.getEmail());
+			contractorDto.setOnPreferredSupplierList(contractor.getOnPreferredSupplierList());
+
 			return contractorDto;
 		});
 	}
-
 
 }

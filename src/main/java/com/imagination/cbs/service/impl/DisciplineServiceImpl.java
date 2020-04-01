@@ -8,7 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Discipline;
-import com.imagination.cbs.dto.ContractorRoleDto;
+import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.RoleMapper;
@@ -37,7 +37,7 @@ public class DisciplineServiceImpl implements DisciplineService {
 
 	@Override
 	@Cacheable("roles")
-	public List<ContractorRoleDto> findAllContractorRoles(Long disciplineId) {
+	public List<RoleDto> findAllContractorRoles(Long disciplineId) {
 
 		Optional<Discipline> discpline = disciplineRepository.findById(disciplineId);
 

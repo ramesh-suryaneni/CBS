@@ -49,9 +49,9 @@ public class BookingDto {
 
 	private String approverComments;
 
-	private List<WorkDaysDto> workDays;
+	private List<WorkDaysDto> monthlyWorkDays;
 
-	private List<WorkTasksDto> workTasks;
+	private List<WorkTasksDto> bookingWorkTasks;
 
 	private String jobname;
 
@@ -59,7 +59,7 @@ public class BookingDto {
 
 	private ApprovalStatusDmDto approvalStatus;
 
-	private ContractorRoleDto role;
+	private RoleDto role;
 
 	private DisciplineDto discipline;
 
@@ -78,4 +78,8 @@ public class BookingDto {
 	private CurrencyDto currency;
 
 	private ContractorEmployeeSearchDto contractEmployee;
+
+	private RegionDto commOffRegion;
+
+	private RegionDto contractorWorkRegion;
 }
