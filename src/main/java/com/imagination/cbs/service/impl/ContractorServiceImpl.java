@@ -1,7 +1,13 @@
 package com.imagination.cbs.service.impl;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,17 +18,24 @@ import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
+import com.imagination.cbs.domain.ContractorEmployeeDefaultRate;
+import com.imagination.cbs.domain.ContractorEmployeeRole;
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
+import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeRequest;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
+import com.imagination.cbs.dto.ContractorRequest;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.ContractorEmployeeMapper;
 import com.imagination.cbs.mapper.ContractorMapper;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.repository.ContractorRepository;
+import com.imagination.cbs.repository.RoleRepository;
 import com.imagination.cbs.service.ContractorService;
+import com.imagination.cbs.service.LoggedInUserService;
 
 @Service("contractorService")
 public class ContractorServiceImpl implements ContractorService {
@@ -37,11 +50,17 @@ public class ContractorServiceImpl implements ContractorService {
 	private ContractorEmployeeRepository contractorEmployeeRepository;
 
 	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
 	private ContractorEmployeeMapper contractorEmployeeMapper;
 
 	@Autowired
 	private ContractorMapper contractorMapper;
 
+	@Autowired
+	private LoggedInUserService loggedInUserService;
+	
 	@Override
 	public Page<ContractorDto> getContractorDeatils(int pageNo, int pageSize, String sortingField,
 			String sortingOrder) {
@@ -95,6 +114,67 @@ public class ContractorServiceImpl implements ContractorService {
 				.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
 
 		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+	}
+
+	@Transactional
+	@Override
+	public Map<String, Object> addContractorDetails(ContractorRequest contractorRequest) {
+
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+
+		Contractor contractorDomain = contractorMapper.toContractorDomainFromContractorRequest(contractorRequest);
+		contractorDomain.setChangedBy(loggedInUser);
+		
+		Contractor savedContractor = contractorRepository.save(contractorDomain);
+		
+		Map<String, Object> contractorCreatedResponse = new HashMap();
+		contractorCreatedResponse.put("contractorId", savedContractor.getContractorId());
+		contractorCreatedResponse.put("contractorName", savedContractor.getContractorName());
+		contractorCreatedResponse.put("serviceProvided", savedContractor.getCompanyType());
+		contractorCreatedResponse.put("contactDetails", savedContractor.getContactDetails());
+		contractorCreatedResponse.put("changedBy", savedContractor.getChangedBy());
+		
+		return contractorCreatedResponse;
+	}
+	
+
+	@Override
+	public ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request) {
+
+		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		ContractorEmployee contractorEmpDomain = new ContractorEmployee();
+		contractorEmpDomain.setEmployeeName(request.getContractorEmployeeName());
+		contractorEmpDomain.setKnownAs(request.getKnownAs());
+		contractorEmpDomain.setChangedBy(loggedInUser);
+		
+		Optional<Contractor> optionalContractor = contractorRepository.findById(contractorId);
+		if (!optionalContractor.isPresent()) {
+			throw new ResourceNotFoundException("Contactor Not Found with Id:- " + contractorId);
+		}
+		contractorEmpDomain.setContractor(optionalContractor.get());
+
+		Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
+		ContractorEmployeeRole contractorEmployeeRole = new ContractorEmployeeRole();
+		Optional<RoleDm> optionalRoleDm = roleRepository.findById(request.getRoleId());
+		if (!optionalRoleDm.isPresent()) {
+			throw new ResourceNotFoundException("Role Not Found with Id:- " + request.getRoleId());
+		}
+		contractorEmployeeRole.setRoleDm(optionalRoleDm.get());
+		contractorEmployeeRole.setDateFrom(currentTimeStamp);
+		contractorEmployeeRole.setChangedBy(loggedInUser);
+		contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
+		contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
+		
+		ContractorEmployeeDefaultRate contractorEmployeeDefaultRate = new ContractorEmployeeDefaultRate();
+		contractorEmployeeDefaultRate.setCurrencyId(request.getCurrencyId());
+		contractorEmployeeDefaultRate.setRate(request.getDayRate());
+		contractorEmployeeDefaultRate.setDateFrom(currentTimeStamp);
+		contractorEmployeeDefaultRate.setChangedBy(loggedInUser);
+		contractorEmployeeDefaultRate.setContractorEmployee(contractorEmpDomain);
+		contractorEmpDomain.setContractorEmployeeDefaultRate(contractorEmployeeDefaultRate);
+		
+		ContractorEmployee savedcontractorEmployee = contractorEmployeeRepository.save(contractorEmpDomain);
+		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(savedcontractorEmployee);
 	}
 
 	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {

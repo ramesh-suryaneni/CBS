@@ -3,18 +3,25 @@
  */
 package com.imagination.cbs.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeRequest;
+import com.imagination.cbs.dto.ContractorRequest;
 import com.imagination.cbs.service.ContractorService;
 
 /**
@@ -71,23 +78,20 @@ public class ContractorController {
 		
 	}
 	
-	@PostMapping()
-	public ContractorDto addNewContractor(ContractorDto request){
+	@PostMapping(consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Map<String,Object>> addNewContractor(@RequestBody ContractorRequest request){
 		
-		//TODO:implement add new contractor
-		
-		return null;
+		Map<String,Object> createdContractorMap = contractorService.addContractorDetails(request);
+		return new ResponseEntity<Map<String,Object>>(createdContractorMap, HttpStatus.CREATED);
 	
-		
 	}
 	
-	@PostMapping("/{contractorId}/employees")
-	public ContractorEmployeeDto addNewContractorEmployee(ContractorEmployeeDto request){
+	@PostMapping(value= "/{contractorId}/employees", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<ContractorEmployeeDto> addNewContractorEmployee(@PathVariable("contractorId") Long contractorId,
+			@RequestBody ContractorEmployeeRequest request){
 		
-		//TODO:implement add new contractor
-		
-		return null;
-	
+		ContractorEmployeeDto createdContractorEmployee = contractorService.addContractorEmployee(contractorId, request);
+		return new ResponseEntity<ContractorEmployeeDto>(createdContractorEmployee, HttpStatus.CREATED);
 		
 	}
 	

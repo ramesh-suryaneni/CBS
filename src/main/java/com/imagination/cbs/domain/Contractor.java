@@ -13,6 +13,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 
 /**
  * The persistent class for the contractor database table.
@@ -38,6 +40,7 @@ public class Contractor implements Serializable {
 	@Column(name="contact_details")
 	private String contactDetails;
 
+	@CreationTimestamp
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
