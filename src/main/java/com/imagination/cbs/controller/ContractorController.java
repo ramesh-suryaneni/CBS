@@ -55,9 +55,8 @@ public class ContractorController {
 	@GetMapping("/{id}")
 	public ContractorDto getContractor(@PathVariable("id") Long id){
 		
-		//TODO:implement get contractor details
 		
-		return null;
+		return contractorService.getContractorByContractorId(id);
 	
 		
 	}
@@ -67,9 +66,7 @@ public class ContractorController {
 	public ContractorEmployeeDto getContractor(@PathVariable("contractorId") Long contractorId,
 			@PathVariable("empId") Long employeeId){
 		
-		//TODO:implement get contractor employee details
-		
-		return null;
+		return contractorService.getContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
 	
 		
 	}

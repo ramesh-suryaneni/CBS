@@ -1,5 +1,7 @@
 package com.imagination.cbs.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,10 +11,15 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Contractor;
+import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
 import com.imagination.cbs.dto.ContractorDto;
+import com.imagination.cbs.dto.ContractorEmployeeDto;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
+import com.imagination.cbs.exception.ResourceNotFoundException;
+import com.imagination.cbs.mapper.ContractorEmployeeMapper;
 import com.imagination.cbs.mapper.ContractorMapper;
+import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.repository.ContractorRepository;
 import com.imagination.cbs.service.ContractorService;
@@ -28,6 +35,12 @@ public class ContractorServiceImpl implements ContractorService {
 	
 	@Autowired
 	private ContractorEmployeeSearchRepository contractorEmployeeSearchRepository;
+	
+	@Autowired
+	private ContractorEmployeeRepository contractorEmployeeRepository;
+	
+	@Autowired
+	private ContractorEmployeeMapper contractorEmployeeMapper;
 
 	@Override
 	public Page<ContractorDto> getContractorDeatils(int pageNo, int pageSize, String sortingField,
@@ -58,6 +71,28 @@ public class ContractorServiceImpl implements ContractorService {
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
+	}
+	
+	@Override
+	public ContractorDto getContractorByContractorId(Long id) {
+		
+		Optional<Contractor> optionalContractor=contractorRepository.findById(id);
+		
+		if(!optionalContractor.isPresent()){
+			throw new ResourceNotFoundException("Contactor Not Found with Id:- "+id);
+		}
+		
+		return contractorMapper.toContractorDtoFromContractorDomain(optionalContractor.get());
+	}
+	
+	
+	@Override
+	public ContractorEmployeeDto getContractorEmployeeByContractorIdAndEmployeeId(Long contractorId, Long employeeId) {
+		
+		ContractorEmployee contractorEmployee=contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
+		
+				
+		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
 	}
 	
 	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
@@ -113,5 +148,6 @@ public class ContractorServiceImpl implements ContractorService {
 			return contractorDto;
 		});
 	}
+
 
 }

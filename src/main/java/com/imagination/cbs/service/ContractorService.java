@@ -3,6 +3,7 @@ package com.imagination.cbs.service;
 import org.springframework.data.domain.Page;
 
 import com.imagination.cbs.dto.ContractorDto;
+import com.imagination.cbs.dto.ContractorEmployeeDto;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 
 
@@ -16,4 +17,7 @@ public interface ContractorService {
 	
 	Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder);
 
+	ContractorDto getContractorByContractorId(Long id);
+	
+	ContractorEmployeeDto getContractorEmployeeByContractorIdAndEmployeeId(Long contractorId,Long employeeId);
 }
