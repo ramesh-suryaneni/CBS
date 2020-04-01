@@ -26,7 +26,7 @@ import com.imagination.cbs.service.SupplierTypeService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SupplierControllerTest {
+public class SupplierTypeControllerTest {
 
 	@Autowired
     private WebApplicationContext context;
@@ -49,7 +49,7 @@ public class SupplierControllerTest {
 
 		when(supplierService.getAllSupplierTypes()).thenReturn(getSupplierTypeDto());
 
-		mockMvc.perform(get("/supplier_types").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/supplier-types").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].name", comparesEqualTo("Yash")));
 
 		verify(supplierService).getAllSupplierTypes();

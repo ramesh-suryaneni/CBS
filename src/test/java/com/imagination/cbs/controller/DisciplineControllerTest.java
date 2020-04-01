@@ -23,9 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.imagination.cbs.dto.ContractorRoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
+import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.service.DisciplineService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,40 +51,32 @@ public class DisciplineControllerTest {
 	@Test
 	public void shouldReturnListOfDiscipline() throws Exception {
 		
-		 List<DisciplineDto> listOfDisciplineDto = new
-		 ArrayList<DisciplineDto>();
-		 listOfDisciplineDto.add(getDisciplineDto());
+		 List<DisciplineDto> listOfDisciplineDto = new ArrayList<DisciplineDto>();
+		 listOfDisciplineDto.add(createDisciplineDto());
 		
 		 when(disciplineService.getAllDisciplines()).thenReturn(listOfDisciplineDto);
 		
 		 mvc.perform(get("/disciplines").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-		 .andExpect(jsonPath("$[0].disciplineName",
-		 comparesEqualTo("Creative")));
+		 .andExpect(jsonPath("$[0].disciplineName",comparesEqualTo("Creative")));
 		
 		 verify(disciplineService).getAllDisciplines();
 	}
 
 	@Test
-	public void shouldReturnListOfRoleBasedOnDisiplineIs() throws Exception {
+	public void shouldReturnListOfRoleBasedOnDisiplineId() throws Exception {
 
-		 List<ContractorRoleDto> contractorRoleDtoList = new ArrayList<>();
+		 List<RoleDto> roleDtoList = new ArrayList<>();
+		roleDtoList.add(createRoleDto());
 		
-		 ContractorRoleDto contractorRoleDto = new ContractorRoleDto();
-		contractorRoleDto.setDisciplineId(7000);
-		contractorRoleDto.setRoleId(8000);
-		 contractorRoleDto.setRoleName("Show Caller");
+		 when(disciplineService.findAllContractorRoles(8009l)).thenReturn(roleDtoList);
 		
-		 contractorRoleDtoList.add(contractorRoleDto);
+		 mvc.perform(get("/disciplines/8009/roles").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).
+		 andExpect(jsonPath("$[0].roleName", comparesEqualTo("2D")));
 		
-		 when(disciplineService.findAllContractorRoles(7000L)).thenReturn(contractorRoleDtoList);
-		
-		 mvc.perform(get("/disciplines/7000/roles").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).
-		 andExpect(jsonPath("$[0].roleName", comparesEqualTo("Show Caller")));
-		
-		// verify(roleService).findAllContractorRoles(7000L);
+		 verify(disciplineService).findAllContractorRoles(8009l);
 	}
 
-	private DisciplineDto getDisciplineDto() {
+	private DisciplineDto createDisciplineDto() {
 		DisciplineDto disciplineDto = new DisciplineDto();
 
 		disciplineDto.setDisciplineId(8000);
@@ -93,5 +84,23 @@ public class DisciplineControllerTest {
 		disciplineDto.setDisciplineDescription("This is Creative");
 
 		return disciplineDto;
+	}
+	
+	private RoleDto createRoleDto()
+	{
+		RoleDto roleDto = new RoleDto();
+		 roleDto.setStatus(null);
+		 roleDto.setRoleName("2D");
+		 roleDto.setRoleId("3214");
+		 roleDto.setRoleDescription("2D");
+		 roleDto.setRoleDefaultRate(null);
+		 roleDto.setRoleCurrencyId(null);
+		 roleDto.setInsideIr35("FALSE");
+		 roleDto.setDisciplineId(null);
+		 roleDto.setChangedDate("2020-03-17T08:02:03.767+05:30");
+		 roleDto.setChangedBy("Akshay");
+		 roleDto.setCestDownloadLink(null);
+		 
+		 return roleDto;
 	}
 }

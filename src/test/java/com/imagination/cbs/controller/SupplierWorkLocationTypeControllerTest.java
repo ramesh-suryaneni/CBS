@@ -50,7 +50,7 @@ public class SupplierWorkLocationTypeControllerTest {
 		
 		when(supplierWorkLocationTypeService.getAllSupplierWorkLocationTypes())
 			.thenReturn(supplierWorkLocationDtoList);
-		this.mockMvc.perform(get("/supplier_location_types").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/supplier-location-types").accept(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$[0].name", comparesEqualTo("Yash") ));
 	}
 
