@@ -27,17 +27,6 @@ public interface BookingMapper {
 	@Mapping(source = "contractedFromDate", dateFormat = "dd/MM/yyyy", target = "contractedFromDate")
 	@Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target = "contractedToDate")
 	@Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy", target = "contractorSignedDate")
-	public BookingDto toBookingDtoFromBookingRevision(BookingRevision bookingRevisionDto);
-
-	// @Mapping(source = "contractedFromDate", dateFormat = "dd/MM/yyyy", target
-	// = "contractedFromDate", qualifiedByName = "stringToTimeStamp")
-	// @Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target =
-	// "contractedToDate", qualifiedByName = "stringToTimeStamp")
-	// @Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy",
-	// target = "contractorSignedDate", qualifiedByName = "stringToTimeStamp")
-	// public BookingRevision toBookingRevisionFromBookingDto(BookingRequest
-	// bookingDto);
-
 	public BookingDto convertToDto(BookingRevision bookingRevision);
 
 }

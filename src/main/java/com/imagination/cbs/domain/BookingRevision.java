@@ -90,9 +90,9 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contractor_type")
 	private String contractorType;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "currency_id")
-	private CurrencyDm currencyDm;
+	private CurrencyDm currency;
 
 	@Column(name = "employee_contact_details")
 	private String employeeContactDetails;
@@ -161,6 +161,30 @@ public class BookingRevision implements Serializable {
 	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
 	private List<BookingWorkTask> bookingWorkTasks;
 
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "comm_off_region")
+	private Region commOffRegion;
+
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contractor_work_region")
+	private Region contractorWorkRegion;
+
+	public Region getCommOffRegion() {
+		return commOffRegion;
+	}
+
+	public void setCommOffRegion(Region commOffRegion) {
+		this.commOffRegion = commOffRegion;
+	}
+
+	public Region getContractorWorkRegion() {
+		return contractorWorkRegion;
+	}
+
+	public void setContractorWorkRegion(Region contractorWorkRegion) {
+		this.contractorWorkRegion = contractorWorkRegion;
+	}
+
 	public List<ContractorMonthlyWorkDay> getMonthlyWorkDays() {
 		return monthlyWorkDays;
 	}
@@ -177,12 +201,12 @@ public class BookingRevision implements Serializable {
 		this.bookingWorkTasks = bookingWorkTasks;
 	}
 
-	public CurrencyDm getCurrencyDm() {
-		return currencyDm;
+	public CurrencyDm getCurrency() {
+		return currency;
 	}
 
-	public void setCurrencyDm(CurrencyDm currencyDm) {
-		this.currencyDm = currencyDm;
+	public void setCurrency(CurrencyDm currencyDm) {
+		this.currency = currencyDm;
 	}
 
 	public RoleDm getRole() {

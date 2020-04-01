@@ -1,10 +1,8 @@
 package com.imagination.cbs.dto;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
-public class ContractorRoleDtoTest {
+public class RoleDtoTest {
 	
 	@Test
 	public void verifyToString(){

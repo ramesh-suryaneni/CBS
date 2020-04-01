@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class BookingRequest {
 	@NotNull(message = "Role Id cannot be null")
-	private String contractorEmployeeRoleId;
+	private String roleId;
 
 	@NotNull(message = "Job Number cannot be null")
 	private String jobNumber;
@@ -77,4 +77,8 @@ public class BookingRequest {
 	private String insideIr35;
 
 	private String jobDeptName;
+
+	private String commOffRegion;
+
+	private String contractorWorkRegion;
 }
