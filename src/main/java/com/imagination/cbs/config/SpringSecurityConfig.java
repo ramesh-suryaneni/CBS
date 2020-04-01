@@ -63,7 +63,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		logger.info("Security enabled");
-		securityEnabled=false;
 
 		if (securityEnabled) {
 
