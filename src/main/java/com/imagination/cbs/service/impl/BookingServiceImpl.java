@@ -143,6 +143,7 @@ public class BookingServiceImpl implements BookingService {
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, false);
 		newBookingDomain.setBookingId(bookingId);
+		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -155,12 +156,12 @@ public class BookingServiceImpl implements BookingService {
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
+		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		ApprovalStatusDm status = new ApprovalStatusDm();
 		status.setApprovalStatusId(1002L);
 		newBookingDomain.setApprovalStatus(status);
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
-
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
