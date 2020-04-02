@@ -7,24 +7,16 @@ import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -41,15 +33,14 @@ import com.imagination.cbs.domain.SupplierTypeDm;
 import com.imagination.cbs.domain.SupplierWorkLocationTypeDm;
 import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.ApproverTeamDto;
-import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
+import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.repository.BookingRepository;
-import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
 import com.imagination.cbs.repository.CurrencyRepository;
@@ -60,6 +51,7 @@ import com.imagination.cbs.repository.RoleRepository;
 import com.imagination.cbs.repository.SupplierTypeRepository;
 import com.imagination.cbs.repository.SupplierWorkLocationTypeRepository;
 import com.imagination.cbs.repository.TeamRepository;
+import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
@@ -78,9 +70,6 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private BookingMapper bookingMapper;
-
-	@Autowired
-	private BookingRevisionRepository bookingRevisionRepository;
 
 	@Autowired
 	private MaconomyService maconomyService;
@@ -119,6 +108,9 @@ public class BookingServiceImpl implements BookingService {
 	private ContractorEmployeeRepository contractorEmployeeRepository;
 
 	@Autowired
+	private ApprovalStatusDmRepository approvalStatusDmRepository;
+
+	@Autowired
 	private LoggedInUserService loggedInUserService;
 
 	@Autowired
@@ -143,6 +135,7 @@ public class BookingServiceImpl implements BookingService {
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, false);
 		newBookingDomain.setBookingId(bookingId);
+		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -155,17 +148,19 @@ public class BookingServiceImpl implements BookingService {
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
 		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
-		ApprovalStatusDm status = new ApprovalStatusDm();
-		status.setApprovalStatusId(1002L);
+		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
+		ApprovalStatusDm status = approvalStatusDmRepository
+				.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
+		status.setApprovalStatusId(status.getApprovalStatusId());
 		newBookingDomain.setApprovalStatus(status);
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
-
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
-		
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+
+		CBSUser user = loggedInUserService.getLoggedInUserDetails();
+		String loggedInUser = user.getDisplayName();
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
@@ -179,10 +174,11 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setInsideIr35(roleDm.getInsideIr35());
 		}
 		// Booking Status
-		ApprovalStatusDm status = new ApprovalStatusDm();
-		status.setApprovalStatusId(1001L);
+		ApprovalStatusDm status = approvalStatusDmRepository
+				.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		status.setApprovalStatusId(status.getApprovalStatusId());
 		bookingDomain.setApprovalStatus(status);
-		bookingRevision.setApprovalStatusId(1001L);
+		bookingRevision.setApprovalStatusId(status.getApprovalStatusId());
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
@@ -345,55 +341,4 @@ public class BookingServiceImpl implements BookingService {
 		}
 	}
 
-	@Override
-	public Page<BookingDashBoardDto> getDraftOrCancelledBookings(String status, int pageNo, int pageSize) {
-
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
-
-		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
-		List<Tuple> bookingRevisions = null;
-
-		if (status.equalsIgnoreCase("Submitted")) {
-			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, pageable);
-		} else {
-			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser,
-					status, pageable);
-		}
-
-		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
-
-		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
-	}
-
-	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
-		Sort sort = null;
-		if (sortingOrder.equals("ASC")) {
-			sort = Sort.by(Direction.ASC, sortingField);
-		}
-		if (sortingOrder.equals("DESC")) {
-			sort = Sort.by(Direction.DESC, sortingField);
-		}
-
-		return PageRequest.of(pageNo, pageSize, sort);
-	}
-
-	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
-		List<BookingDashBoardDto> bookingDashboradDtos = new ArrayList<>();
-		bookingRevisions.forEach((bookingRevision) -> {
-			BookingDashBoardDto bookingDashBoardDto = new BookingDashBoardDto();
-
-			bookingDashBoardDto.setStatus(bookingRevision.get("status", String.class));
-			bookingDashBoardDto.setJobname(bookingRevision.get("jobName", String.class));
-			bookingDashBoardDto.setRoleName(bookingRevision.get("role", String.class));// contractorEmployeeRole.getRoleDm().getRoleName());
-			bookingDashBoardDto.setContractorName(bookingRevision.get("contractor", String.class));
-			bookingDashBoardDto.setContractedFromDate(bookingRevision.get("startDate", Timestamp.class));
-			bookingDashBoardDto.setContractedToDate(bookingRevision.get("endDate", Timestamp.class));
-			bookingDashBoardDto.setChangedBy(bookingRevision.get("changedBy", String.class));
-			bookingDashBoardDto.setChangedDate(bookingRevision.get("changedDate", Timestamp.class));
-
-			bookingDashboradDtos.add(bookingDashBoardDto);
-		});
-
-		return bookingDashboradDtos;
-	}
 }
