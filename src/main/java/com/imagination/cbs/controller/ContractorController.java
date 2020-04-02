@@ -79,10 +79,10 @@ public class ContractorController {
 	}
 	
 	@PostMapping(consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Map<String,Object>> addNewContractor(@RequestBody ContractorRequest request){
+	public ResponseEntity<ContractorDto> addNewContractor(@RequestBody ContractorRequest request){
 		
-		Map<String,Object> createdContractorMap = contractorService.addContractorDetails(request);
-		return new ResponseEntity<Map<String,Object>>(createdContractorMap, HttpStatus.CREATED);
+		ContractorDto createdContractorMap = contractorService.addContractorDetails(request);
+		return new ResponseEntity<ContractorDto>(createdContractorMap, HttpStatus.CREATED);
 	
 	}
 	

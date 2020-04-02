@@ -118,7 +118,7 @@ public class ContractorServiceImpl implements ContractorService {
 
 	@Transactional
 	@Override
-	public Map<String, Object> addContractorDetails(ContractorRequest contractorRequest) {
+	public ContractorDto addContractorDetails(ContractorRequest contractorRequest) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 
@@ -127,14 +127,7 @@ public class ContractorServiceImpl implements ContractorService {
 		
 		Contractor savedContractor = contractorRepository.save(contractorDomain);
 		
-		Map<String, Object> contractorCreatedResponse = new HashMap();
-		contractorCreatedResponse.put("contractorId", savedContractor.getContractorId());
-		contractorCreatedResponse.put("contractorName", savedContractor.getContractorName());
-		contractorCreatedResponse.put("serviceProvided", savedContractor.getCompanyType());
-		contractorCreatedResponse.put("contactDetails", savedContractor.getContactDetails());
-		contractorCreatedResponse.put("changedBy", savedContractor.getChangedBy());
-		
-		return contractorCreatedResponse;
+		return contractorMapper.toContractorDtoFromContractorDomain(savedContractor);
 	}
 	
 

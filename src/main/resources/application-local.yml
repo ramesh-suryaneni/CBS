@@ -13,7 +13,7 @@ spring:
                use_jdbc_metadata_defaults:   false
        
 cbssecurity:
-     enabled: true
+     enabled: false
 
 cest_outcome:
   inside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf

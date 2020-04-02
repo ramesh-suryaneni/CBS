@@ -25,7 +25,7 @@ public interface ContractorService {
 	
 	ContractorEmployeeDto getContractorEmployeeByContractorIdAndEmployeeId(Long contractorId,Long employeeId);
 	
-	Map<String, Object> addContractorDetails(ContractorRequest request );
+	ContractorDto addContractorDetails(ContractorRequest request );
 	
 	ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request);
 }
