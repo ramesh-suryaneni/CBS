@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * The persistent class for the contractor_employee_role database table.
@@ -31,12 +34,16 @@ public class ContractorEmployeeRole implements Serializable {
 	@Column(name="changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
 	private String status;
 	
-	@OneToOne
+	@Column(name="date_from")
+	private Timestamp dateFrom;
+	
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 	
@@ -77,6 +84,14 @@ public class ContractorEmployeeRole implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Timestamp getDateFrom() {
+		return dateFrom;
+	}
+
+	public void setDateFrom(Timestamp dateFrom) {
+		this.dateFrom = dateFrom;
 	}
 
 	public ContractorEmployee getContractorEmployee() {
