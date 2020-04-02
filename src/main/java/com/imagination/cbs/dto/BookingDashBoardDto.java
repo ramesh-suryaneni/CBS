@@ -19,3 +19,4 @@ public class BookingDashBoardDto {
 	private BigInteger bookingId;
 	
 }
+

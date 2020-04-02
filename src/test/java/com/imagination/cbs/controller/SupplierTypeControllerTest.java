@@ -6,10 +6,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +21,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.imagination.cbs.dto.RecruitingDto;
-import com.imagination.cbs.service.RecruitingService;
+import com.imagination.cbs.dto.SupplierTypeDto;
+import com.imagination.cbs.service.SupplierTypeService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class RecruitingControllerTest {
+public class SupplierTypeControllerTest {
 
 	@Autowired
     private WebApplicationContext context;
@@ -37,7 +34,7 @@ public class RecruitingControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private RecruitingService recruitingService;
+	private SupplierTypeService supplierService;
 
 	@Before
     public void setup() {
@@ -45,30 +42,30 @@ public class RecruitingControllerTest {
           .webAppContextSetup(context)
           .apply(SecurityMockMvcConfigurers.springSecurity())
           .build();
-    }
+	}
 	
 	@Test
-	public void shouldReturnListOfReasonsForRecruiting() throws Exception {
+	public void shouldReturnListOfSupplierTypeDto() throws Exception {
 
-		when(recruitingService.getAllReasonForRecruiting()).thenReturn(getRecruitingDto());
+		when(supplierService.getAllSupplierTypes()).thenReturn(getSupplierTypeDto());
 
-		mockMvc.perform(get("/recruiting-reasons").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].reasonName", comparesEqualTo("Specific skills required")));
+		mockMvc.perform(get("/supplier-types").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].name", comparesEqualTo("Yash")));
 
-		verify(recruitingService).getAllReasonForRecruiting();
+		verify(supplierService).getAllSupplierTypes();
 	}
 
-	private List<RecruitingDto> getRecruitingDto() {
+	private List<SupplierTypeDto> getSupplierTypeDto() {
 
-		List<RecruitingDto> listOfRecruitingDto = new ArrayList<RecruitingDto>();
+		List<SupplierTypeDto> supplierDtoList = new ArrayList<SupplierTypeDto>();
 
-		RecruitingDto recruitingDto = new RecruitingDto();
-		recruitingDto.setReasonId(1);
-		recruitingDto.setReasonName("Specific skills required");
-		recruitingDto.setReasonDescription("Internal resource not available");
-		listOfRecruitingDto.add(recruitingDto);
+		SupplierTypeDto supplierType = new SupplierTypeDto();
+		supplierType.setId(1);
+		supplierType.setName("Yash");
+		supplierType.setDescription("test data ");
+		supplierDtoList.add(supplierType);
 
-		return listOfRecruitingDto;
+		return supplierDtoList;
 	}
 
 }

@@ -48,6 +48,7 @@ public class RoleServiceImpl implements RoleService {
 			String link = (Boolean.valueOf(dto.getInsideIr35())) ? insideIR35CestPDF : outsideIR35CestPDF;
 			dto.setCestDownloadLink(link);
 
+
 			// Fetch role default rate; UI will use if as default day rate if no
 			// contractor employee selected.
 			List<RoleDefaultRate> rates = roleDefaultRateRepository.findAllByRoleId(roleId);

@@ -1,15 +1,11 @@
 package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,52 +19,51 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.imagination.cbs.dto.RecruitingDto;
-import com.imagination.cbs.service.RecruitingService;
+import com.imagination.cbs.dto.CurrencyDto;
+import com.imagination.cbs.service.CurrencyService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class RecruitingControllerTest {
+public class CurrenciesControllerTest {
 
 	@Autowired
     private WebApplicationContext context;
 	
 	private MockMvc mockMvc;
-
+	
 	@MockBean
-	private RecruitingService recruitingService;
-
+	private CurrencyService currencyService;
+	
 	@Before
     public void setup() {
         this.mockMvc = MockMvcBuilders
           .webAppContextSetup(context)
           .apply(SecurityMockMvcConfigurers.springSecurity())
           .build();
-    }
+	}
 	
 	@Test
-	public void shouldReturnListOfReasonsForRecruiting() throws Exception {
+	public void shouldReturnAllCurrencies() throws Exception {
+		
+		List<CurrencyDto> currencyDtoList = new ArrayList<CurrencyDto>();
+		currencyDtoList.add(createCurrencyDto());
+		
+		when(currencyService.getAllCurrencies()).thenReturn(currencyDtoList);
+		
+		this.mockMvc.perform(get("/currencies").accept(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$[0].currencyName",comparesEqualTo("Euros")));
 
-		when(recruitingService.getAllReasonForRecruiting()).thenReturn(getRecruitingDto());
-
-		mockMvc.perform(get("/recruiting-reasons").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$[0].reasonName", comparesEqualTo("Specific skills required")));
-
-		verify(recruitingService).getAllReasonForRecruiting();
 	}
 
-	private List<RecruitingDto> getRecruitingDto() {
-
-		List<RecruitingDto> listOfRecruitingDto = new ArrayList<RecruitingDto>();
-
-		RecruitingDto recruitingDto = new RecruitingDto();
-		recruitingDto.setReasonId(1);
-		recruitingDto.setReasonName("Specific skills required");
-		recruitingDto.setReasonDescription("Internal resource not available");
-		listOfRecruitingDto.add(recruitingDto);
-
-		return listOfRecruitingDto;
+	public CurrencyDto createCurrencyDto()
+	{
+		CurrencyDto currencyDto = new CurrencyDto();
+		currencyDto.setCurrencyName("Euros");
+		currencyDto.setCurrencyId("103");
+		currencyDto.setCurrencyCode("EUR");
+		currencyDto.setChangedDate(null);
+		currencyDto.setChangedBy(null);
+		
+		return currencyDto;
 	}
-
 }
