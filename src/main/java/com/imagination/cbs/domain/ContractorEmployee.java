@@ -2,6 +2,9 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.sql.Timestamp;
 
 
@@ -23,6 +26,7 @@ public class ContractorEmployee implements Serializable {
 	@Column(name="changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
@@ -45,7 +49,7 @@ public class ContractorEmployee implements Serializable {
 	private Contractor contractor;
 	
 	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne(mappedBy="contractorEmployee")
+	@OneToOne(mappedBy="contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
 
 	//bi-directional one-to-one association to ContractorEmployeeRating
@@ -53,7 +57,7 @@ public class ContractorEmployee implements Serializable {
 	private ContractorEmployeeRating contractorEmployeeRating;
 	
 	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="contractorEmployee")
+	@OneToOne(mappedBy="contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ContractorEmployeeRole contractorEmployeeRole;
 	
 	public ContractorEmployee() {

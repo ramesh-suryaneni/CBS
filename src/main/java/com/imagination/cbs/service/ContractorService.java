@@ -1,10 +1,14 @@
 package com.imagination.cbs.service;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorEmployeeRequest;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
+import com.imagination.cbs.dto.ContractorRequest;
 
 
 public interface ContractorService {
@@ -20,4 +24,8 @@ public interface ContractorService {
 	ContractorDto getContractorByContractorId(Long id);
 	
 	ContractorEmployeeDto getContractorEmployeeByContractorIdAndEmployeeId(Long contractorId,Long employeeId);
+	
+	ContractorDto addContractorDetails(ContractorRequest request );
+	
+	ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request);
 }

@@ -2,6 +2,9 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -24,6 +27,7 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 	@Column(name="changed_by")
 	private String changedBy;
 
+	@CreationTimestamp
 	@Column(name="changed_date")
 	private Timestamp changedDate;
 
@@ -35,7 +39,7 @@ public class ContractorEmployeeDefaultRate implements Serializable {
 	@Column(name="currency_id")
 	private long currencyId;
 	
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="contractor_employee_id")
 	private ContractorEmployee contractorEmployee;
 
