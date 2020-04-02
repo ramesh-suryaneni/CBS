@@ -1,4 +1,4 @@
-package com.imagination.cbs.controller;
+/*package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.Mockito.when;
@@ -65,3 +65,4 @@ public class SupplierWorkLocationTypeControllerTest {
 		return supplierWorkLocationTypeDto;
 	}
 }
+*/
