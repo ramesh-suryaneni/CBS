@@ -26,6 +26,7 @@ import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.service.BookingService;
+import com.imagination.cbs.service.DashBoardService;
 import com.imagination.cbs.util.BookingValidator;
 
 /**
@@ -42,6 +43,9 @@ public class BookingController {
 
 	@Autowired
 	private BookingValidator bookingValidator;
+	
+	@Autowired
+	private DashBoardService dashBoardService;
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
@@ -68,8 +72,8 @@ public class BookingController {
 	}
 
 	@GetMapping()
-	public Page<BookingDashBoardDto> getDraftedUserBookings(@RequestParam String status,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "5") Integer pageSize) {
-		return bookingServiceImpl.getDraftOrCancelledBookings(status, pageNo, pageSize);
+	public Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(@RequestParam String status,
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "100") Integer pageSize) {
+		return dashBoardService.getDashBoardBookingsStatusDetails(status, pageNo, pageSize);
 	}
 }
