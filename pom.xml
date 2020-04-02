@@ -26,7 +26,9 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sonar.sources>src/main/java</sonar.sources>
-		<sonar.exclusions>**/domain/*.java, **/dto/*.java, **/config/SpringSecurityConfig.java, **/cbs/ContractorBookingSystemApplication.java</sonar.exclusions>
+		<sonar.exclusions>**/domain/*.java, **/dto/*.java,
+			**/config/SpringSecurityConfig.java,
+			**/cbs/ContractorBookingSystemApplication.java</sonar.exclusions>
 		<sonar.tests>src/test/java</sonar.tests>
 	</properties>
 
@@ -34,18 +36,27 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
+
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency> 
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+
 		</dependency>
 
 		<dependency>
@@ -72,9 +83,9 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope> 
-			<!-- <exclusions> <exclusion> <groupId>org.junit.vintage</groupId> 
-				<artifactId>junit-vintage-engine</artifactId> </exclusion> </exclusions> -->
+			<scope>test</scope>
+			<!-- <exclusions> <exclusion> <groupId>org.junit.vintage</groupId> <artifactId>junit-vintage-engine</artifactId> 
+				</exclusion> </exclusions> -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -103,13 +114,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<!--  <version>4.12</version> -->
+			<!-- <version>4.12</version> -->
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>com.googlecode.json-simple</groupId>
-		    <artifactId>json-simple</artifactId>
-		    <version>1.1.1</version>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
@@ -122,15 +133,27 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-log4j -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+			
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+
+		</dependency>
 	</dependencies>
 
 	<build>
-	<finalName>ROOT</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<!--  <version>${org.apache.maven.plugins.version}</version> -->
+				<!-- <version>${org.apache.maven.plugins.version}</version> -->
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>

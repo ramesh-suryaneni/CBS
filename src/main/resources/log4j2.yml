@@ -1,0 +1,45 @@
+Configutation:
+  name: Default
+
+  Properties:
+    Property:
+    - name: log-path
+      value: ${sys:catalina.base}/logs/www/CBS/logs
+    - name: archive
+      value: ${log-path}/archive
+  Appenders:
+
+    Console:
+      name: Console-Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+    RollingFile:
+      name: RollingFile-Appender
+      fileName: ${log-path}/app-log.logs
+      filePattern: ${archive}/app.log.%d{yyyy-MM-dd-hh-mm}.logs
+      JSONLayout:
+        complete : false
+        eventEol : true
+        compact : true
+        
+      Policies: 
+          SizeBasedTriggeringPolicy:
+             size: 1 MB 
+      DefaultRolloverStrategy:
+        max: '30'  
+
+  Loggers:
+
+      Root:
+        level: error info
+        AppenderRef:
+          - ref: Console-Appender
+
+      Logger:
+        - name: com.imagination.cbs
+          level: info
+          AppenderRef:
+            - ref: RollingFile-Appender
+              level: error info      
