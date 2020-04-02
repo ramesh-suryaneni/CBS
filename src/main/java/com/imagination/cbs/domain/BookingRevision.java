@@ -39,9 +39,6 @@ public class BookingRevision implements Serializable {
 	@Column(name = "agreement_id")
 	private String agreementId;
 
-	@Column(name = "approval_status_id")
-	private Long approvalStatusId;
-
 	@Column(name = "changed_by")
 	private String changedBy;
 
@@ -147,6 +144,10 @@ public class BookingRevision implements Serializable {
 	@Column(name = "job_name")
 	private String jobname;
 
+	@OneToOne
+	@JoinColumn(name = "approval_status_id")
+	private ApprovalStatusDm approvalStatus;
+
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "supplier_work_location_type")
 	private SupplierWorkLocationTypeDm supplierWorkLocationType;
@@ -168,6 +169,14 @@ public class BookingRevision implements Serializable {
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "contractor_work_region")
 	private Region contractorWorkRegion;
+
+	public ApprovalStatusDm getApprovalStatus() {
+		return approvalStatus;
+	}
+
+	public void setApprovalStatus(ApprovalStatusDm approvalStatus) {
+		this.approvalStatus = approvalStatus;
+	}
 
 	public Region getCommOffRegion() {
 		return commOffRegion;
@@ -239,14 +248,6 @@ public class BookingRevision implements Serializable {
 
 	public void setAgreementId(String agreementId) {
 		this.agreementId = agreementId;
-	}
-
-	public Long getApprovalStatusId() {
-		return approvalStatusId;
-	}
-
-	public void setApprovalStatusId(Long approvalStatusId) {
-		this.approvalStatusId = approvalStatusId;
 	}
 
 	public String getChangedBy() {

@@ -151,7 +151,6 @@ public class BookingServiceImpl implements BookingService {
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		ApprovalStatusDm status = approvalStatusDmRepository
 				.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
-		status.setApprovalStatusId(status.getApprovalStatusId());
 		newBookingDomain.setApprovalStatus(status);
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
@@ -176,9 +175,8 @@ public class BookingServiceImpl implements BookingService {
 		// Booking Status
 		ApprovalStatusDm status = approvalStatusDmRepository
 				.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
-		status.setApprovalStatusId(status.getApprovalStatusId());
 		bookingDomain.setApprovalStatus(status);
-		bookingRevision.setApprovalStatusId(status.getApprovalStatusId());
+		bookingRevision.setApprovalStatus(status);
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
