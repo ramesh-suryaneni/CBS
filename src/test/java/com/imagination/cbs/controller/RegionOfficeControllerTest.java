@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +29,7 @@ import com.imagination.cbs.service.impl.RegionOfficeServiceImpl;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class RegionOfficeControllerTest {
 
 	@Autowired
@@ -47,6 +48,7 @@ public class RegionOfficeControllerTest {
           .build();
 	}
 	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnAllRegions() throws Exception {
 
@@ -61,6 +63,7 @@ public class RegionOfficeControllerTest {
 		verify(regionOfficeService).getAllRegions();
 	}
 
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnAllOfficesBasedOnRegion() throws Exception {
 

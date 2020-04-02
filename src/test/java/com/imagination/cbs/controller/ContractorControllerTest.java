@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +27,7 @@ import com.imagination.cbs.dto.ContractorEmployeeDto;
 import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class ContractorControllerTest {
 
 
@@ -46,6 +47,7 @@ public class ContractorControllerTest {
           .build();
 	}
 	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnContractorByContractorId() throws Exception {
 		
@@ -58,6 +60,7 @@ public class ContractorControllerTest {
 		verify(contractorService).getContractorByContractorId(6214l);
 	}
 	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnContractorEmployeeByContrctorIdAndEmployeeId() throws Exception
 	{

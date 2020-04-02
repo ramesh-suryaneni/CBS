@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,7 +28,7 @@ import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.service.RoleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class RoleControllerTest {
 	
 	@Autowired
@@ -46,6 +47,7 @@ public class RoleControllerTest {
           .build();
 	}
 	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnContractorRoleDto() throws Exception{
 		long roleId = 3214;
@@ -59,6 +61,7 @@ public class RoleControllerTest {
 		verify(roleservice,times(2)).getCESToutcome(roleId);
 	}
 
+	@WithMockUser("/developer")
 	@Test
 	public void shouldThrowExceptionRoleId_Null() throws Exception{
 		

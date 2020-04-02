@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,7 +24,7 @@ import com.imagination.cbs.dto.CurrencyDto;
 import com.imagination.cbs.service.CurrencyService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class CurrenciesControllerTest {
 
 	@Autowired
@@ -41,7 +42,7 @@ public class CurrenciesControllerTest {
           .apply(SecurityMockMvcConfigurers.springSecurity())
           .build();
 	}
-	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnAllCurrencies() throws Exception {
 		
