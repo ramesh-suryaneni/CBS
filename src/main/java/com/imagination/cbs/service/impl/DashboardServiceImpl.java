@@ -1,11 +1,7 @@
 package com.imagination.cbs.service.impl;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.persistence.Tuple;
 
@@ -22,6 +18,7 @@ import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.service.DashBoardService;
 import com.imagination.cbs.service.LoggedInUserService;
+import com.imagination.cbs.util.ResultTrasnsformerHelper;
 
 /**
  * @author Pappu Rout
@@ -30,13 +27,16 @@ import com.imagination.cbs.service.LoggedInUserService;
 
 
 @Service("dashBoardService")
-public class DashboardServiceImpl implements DashBoardService{
+public class DashBoardServiceImpl implements DashBoardService{
 	
 	@Autowired
 	private BookingRevisionRepository bookingRevisionRepository;
 	
 	@Autowired
 	private LoggedInUserService loggedInUserService;
+	
+	@Autowired
+	private ResultTrasnsformerHelper resultTrasnsformerHelper;
 	
 	@Override
 	public Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(String status, int pageNo, int pageSize) {
@@ -57,7 +57,7 @@ public class DashboardServiceImpl implements DashBoardService{
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
 		}
 
-		List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
+		List<BookingDashBoardDto> bookingDashBoardDtos = resultTrasnsformerHelper.transormListOfTupleToListOfInputObject(bookingRevisions, BookingDashBoardDto.class);
 
 		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
 	}
@@ -74,36 +74,16 @@ public class DashboardServiceImpl implements DashBoardService{
 		return PageRequest.of(pageNo, pageSize, sort);
 	}
 
-	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
-		
-		return bookingRevisions.stream().filter((bookingRevision)-> Objects.nonNull((bookingRevision.get("bookingId",BigInteger.class))))
-			.map(bookingRevision -> {
-			BookingDashBoardDto bookingDashBoardDto = new BookingDashBoardDto();
-
-			bookingDashBoardDto.setStatus(bookingRevision.get("status", String.class));
-			bookingDashBoardDto.setJobname(bookingRevision.get("jobName", String.class));
-			bookingDashBoardDto.setRoleName(bookingRevision.get("role", String.class));
-			bookingDashBoardDto.setContractorName(bookingRevision.get("contractor", String.class));
-			bookingDashBoardDto.setContractedFromDate(bookingRevision.get("startDate", Timestamp.class));
-			bookingDashBoardDto.setContractedToDate(bookingRevision.get("endDate", Timestamp.class));
-			bookingDashBoardDto.setChangedBy(bookingRevision.get("changedBy", String.class));
-			bookingDashBoardDto.setChangedDate(bookingRevision.get("changedDate", Timestamp.class));
-			bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
-			
-			return bookingDashBoardDto;
-			
-			}).collect(Collectors.toList());
-	}
 	
 	private Page<BookingDashBoardDto> retrieveBookingRevisionForWaitingForApproval(Long employeeId,  Pageable pageable, List<BookingDashBoardDto> bookingDashboradDtos){
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByJobName = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByJobNumber(employeeId, pageable);
 		
-		List<BookingDashBoardDto> bookingDashboradDtosList = toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByJobName);
+		List<BookingDashBoardDto> bookingDashboradDtosList = resultTrasnsformerHelper.transormListOfTupleToListOfInputObject(retrieveBookingRevisionForWaitingByJobName, BookingDashBoardDto.class);
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId, pageable);
 		
-		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId));
+		bookingDashboradDtosList.addAll(resultTrasnsformerHelper.transormListOfTupleToListOfInputObject(retrieveBookingRevisionForWaitingByEmployeeId, BookingDashBoardDto.class));
 		
 		return new PageImpl<>(bookingDashboradDtosList, pageable, bookingDashboradDtosList.size());
 		

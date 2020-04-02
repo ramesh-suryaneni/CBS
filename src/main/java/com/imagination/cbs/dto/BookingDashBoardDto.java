@@ -9,7 +9,7 @@ import lombok.Data;
 public class BookingDashBoardDto {
 	
 	private String status;
-	private String jobname;
+	private String jobName;
 	private String roleName;
 	private String contractorName;
 	private Timestamp contractedFromDate;
