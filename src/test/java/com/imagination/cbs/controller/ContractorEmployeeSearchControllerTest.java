@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,12 +17,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,7 +33,7 @@ import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class ContractorEmployeeSearchControllerTest {
 
 	@Autowired
@@ -50,6 +50,7 @@ public class ContractorEmployeeSearchControllerTest {
 				.build();
 	}
 
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleId() throws Exception {
 
@@ -63,6 +64,7 @@ public class ContractorEmployeeSearchControllerTest {
 		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");
 	}
 
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleIdAndName() throws Exception {
 
@@ -78,6 +80,7 @@ public class ContractorEmployeeSearchControllerTest {
 				"ASC");
 	}
 
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnEmptyPageResponseOfContractorEmployeeDtoIfContractorNameIsNotPresentInDB()
 			throws Exception {
@@ -116,4 +119,4 @@ public class ContractorEmployeeSearchControllerTest {
 		return new PageImpl<>(contractorEmployeeSearchDtoList, PageRequest.of(0, 5), 2);
 	}
 
-}*/
+}

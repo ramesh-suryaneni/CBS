@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.Mockito.verify;
@@ -6,27 +6,30 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.dto.ContractorEmployeeDto;
 import com.imagination.cbs.service.ContractorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class ContractorControllerTest {
 
 
@@ -46,7 +49,7 @@ public class ContractorControllerTest {
           .build();
 	}
 	
-	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnContractorByContractorId() throws Exception {
 		
@@ -59,20 +62,20 @@ public class ContractorControllerTest {
 		verify(contractorService).getContractorByContractorId(6214l);
 	}
 	
-	
+	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnContractorEmployeeByContrctorIdAndEmployeeId() throws Exception
 	{
 		when(contractorService.getContractorEmployeeByContractorIdAndEmployeeId(6000l, 5000l)).thenReturn(createContractorEmployeeDto());
 		
-		this.mockMvc.perform(get("/contractors/60001/employees/50001").contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/contractors/6000/employees/5000").contentType(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk())
 						.andExpect(jsonPath("$.employeeName", comparesEqualTo("Alex")));
 		
 		verify(contractorService).getContractorEmployeeByContractorIdAndEmployeeId(6000l, 5000l);
 	}
 	
-	@Test
+/*	@Test
 	public void shouldReturnListOfContractorsByContractorName() throws Exception {
 		
 		List<ContractorDto> contractorDtos = getContractorDtos();
@@ -96,7 +99,7 @@ public class ContractorControllerTest {
 
 		verify(contractorService).getContractorsByContractorName("Test");
 	}
-
+*/
 	public List<ContractorDto> getContractorDtos() {
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
 		ContractorDto contractorDto1 = new ContractorDto();
@@ -127,4 +130,3 @@ public class ContractorControllerTest {
 		return contractorEmployeeDto;
 	}
 }
-*/
