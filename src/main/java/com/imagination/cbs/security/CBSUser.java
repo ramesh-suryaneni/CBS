@@ -18,15 +18,15 @@ public class CBSUser implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private Collection<? extends GrantedAuthority> authorities;
-	
+
 	private String email;
 
 	private Long empId;
-	
+
 	private String maconomyEmpNumber;
-	
+
 	private String displayName;
 
 	/**
@@ -58,7 +58,12 @@ public class CBSUser implements UserDetails {
 		this.accountNonLocked = accountNonLocked;
 		this.credentialsNonExpired = credentialsNonExpired;
 	}
-	
+
+	public CBSUser(String displayName) {
+		this.displayName = displayName;
+
+	}
+
 	/**
 	 * @param authorities
 	 * @param email
@@ -72,8 +77,8 @@ public class CBSUser implements UserDetails {
 	 * @param accountNonLocked
 	 * @param credentialsNonExpired
 	 */
-	public CBSUser(String email, Long empId,
-			String maconomyEmpNumber, String displayName, String password, String username, Collection<? extends GrantedAuthority> authorities) {
+	public CBSUser(String email, Long empId, String maconomyEmpNumber, String displayName, String password,
+			String username, Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.email = email;
 		this.empId = empId;
@@ -82,14 +87,13 @@ public class CBSUser implements UserDetails {
 		this.password = password;
 		this.username = username;
 		this.authorities = authorities;
-		
+
 		this.enabled = true;
 		this.accountNonExpired = true;
 		this.accountNonLocked = true;
 		this.credentialsNonExpired = true;
-		
+
 	}
-	
 
 	private String password;
 
@@ -146,7 +150,8 @@ public class CBSUser implements UserDetails {
 	}
 
 	/**
-	 * @param email the email to set
+	 * @param email
+	 *            the email to set
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -160,7 +165,8 @@ public class CBSUser implements UserDetails {
 	}
 
 	/**
-	 * @param empId the empId to set
+	 * @param empId
+	 *            the empId to set
 	 */
 	public void setEmpId(Long empId) {
 		this.empId = empId;
@@ -174,7 +180,8 @@ public class CBSUser implements UserDetails {
 	}
 
 	/**
-	 * @param maconomyEmpNumber the maconomyEmpNumber to set
+	 * @param maconomyEmpNumber
+	 *            the maconomyEmpNumber to set
 	 */
 	public void setMaconomyEmpNumber(String maconomyEmpNumber) {
 		this.maconomyEmpNumber = maconomyEmpNumber;
@@ -188,7 +195,8 @@ public class CBSUser implements UserDetails {
 	}
 
 	/**
-	 * @param displayName the displayName to set
+	 * @param displayName
+	 *            the displayName to set
 	 */
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -38,8 +39,8 @@ import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
+import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.repository.BookingRepository;
-import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
 import com.imagination.cbs.repository.CurrencyRepository;
@@ -50,6 +51,7 @@ import com.imagination.cbs.repository.RoleRepository;
 import com.imagination.cbs.repository.SupplierTypeRepository;
 import com.imagination.cbs.repository.SupplierWorkLocationTypeRepository;
 import com.imagination.cbs.repository.TeamRepository;
+import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
@@ -106,6 +108,9 @@ public class BookingServiceImpl implements BookingService {
 	private ContractorEmployeeRepository contractorEmployeeRepository;
 
 	@Autowired
+	private ApprovalStatusDmRepository approvalStatusDmRepository;
+
+	@Autowired
 	private LoggedInUserService loggedInUserService;
 
 	@Autowired
@@ -144,16 +149,18 @@ public class BookingServiceImpl implements BookingService {
 		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
-		ApprovalStatusDm status = new ApprovalStatusDm();
-		status.setApprovalStatusId(1002L);
+		ApprovalStatusDm status = approvalStatusDmRepository
+				.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
+		status.setApprovalStatusId(status.getApprovalStatusId());
 		newBookingDomain.setApprovalStatus(status);
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
-		
-		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+
+		CBSUser user = loggedInUserService.getLoggedInUserDetails();
+		String loggedInUser = user.getDisplayName();
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
@@ -167,10 +174,11 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setInsideIr35(roleDm.getInsideIr35());
 		}
 		// Booking Status
-		ApprovalStatusDm status = new ApprovalStatusDm();
-		status.setApprovalStatusId(1001L);
+		ApprovalStatusDm status = approvalStatusDmRepository
+				.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		status.setApprovalStatusId(status.getApprovalStatusId());
 		bookingDomain.setApprovalStatus(status);
-		bookingRevision.setApprovalStatusId(1001L);
+		bookingRevision.setApprovalStatusId(status.getApprovalStatusId());
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
@@ -333,6 +341,4 @@ public class BookingServiceImpl implements BookingService {
 		}
 	}
 
-	
-
-	}
+}
