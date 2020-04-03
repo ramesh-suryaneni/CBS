@@ -55,7 +55,7 @@ import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
-import com.imagination.cbs.util.DateUtils;
+import com.imagination.cbs.util.CBSDateUtils;
 
 /**
  * @author Ramesh.Suryaneni
@@ -197,8 +197,8 @@ public class BookingServiceImpl implements BookingService {
 			}
 		}
 
-		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
-		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
+		bookingRevision.setContractedFromDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision.setContractedToDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
 		bookingRevision.setRevisionNumber(revisionNumber);
 		// Contractor Details
