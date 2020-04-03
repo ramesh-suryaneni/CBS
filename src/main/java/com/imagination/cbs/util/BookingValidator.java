@@ -78,7 +78,7 @@ public class BookingValidator implements Validator {
 		if (!insideIr35) {
 			validateWorkTasks(bookingRequest.getWorkTasks(), errors);
 		}
-		if (!insideIr35) {
+		if (insideIr35) {
 			validateWorkDays(bookingRequest.getWorkDays(), errors);
 		}
 	}
