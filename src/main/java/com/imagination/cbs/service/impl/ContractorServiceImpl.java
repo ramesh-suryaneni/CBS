@@ -1,13 +1,10 @@
 package com.imagination.cbs.service.impl;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
