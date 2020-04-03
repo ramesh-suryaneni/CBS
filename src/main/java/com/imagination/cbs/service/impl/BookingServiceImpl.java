@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
-		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, false);
+		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, false);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		bookingRepository.save(newBookingDomain);
@@ -146,7 +146,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking bookingDetails = bookingRepository.findById(bookingId).get();
 		Long revisionNumber = bookingDetails.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get().getRevisionNumber();
-		Booking newBookingDomain = populateBooking(bookingRequest, revisionNumber, true);
+		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		ApprovalStatusDm status = approvalStatusDmRepository
@@ -200,7 +200,7 @@ public class BookingServiceImpl implements BookingService {
 		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
 		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
-		bookingRevision.setRevisionNumber(++revisionNumber);
+		bookingRevision.setRevisionNumber(revisionNumber);
 		// Contractor Details
 		if (!StringUtils.isEmpty(bookingRequest.getContractorId())) {
 			Contractor contractor = contractorRepository.findById(Long.parseLong(bookingRequest.getContractorId()))
