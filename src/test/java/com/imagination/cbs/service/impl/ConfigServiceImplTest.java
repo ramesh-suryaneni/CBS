@@ -42,14 +42,6 @@ public class ConfigServiceImplTest {
 
 	}
 
-	private Config getGoogleKeyValue() {
-		Config obj = new Config();
-		obj.setConfigId(2L);
-		obj.setKeyName("GOOGLE_ID");
-		obj.setKeyValue("73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com");
-		return obj;
-	}
-
 	@Test
 	public void shouldReturnListOfAdobeConfigDetailsByKeyName() {
 		String keyName = "ADOBE";
@@ -67,20 +59,28 @@ public class ConfigServiceImplTest {
 
 	private List<Config> getAdobeConfigKeyValue() {
 
-		List<Config> list = new ArrayList<Config>();
+		List<Config> adobeConfigList = new ArrayList<Config>();
 
+		Config adobeTokenDeatails = new Config();
+		adobeTokenDeatails.setKeyName("ADOBE_TOKEN");
+		adobeTokenDeatails.setKeyValue("TEST_TOKEN");
+
+		Config adobeClientDetails = new Config();
+		adobeClientDetails.setKeyName("ADOBE_CLIENT_ID");
+		adobeClientDetails.setKeyValue("TEST_CLIENT_ID");
+
+		adobeConfigList.add(adobeTokenDeatails);
+		adobeConfigList.add(adobeClientDetails);
+
+		return adobeConfigList;
+	}
+	
+	private Config getGoogleKeyValue() {
 		Config obj = new Config();
-		obj.setKeyName("ADOBE_TOKEN");
-		obj.setKeyValue("TEST_TOKEN");
-
-		Config obj1 = new Config();
-		obj1.setKeyName("ADOBE_CLIENT_ID");
-		obj1.setKeyValue("TEST_CLIENT_ID");
-
-		list.add(obj);
-		list.add(obj1);
-
-		return list;
+		obj.setConfigId(2L);
+		obj.setKeyName("GOOGLE_ID");
+		obj.setKeyValue("73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com");
+		return obj;
 	}
 
 }

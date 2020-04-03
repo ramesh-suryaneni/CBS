@@ -56,14 +56,14 @@ public class MaconomyControllerTest {
 			
 	}
 	
-	public JobDataDto createJobDataDto()
+	private JobDataDto createJobDataDto()
 	{
 		JobDataDto jobDataDto = new JobDataDto();
 		jobDataDto.setData(createJobDetailDto());
 		return jobDataDto;
 	}
 	
-	public JobDetailDto createJobDetailDto()
+	private JobDetailDto createJobDetailDto()
 	{
 		JobDetailDto jobDetailDto = new JobDetailDto();
 		jobDetailDto.setJobname("SE");
