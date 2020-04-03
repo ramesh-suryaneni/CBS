@@ -22,7 +22,6 @@ public class BookingRequest {
 	@Pattern(regexp = "[0-9]+", message = "Supplier Type Id should be numeric only")
 	private String supplierTypeId;
 
-	@NotNull(message = "Commisioning Office cannot be null")
 	@Pattern(regexp = "[0-9]+", message = "Commisionning Office Id should be numeric only")
 	private String commisioningOffice;
 

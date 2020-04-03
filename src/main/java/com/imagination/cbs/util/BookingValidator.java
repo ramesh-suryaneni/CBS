@@ -81,5 +81,8 @@ public class BookingValidator implements Validator {
 		if (insideIr35) {
 			validateWorkDays(bookingRequest.getWorkDays(), errors);
 		}
+		if (insideIr35 && bookingRequest.getCommisioningOffice() == null) {
+			errors.rejectValue("commisioningOffice", BAD_ERROR_CODE, "Commisioning Office cannot be null");
+		}
 	}
 }
