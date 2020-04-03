@@ -56,7 +56,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+" rd.role_id=contractor_employee_role_id"
 			+" join cbs.approval_status_dm asd on"
 			+" br.approval_status_id = asd.approval_status_id"
-			+" where br.team_id in(select team_id from cbs.approver where employe_id=1034 and approver_order in (1,2,3))", nativeQuery = true)
+			+" where br.team_id in(select team_id from cbs.approver where employe_id=:employeeId and approver_order in (1,2,3))", nativeQuery = true)
 	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByEmployeeId(@Param("employeeId") Long employeeId, Pageable pageable);
 	
 	
