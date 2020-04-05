@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
+import com.imagination.cbs.domain.ApproverOverrides;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
@@ -32,6 +33,7 @@ import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.domain.SupplierTypeDm;
 import com.imagination.cbs.domain.SupplierWorkLocationTypeDm;
 import com.imagination.cbs.domain.Team;
+import com.imagination.cbs.dto.ApproveRequest;
 import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
@@ -41,6 +43,7 @@ import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.ApprovalStatusDmRepository;
+import com.imagination.cbs.repository.ApproverOverridesRepository;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -119,6 +122,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private DisciplineMapper disciplineMapper;
+	
+	@Autowired
+	private ApproverOverridesRepository approverOverridesRepository;
 
 	@Transactional
 	@Override
@@ -338,6 +344,83 @@ public class BookingServiceImpl implements BookingService {
 			}).collect(toList());
 			savedBookingRevision.setBookingWorkTasks(bookingWorkTasks);
 		}
+	}
+	
+	@Override
+	public BookingDto cancelooking(Long bookingId) {
+		
+		//TODO: cancel booking
+		
+		return retrieveBookingDetails(bookingId);
+	}
+
+	@Override
+	public BookingDto approveBooking(ApproveRequest request) {
+		
+		CBSUser user = loggedInUserService.getLoggedInUserDetails();
+		
+		Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
+		
+		BookingRevision latestRevision = getLatestRevision(booking);
+		
+		String jobNumber = latestRevision.getJobNumber();
+		Team approverTeam = latestRevision.getTeam();
+		
+		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
+		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
+		
+		if(isInApprovalStatus) {
+			ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(1000L).get(); //pass next status id;
+			
+			switch(request.getAction()) {
+			case "APPROVE" :
+				//check if booking can be overrided.
+				ApproverOverrides approverOverride = approverOverridesRepository.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
+				if(approverOverride != null) {
+					//TODO: process request
+				}else if(isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)){
+					//TODO: process request
+					
+				}else {
+					//TODO:throw 403 error
+				}
+				break;
+			case "HRAPPROVE" :
+			
+			}
+			
+			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+		}
+		
+		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+	}
+	
+	private BookingRevision getLatestRevision(Booking booking) {
+		
+		return booking.getBookingRevisions().stream()
+				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get();
+		
+	}
+	
+	private boolean isUserCanApprove(Long teamId, Long empId, Long currentStatus) {
+		//TODO:check if user is part of approval process as per team
+		return true;
+	}
+	
+	private boolean isInApproverStatus(int status) {
+		//TODO:implement switch to get status, with ENUM;
+				/*
+				 * switch(currentApprovalStatus.intValue()) { case
+				 * ApprovalStatusConstant.APPROVAL_1: }
+				 */
+		boolean result = false;
+		switch(status) {
+			case 10001:
+			case 10002:
+			case 10003:
+				result = true;
+		}
+		return result;
 	}
 
 }
