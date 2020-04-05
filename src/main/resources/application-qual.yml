@@ -7,7 +7,7 @@ spring:
       generate-ddl:   false
       properties:
          hibernate:
-            default_schema:   dbo
+            default_schema:   cbs
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
@@ -16,6 +16,6 @@ cbssecurity:
      enabled: true
 
 cest_outcome:
-  inside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf
-  outside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf            
+  inside_ir35_pdf: https://cbsbucketwa.blob.core.windows.net/cest-forms/IR35 Example PDF inside.pdf
+  outside_ir35_pdf: https://cbsbucketwa.blob.core.windows.net/cest-forms/IR35 Example PDF outside.pdf            
                
