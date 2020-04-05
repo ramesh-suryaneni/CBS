@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 
+import io.swagger.models.auth.In;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -40,10 +42,10 @@ public class SwaggerConfig {
     public Docket api() { 
         return new Docket(DocumentationType.SWAGGER_2)
         		.securitySchemes(Arrays.asList(apiKey()))
-                //.securityContexts(Collections.singletonList(securityContext()))
+                .securityContexts(Collections.singletonList(securityContext()))
         		.apiInfo(DEFAULT_API_INFO)
         		.select()
-        		//.apis(RequestHandlerSelectors.any())
+        		.apis(RequestHandlerSelectors.any())
         		.apis(RequestHandlerSelectors.basePackage("com.imagination.cbs"))
         		.paths(PathSelectors.any())
         		.build();                                           
@@ -56,10 +58,10 @@ public class SwaggerConfig {
     private List<SecurityReference> defaultAuth() {
       final AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
       final AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};
-      return Collections.singletonList(new SecurityReference("Bearer", authorizationScopes));
+      return Collections.singletonList(new SecurityReference("Token Access", authorizationScopes));
     }
 
     private ApiKey apiKey() {
-      return new ApiKey("Bearer", "Authorization", "header");
+      return new ApiKey("Token Access", HttpHeaders.AUTHORIZATION, In.HEADER.name());
     } 
 }
