@@ -73,7 +73,7 @@ public class BookingController {
 
 	@GetMapping()
 	public Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(@RequestParam String status,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "100") Integer pageSize) {
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "1000") Integer pageSize) {
 		return dashBoardService.getDashBoardBookingsStatusDetails(status, pageNo, pageSize);
 	}
 }
