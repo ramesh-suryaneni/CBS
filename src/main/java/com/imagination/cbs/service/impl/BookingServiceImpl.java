@@ -36,6 +36,7 @@ import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
@@ -192,7 +193,7 @@ public class BookingServiceImpl implements BookingService {
 				bookingDomain.setTeam(teamOne);
 			} catch (Exception e) {
 				if (isSubmit) {
-					throw e;
+					throw new CBSValidationException("Invalid Job Number");
 				}
 			}
 		}
