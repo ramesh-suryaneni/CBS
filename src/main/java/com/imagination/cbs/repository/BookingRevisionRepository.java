@@ -44,16 +44,17 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+" FROM cbs.approver_override_jobs aoj "
 			+" join cbs.booking_revision br on  br.job_number = aoj.job_number" 
 			+" join cbs.approval_status_dm asd on asd.approval_status_id=br.approval_status_id"
-			+" join cbs.role_dm rd on rd.role_id = br.contractor_employee_role_id"
+			+" join cbs.role_dm rd on rd.role_id = br.role_id"
 			+" where aoj.employee_Id = :employeeId"
 			+" and asd.approval_name in ('Waiting on Approval 1','Waiting on Approval 2','Waiting on Approval 3')", nativeQuery = true)
+	
 	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByJobNumber(@Param("employeeId") Long employeeId, Pageable pageable);
 	
 	
 	@Query(value = "SELECT asd.approval_name as status, br.booking_id as bookingId, br.job_name as jobName, rd.role_name as roleName, br.contractor_name as contractorName,"
 			+" br.contracted_from_date as contractedFromDate, br.contracted_to_date as contractedToDate, br.changed_by as changedBy, br.changed_date as changedDate" 
 			+" FROM cbs.role_dm rd join cbs.booking_revision br on"
-			+" rd.role_id=contractor_employee_role_id"
+			+" rd.role_id=br.role_id"
 			+" join cbs.approval_status_dm asd on"
 			+" br.approval_status_id = asd.approval_status_id"
 			+" where br.team_id in(select team_id from cbs.approver where employe_id=:employeeId and approver_order in (1,2,3))", nativeQuery = true)
