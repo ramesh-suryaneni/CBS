@@ -1,13 +1,13 @@
 spring:
    datasource:
-      url:   jdbc:sqlserver://testcests.database.windows.net:1433;database=cbs-database      
-      username:   cbsapp_admin
-      password:   1%2wJ}4]qNVm#*E7n+@TtT
+      url:   ${SPRING_DATASOURCE_URL}
+      username:   ${SPRING_DATASOURCE_USERNAME}
+      password:   ${SPRING_DATASOURCE_PASSWORD}
    jpa:
       generate-ddl:   false
       properties:
          hibernate:
-            default_schema:   cbs
+            default_schema:   ${SPRING_DATASOURCE_DBSCHEMA}
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
@@ -17,5 +17,4 @@ cbssecurity:
 
 cest_outcome:
   inside_ir35_pdf: https://cbsbucketwa.blob.core.windows.net/cest-forms/IR35 Example PDF inside.pdf
-  outside_ir35_pdf: https://cbsbucketwa.blob.core.windows.net/cest-forms/IR35 Example PDF outside.pdf            
-               
+  outside_ir35_pdf: https://cbsbucketwa.blob.core.windows.net/cest-forms/IR35 Example PDF outside.pdf
