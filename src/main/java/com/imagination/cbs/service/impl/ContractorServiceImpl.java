@@ -73,6 +73,15 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
+	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetails(int pageNo, int pageSize, String sortingField,
+			String sortingOrder) {
+		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findAll(pageable);
+
+		return toContractorEmployeeDtoPage(contractorEmployeePage);
+	}
+
+	@Override
 	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize,
 			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
