@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.List;
 
@@ -143,6 +144,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, false);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
+		newBookingDomain.setChangedDate(bookingDetails.getChangedDate());
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -156,9 +158,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
-		ApprovalStatusDm status = approvalStatusDmRepository
-				.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
-		newBookingDomain.setApprovalStatus(status);
+		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -180,8 +180,12 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setInsideIr35(roleDm.getInsideIr35());
 		}
 		// Booking Status
-		ApprovalStatusDm status = approvalStatusDmRepository
-				.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		ApprovalStatusDm status = null;
+		if (isSubmit) {
+			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
+		} else {
+			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		}
 		bookingDomain.setApprovalStatus(status);
 		bookingRevision.setApprovalStatus(status);
 		// This is for booking job number
@@ -204,7 +208,8 @@ public class BookingServiceImpl implements BookingService {
 			}
 		}
 
-		bookingRevision.setContractedFromDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision
+				.setContractedFromDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
 		bookingRevision.setContractedToDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
 		bookingRevision.setRevisionNumber(revisionNumber);
