@@ -1,9 +1,9 @@
 package com.imagination.cbs.service;
 
-import com.imagination.cbs.model.AdobeOAuth;
+import com.imagination.cbs.dto.AdobeOAuthDto;
 
 public interface OAuthService {
 
-	boolean saveOrUpdateAccessToken(AdobeOAuth oAuth);
+	boolean saveOrUpdateAccessToken(AdobeOAuthDto adobeOAuthDto);
 
 }
