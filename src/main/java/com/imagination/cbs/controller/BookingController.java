@@ -80,7 +80,7 @@ public class BookingController {
 	}
 	
 	@PostMapping("/process-request")
-	public BookingDto approveBooking(@RequestBody ApproveRequest request) {
+	public BookingDto approveBooking(@RequestBody ApproveRequest request) throws Exception{
 		
 		return bookingServiceImpl.approveBooking(request);
 		

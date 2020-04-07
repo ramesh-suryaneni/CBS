@@ -23,6 +23,6 @@ public interface BookingService {
 	
 	public BookingDto cancelooking(Long bookingId);
 	
-	public BookingDto approveBooking(ApproveRequest request);
+	public BookingDto approveBooking(ApproveRequest request) throws Exception;
 
 }
