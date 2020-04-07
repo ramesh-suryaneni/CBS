@@ -40,8 +40,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.imagination.cbs.domain.Config;
+import com.imagination.cbs.dto.AdobeOAuthDto;
 import com.imagination.cbs.exception.CBSApplicationException;
-import com.imagination.cbs.model.AdobeOAuth;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeOAuthTokensService;
 import com.imagination.cbs.service.OAuthService;
@@ -100,10 +100,10 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		}
 	}
 
-	public AdobeOAuth getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken) {
+	public AdobeOAuthDto getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken) {
 		log.debug("oAuthToken::Refresh:: {}", oAuthRefreshToken);
 		JsonNode response = null;
-		AdobeOAuth oAuth = null;
+		AdobeOAuthDto adobeOAuthDto = null;
 
 		String uri = OAUTH_BASE_URL + OAUTH_REFRESH_TOKEN_ENDPOINT;
 		HttpHeaders headers = new HttpHeaders();
@@ -116,15 +116,15 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 			HttpEntity<?> httpEntity = new HttpEntity<>(requestBody, headers);
 
 			response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, JsonNode.class).getBody();
-			oAuth = convertJsonToObj(response);
-			log.info("Get access token using aefresh token::: {}", oAuth);
+			adobeOAuthDto = convertJsonToObj(response);
+			log.info("Get access token using aefresh token::: {}", adobeOAuthDto);
 
-			oAuth.setRefreshToken(oAuthRefreshToken);
+			adobeOAuthDto.setRefreshToken(oAuthRefreshToken);
 
 		} catch (Exception e) {
 			log.info("Exception refresh token:::{}", e);
 		}
-		return oAuth;
+		return adobeOAuthDto;
 	}
 
 	public String getBaseURIForRestAPI(String accessToken) {
@@ -155,28 +155,28 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		}
 	}
 
-	public AdobeOAuth convertJsonToObj(JsonNode res) {
-		AdobeOAuth oAuth = null;
+	public AdobeOAuthDto convertJsonToObj(JsonNode res) {
+		AdobeOAuthDto adobeOAuthDto = null;
 
 		try {
-			oAuth = new AdobeOAuth();
-			oAuth.setAccessToken(res.path(ACCESS_TOKEN).asText());
-			oAuth.setRefreshToken(res.path(REFRESH_TOKEN).asText());
-			oAuth.setTokenType(res.path(TOKEN_TYPE).asText());
-			oAuth.setExpiresIn(res.path(EXPIRES_IN).asInt());
-			log.info("JsonNode to AdobeoAuth:: {}", oAuth);
+			adobeOAuthDto = new AdobeOAuthDto();
+			adobeOAuthDto.setAccessToken(res.path(ACCESS_TOKEN).asText());
+			adobeOAuthDto.setRefreshToken(res.path(REFRESH_TOKEN).asText());
+			adobeOAuthDto.setTokenType(res.path(TOKEN_TYPE).asText());
+			adobeOAuthDto.setExpiresIn(res.path(EXPIRES_IN).asInt());
+			log.info("JsonNode to AdobeoAuth:: {}", adobeOAuthDto);
 
 		} catch (Exception e) {
 			log.info("Exception inside convertJsonToObj():: {}" + e);
 		}
 
-		return oAuth;
+		return adobeOAuthDto;
 	}
 
-	public AdobeOAuth getNewAccessToken(String oauthRefreshToken) {
+	public AdobeOAuthDto getNewAccessToken(String oauthRefreshToken) {
 		log.info("AdobeOAuth:::OAuthRefreshToken:: {}", oauthRefreshToken);
 		ResponseEntity<JsonNode> results = null;
-		AdobeOAuth oAuths = null;
+		AdobeOAuthDto adobeOAuthDto = null;
 
 		String url = OAUTH_BASE_URL + OAUTH_ACCESS_TOKEN_ENDPOINT;
 		MultiValueMap<String, String> headers = new HttpHeaders();
@@ -190,12 +190,12 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 				results = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
 				log.info("AdobeOAuth:::results: {}", results);
-				oAuths = convertJsonToObj(results.getBody());
+				adobeOAuthDto = convertJsonToObj(results.getBody());
 				log.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
 
 			} else {
-				oAuths = getOauthAccessTokenFromRefreshToken(oauthRefreshToken);
-				log.info("Get Access Token Used by Refresh Token :::{}", oAuths);
+				adobeOAuthDto = getOauthAccessTokenFromRefreshToken(oauthRefreshToken);
+				log.info("Get Access Token Used by Refresh Token :::{}", adobeOAuthDto);
 			}
 
 		} catch (Exception e) {
@@ -203,12 +203,12 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 			throw new CBSApplicationException(e.getLocalizedMessage());
 		}
 
-		saveOrUpdateAdobeKeys(oAuths);
-		return oAuths;
+		saveOrUpdateAdobeKeys(adobeOAuthDto);
+		return adobeOAuthDto;
 
 	}
 
-	private void saveOrUpdateAdobeKeys(AdobeOAuth oAuth) {
+	private void saveOrUpdateAdobeKeys(AdobeOAuthDto oAuth) {
 
 		boolean result = oAuthService.saveOrUpdateAccessToken(oAuth);
 		log.info("Inside saveOrUpdateAdobeKeys() :::: {}" + result);
