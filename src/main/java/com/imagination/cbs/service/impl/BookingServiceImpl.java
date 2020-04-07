@@ -30,6 +30,7 @@ import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
 import com.imagination.cbs.domain.ContractorWorkSite;
 import com.imagination.cbs.domain.CurrencyDm;
+import com.imagination.cbs.domain.EmployeeMapping;
 import com.imagination.cbs.domain.OfficeDm;
 import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.domain.Region;
@@ -452,8 +453,26 @@ public class BookingServiceImpl implements BookingService {
 	}
 	
 	private boolean isUserCanApprove(Long teamId, Long empId, Long currentStatus) {
-		//TODO:check if user is part of approval process as per team
-		return true;
+		Long order = 0L;
+		Team team = new Team();
+		team.setTeamId(teamId);
+		
+		EmployeeMapping employee = new EmployeeMapping();
+		employee.setEmployeeId(empId);
+		switch(currentStatus.intValue()) {
+		case 1002:
+			order = 1L;
+			break;
+		case 1003:
+			order = 2L;
+			break;
+		case 1004:
+			order = 3L;
+			break;
+		}
+		
+		Approver approver = approverRepository.findByTeamAndEmployeeAndApproverOrder(team, employee, order);
+		return (approver != null);
 	}
 	
 	private boolean isInApproverStatus(int status) {
@@ -469,7 +488,7 @@ public class BookingServiceImpl implements BookingService {
 	
 	private Long getNextApprovalStatus(Long currentStatus, Team approverTeam) {
 		
-		List<Approver> approvers = approverRepository.findAllByTeamId(approverTeam.getTeamId());
+		List<Approver> approvers = approverRepository.findAllByTeam(approverTeam);
 		Long maxApproverOrder = approvers.stream()
 				.max(Comparator.comparing(Approver::getApproverOrder)).get().getApproverOrder();
 		

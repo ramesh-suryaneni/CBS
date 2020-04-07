@@ -19,7 +19,7 @@ import com.imagination.cbs.domain.Team;
 @Repository
 public interface ApproverRepository extends JpaRepository<Approver, Long> {
 	
-	public List<Approver> findAllByTeamId(Long teamId);
+	public List<Approver> findAllByTeam(Team team);
 	
 	Approver findByTeamAndEmployeeAndApproverOrder(Team team, EmployeeMapping employee, Long order);
 
