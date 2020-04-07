@@ -8,7 +8,7 @@ import java.util.Date;
  * @author pravin.budage
  *
  */
-public class DateUtils {
+public class CBSDateUtils {
 
 	public static Timestamp convertDateToTimeStamp(String date) {
 		Timestamp timeStamp = null;
@@ -20,5 +20,13 @@ public class DateUtils {
 			e.printStackTrace();
 		}
 		return timeStamp;
+	}
+	
+	public static String conevrtTimeStampIntoStringFormat(Timestamp timestamp){
+       if(null != timestamp){
+		Date date = new Date(timestamp.getTime());
+        return new SimpleDateFormat("dd/MM/yyy").format(date);
+       }
+       return null;
 	}
 }

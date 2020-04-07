@@ -10,8 +10,8 @@ import lombok.Data;
  *
  */
 @Data
-public class SupplierWorkLocationTypeDto {
-	
+public class SiteOptionsDto {
+
 	private String id;
 
 	private String name;
@@ -19,5 +19,4 @@ public class SupplierWorkLocationTypeDto {
 	private String changedBy;
 
 	private String changedDateTime;
-
 }

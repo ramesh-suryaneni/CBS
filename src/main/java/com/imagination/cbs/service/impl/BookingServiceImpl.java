@@ -7,6 +7,8 @@ import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,28 +20,33 @@ import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
+import com.imagination.cbs.domain.ApproverOverrides;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
+import com.imagination.cbs.domain.ContractorWorkSite;
 import com.imagination.cbs.domain.CurrencyDm;
 import com.imagination.cbs.domain.OfficeDm;
 import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.domain.Region;
 import com.imagination.cbs.domain.RoleDm;
+import com.imagination.cbs.domain.SiteOptions;
 import com.imagination.cbs.domain.SupplierTypeDm;
-import com.imagination.cbs.domain.SupplierWorkLocationTypeDm;
 import com.imagination.cbs.domain.Team;
+import com.imagination.cbs.dto.ApproveRequest;
 import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.ApprovalStatusDmRepository;
+import com.imagination.cbs.repository.ApproverOverridesRepository;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -48,14 +55,14 @@ import com.imagination.cbs.repository.OfficeRepository;
 import com.imagination.cbs.repository.RecruitingRepository;
 import com.imagination.cbs.repository.RegionRepository;
 import com.imagination.cbs.repository.RoleRepository;
+import com.imagination.cbs.repository.SiteOptionsRepository;
 import com.imagination.cbs.repository.SupplierTypeRepository;
-import com.imagination.cbs.repository.SupplierWorkLocationTypeRepository;
 import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
-import com.imagination.cbs.util.DateUtils;
+import com.imagination.cbs.util.CBSDateUtils;
 
 /**
  * @author Ramesh.Suryaneni
@@ -90,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
 	private ContractorRepository contractorRepository;
 
 	@Autowired
-	private SupplierWorkLocationTypeRepository supplierWorkLocationTypeRepository;
+	private SiteOptionsRepository siteOptionsRepository;
 
 	@Autowired
 	private SupplierTypeRepository supplierTypeRepository;
@@ -119,6 +126,9 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private DisciplineMapper disciplineMapper;
 
+	@Autowired
+	private ApproverOverridesRepository approverOverridesRepository;
+
 	@Transactional
 	@Override
 	public BookingDto addBookingDetails(BookingRequest bookingRequest) {
@@ -136,6 +146,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, false);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
+		newBookingDomain.setChangedDate(bookingDetails.getChangedDate());
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -149,9 +160,7 @@ public class BookingServiceImpl implements BookingService {
 		Booking newBookingDomain = populateBooking(bookingRequest, ++revisionNumber, true);
 		newBookingDomain.setBookingId(bookingId);
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
-		ApprovalStatusDm status = approvalStatusDmRepository
-				.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
-		newBookingDomain.setApprovalStatus(status);
+		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
 		return retrieveBookingDetails(bookingId);
 	}
@@ -173,8 +182,12 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setInsideIr35(roleDm.getInsideIr35());
 		}
 		// Booking Status
-		ApprovalStatusDm status = approvalStatusDmRepository
-				.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		ApprovalStatusDm status = null;
+		if (isSubmit) {
+			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
+		} else {
+			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+		}
 		bookingDomain.setApprovalStatus(status);
 		bookingRevision.setApprovalStatus(status);
 		// This is for booking job number
@@ -192,13 +205,14 @@ public class BookingServiceImpl implements BookingService {
 				bookingDomain.setTeam(teamOne);
 			} catch (Exception e) {
 				if (isSubmit) {
-					throw e;
+					throw new CBSValidationException("Invalid Job Number");
 				}
 			}
 		}
 
-		bookingRevision.setContractedFromDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
-		bookingRevision.setContractedToDate(DateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
+		bookingRevision
+				.setContractedFromDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedFromDate()));
+		bookingRevision.setContractedToDate(CBSDateUtils.convertDateToTimeStamp(bookingRequest.getContractedToDate()));
 		bookingRevision.setChangedBy(loggedInUser);
 		bookingRevision.setRevisionNumber(revisionNumber);
 		// Contractor Details
@@ -206,18 +220,12 @@ public class BookingServiceImpl implements BookingService {
 			Contractor contractor = contractorRepository.findById(Long.parseLong(bookingRequest.getContractorId()))
 					.get();
 			bookingRevision.setContractor(contractor);
-			bookingRevision.setContractorName(contractor.getContractorName());
-			bookingRevision.setContractorType(contractor.getCompanyType());
-			bookingRevision.setContractorContactDetails(contractor.getContactDetails());
 		}
 		// Employee details
 		if (!StringUtils.isEmpty(bookingRequest.getContractEmployeeId())) {
 			ContractorEmployee contractorEmployee = contractorEmployeeRepository
 					.findById(Long.valueOf(bookingRequest.getContractEmployeeId())).get();
 			bookingRevision.setContractEmployee(contractorEmployee);
-			bookingRevision.setContractorEmployeeName(contractorEmployee.getEmployeeName());
-			bookingRevision.setContractorContactDetails(contractorEmployee.getContactDetails());
-			bookingRevision.setKnownAs(contractorEmployee.getKnownAs());
 		}
 		// Office Details
 		if (!StringUtils.isEmpty(bookingRequest.getCommisioningOffice())) {
@@ -268,12 +276,6 @@ public class BookingServiceImpl implements BookingService {
 			CurrencyDm currency = currencyRepository.findById(Long.valueOf(bookingRequest.getCurrencyId())).get();
 			bookingRevision.setCurrency(currency);
 		}
-		// Contractor Work Location Type
-		if (!StringUtils.isEmpty(bookingRequest.getSupplierWorkLocationType())) {
-			SupplierWorkLocationTypeDm supplierWorkLocationType = supplierWorkLocationTypeRepository
-					.findById(Long.valueOf(bookingRequest.getSupplierWorkLocationType())).get();
-			bookingRevision.setSupplierWorkLocationType(supplierWorkLocationType);
-		}
 		// Comoff Regions
 		if (!StringUtils.isEmpty(bookingRequest.getCommOffRegion())) {
 			Region commOffRegion = regionRepository.findById(Long.valueOf(bookingRequest.getCommOffRegion())).get();
@@ -289,6 +291,8 @@ public class BookingServiceImpl implements BookingService {
 		populateMonthlyWorkDays(bookingRequest, bookingRevision);
 		// Work Tasks
 		populateWorkTasks(bookingRequest, bookingRevision);
+		// Site Options
+		populateSiteOptions(bookingRequest, bookingRevision);
 		bookingDomain.addBookingRevision(bookingRevision);
 		return bookingDomain;
 	}
@@ -305,6 +309,20 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setDiscipline(
 				disciplineMapper.toDisciplineDtoFromDisciplineDomain(bookingRevision.getRole().getDiscipline()));
 		return bookingDto;
+	}
+
+	private void populateSiteOptions(BookingRequest bookingRequest, BookingRevision savedBookingRevision) {
+		if (bookingRequest.getSiteOptions() != null) {
+			List<ContractorWorkSite> list = new ArrayList<ContractorWorkSite>();
+			bookingRequest.getSiteOptions().forEach(siteId -> {
+				SiteOptions siteOptions = siteOptionsRepository.findById(Long.valueOf(siteId)).get();
+				ContractorWorkSite contractorWorkSite = new ContractorWorkSite();
+				contractorWorkSite.setBookingRevision(savedBookingRevision);
+				contractorWorkSite.setSiteOptions(siteOptions);
+				list.add(contractorWorkSite);
+			});
+			savedBookingRevision.setContractorWorkSites(list);
+		}
 	}
 
 	private void populateMonthlyWorkDays(BookingRequest bookingRequest, BookingRevision savedBookingRevision) {
@@ -337,6 +355,87 @@ public class BookingServiceImpl implements BookingService {
 			}).collect(toList());
 			savedBookingRevision.setBookingWorkTasks(bookingWorkTasks);
 		}
+	}
+
+	@Override
+	public BookingDto cancelooking(Long bookingId) {
+
+		// TODO: cancel booking
+
+		return retrieveBookingDetails(bookingId);
+	}
+
+	@Override
+	public BookingDto approveBooking(ApproveRequest request) {
+
+		CBSUser user = loggedInUserService.getLoggedInUserDetails();
+
+		Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
+
+		BookingRevision latestRevision = getLatestRevision(booking);
+
+		String jobNumber = latestRevision.getJobNumber();
+		Team approverTeam = latestRevision.getTeam();
+
+		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
+		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
+
+		if (isInApprovalStatus) {
+			ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(1000L).get(); // pass
+																									// next
+																									// status
+																									// id;
+
+			switch (request.getAction()) {
+			case "APPROVE":
+				// check if booking can be overrided.
+				ApproverOverrides approverOverride = approverOverridesRepository
+						.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
+				if (approverOverride != null) {
+					// TODO: process request
+				} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
+					// TODO: process request
+
+				} else {
+					// TODO:throw 403 error
+				}
+				break;
+			case "HRAPPROVE":
+
+			}
+
+			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+		}
+
+		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+	}
+
+	private BookingRevision getLatestRevision(Booking booking) {
+
+		return booking.getBookingRevisions().stream().max(Comparator.comparing(BookingRevision::getRevisionNumber))
+				.get();
+
+	}
+
+	private boolean isUserCanApprove(Long teamId, Long empId, Long currentStatus) {
+		// TODO:check if user is part of approval process as per team
+		return true;
+	}
+
+	private boolean isInApproverStatus(int status) {
+		// TODO:implement switch to get status, with ENUM;
+		/*
+		 * switch(currentApprovalStatus.intValue()) { case
+		 * ApprovalStatusConstant.APPROVAL_1: }
+		 */
+		boolean result = false;
+		switch (status) {
+		case 10001:
+		case 10002:
+		case 10003:
+			result = true;
+		}
+		return result;
 	}
 
 }

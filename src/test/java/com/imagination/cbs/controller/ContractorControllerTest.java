@@ -105,8 +105,9 @@ public class ContractorControllerTest {
 		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
 		
 	}
-	
-	@WithMockUser("developer")
+
+
+	@WithMockUser("devloper")
 	@Test
 	public void shouldAddNewContractor() throws Exception
 	{
@@ -150,7 +151,8 @@ public class ContractorControllerTest {
 		verify(contractorService).getContractorDeatils(0, 10, "contractorName", "ASC");
 	}
 
-	private List<ContractorDto> getContractorDtos() {
+
+	public List<ContractorDto> getContractorDtos() {
 		
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
 		
@@ -186,7 +188,7 @@ public class ContractorControllerTest {
 		return contractorEmployeeDto;
 	}
 	
-	private ContractorEmployeeRequest createContractorEmployeeRequest()
+	public ContractorEmployeeRequest createContractorEmployeeRequest()
 	{
 		ContractorEmployeeRequest contractorEmpRequest = new ContractorEmployeeRequest();
 		contractorEmpRequest.setContractorEmployeeName("Akshay");
@@ -198,7 +200,7 @@ public class ContractorControllerTest {
 		return contractorEmpRequest;
 	}
 	
-	private ContractorRequest createContractorRequest()
+	public ContractorRequest createContractorRequest()
 	{
 		ContractorRequest contractorRequest = new ContractorRequest();
 		contractorRequest.setContactDetails("Details5");
@@ -208,7 +210,7 @@ public class ContractorControllerTest {
 		return contractorRequest;
 	}
 	
-	private Page<ContractorDto> createPageData()
+	public Page<ContractorDto> createPageData()
 	{
 		return new PageImpl<>(getContractorDtos(),PageRequest.of(0, 10),2);
 	}

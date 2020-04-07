@@ -71,15 +71,14 @@ public class BookingValidator implements Validator {
 		if (insideIr35 && bookingRequest.getEmployerTaxPercent() == null) {
 			errors.rejectValue("employerTaxPercent", BAD_ERROR_CODE, "Employer Tax Percent cannot be null");
 		}
-		if (!insideIr35 && bookingRequest.getSupplierWorkLocationType() == null) {
-			errors.rejectValue("supplierWorkLocationType", BAD_ERROR_CODE,
-					"Supplier Work Location Type cannot be null");
-		}
 		if (!insideIr35) {
 			validateWorkTasks(bookingRequest.getWorkTasks(), errors);
 		}
-		if (!insideIr35) {
+		if (insideIr35) {
 			validateWorkDays(bookingRequest.getWorkDays(), errors);
+		}
+		if (insideIr35 && bookingRequest.getCommisioningOffice() == null) {
+			errors.rejectValue("commisioningOffice", BAD_ERROR_CODE, "Commisioning Office cannot be null");
 		}
 	}
 }

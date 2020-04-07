@@ -25,21 +25,11 @@ public class BookingDto {
 
 	private String contractedToDate;
 
-	private String contractorContactDetails;
-
-	private String contractorEmployeeName;
-
-	private String contractorName;
-
 	private String contractorSignedDate;
 
 	private String contractorTotalAvailableDays;
 
 	private String contractorTotalWorkingDays;
-
-	private String contractorType;
-
-	private String employeeContactDetails;
 
 	private String employerTaxPercent;
 
@@ -67,8 +57,6 @@ public class BookingDto {
 
 	private SupplierTypeDto supplierType;
 
-	private SupplierWorkLocationTypeDto supplierWorkLocationType;
-
 	private RecruitingDto reasonForRecruiting;
 
 	private OfficeDto commisioningOffice;
@@ -82,4 +70,6 @@ public class BookingDto {
 	private RegionDto commOffRegion;
 
 	private RegionDto contractorWorkRegion;
+
+	private List<ContractorWorkSiteDto> contractorWorkSites;
 }

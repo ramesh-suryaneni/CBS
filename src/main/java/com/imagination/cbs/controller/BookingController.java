@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imagination.cbs.dto.ApproveRequest;
 import com.imagination.cbs.dto.BookingDashBoardDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
@@ -73,7 +75,28 @@ public class BookingController {
 
 	@GetMapping()
 	public Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(@RequestParam String status,
-			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "100") Integer pageSize) {
+			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "1000") Integer pageSize) {
 		return dashBoardService.getDashBoardBookingsStatusDetails(status, pageNo, pageSize);
+	}
+	
+	@PostMapping("/process-request")
+	public BookingDto approveBooking(@RequestBody ApproveRequest request) {
+		
+		return bookingServiceImpl.approveBooking(request);
+		
+	}
+	
+	@GetMapping("/{booking_id}")
+	public BookingDto getBookingDetails(@PathVariable("booking_id") Long bookingId) {
+		
+		return bookingServiceImpl.retrieveBookingDetails(bookingId);
+		
+	}
+	
+	@DeleteMapping("/{booking_id}")
+	public BookingDto canceBooking(@PathVariable("booking_id") Long bookingId) {
+		
+		return bookingServiceImpl.cancelooking(bookingId);
+		
 	}
 }

@@ -44,16 +44,16 @@ public class RecruitingServiceImplTest {
 
 	private List<ReasonsForRecruiting> getListOfReasonsForRecruiting() {
 
-		List<ReasonsForRecruiting> list = new ArrayList<>();
+		List<ReasonsForRecruiting> reasonsForRecruitingList = new ArrayList<>();
 
 		ReasonsForRecruiting recruiting = new ReasonsForRecruiting();
 		recruiting.setReasonId(2L);
 		recruiting.setReasonName("Specific skills required");
 		recruiting.setReasonDescription("Specific skills required");
 
-		list.add(recruiting);
+		reasonsForRecruitingList.add(recruiting);
 
-		return list;
+		return reasonsForRecruitingList;
 	}
 
 	private List<RecruitingDto> getListOfRecruitingDto() {

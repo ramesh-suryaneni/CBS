@@ -1,7 +1,6 @@
 package com.imagination.cbs.dto;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
 
 import lombok.Data;
 
@@ -12,11 +11,11 @@ public class BookingDashBoardDto {
 	private String jobName;
 	private String roleName;
 	private String contractorName;
-	private Timestamp contractedFromDate;
-	private Timestamp contractedToDate;
+	private String contractedFromDate;
+	private String contractedToDate;
 	private String changedBy;
-	private Timestamp changedDate;
+	private String changedDate;
 	private BigInteger bookingId;
-	
+
 }
 

@@ -22,7 +22,6 @@ public class BookingRequest {
 	@Pattern(regexp = "[0-9]+", message = "Supplier Type Id should be numeric only")
 	private String supplierTypeId;
 
-	@NotNull(message = "Commisioning Office cannot be null")
 	@Pattern(regexp = "[0-9]+", message = "Commisionning Office Id should be numeric only")
 	private String commisioningOffice;
 
@@ -53,8 +52,6 @@ public class BookingRequest {
 	@Pattern(regexp = "[0-9]+", message = "Contractor Rate Per Day should be numeric only")
 	private String rate;
 
-	private String supplierWorkLocationType;
-
 	@NotNull(message = "Currency Id cannot be null")
 	private String currencyId;
 
@@ -81,4 +78,6 @@ public class BookingRequest {
 	private String commOffRegion;
 
 	private String contractorWorkRegion;
+
+	private List<String> siteOptions;
 }
