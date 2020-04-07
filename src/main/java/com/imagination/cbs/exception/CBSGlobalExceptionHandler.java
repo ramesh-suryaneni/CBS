@@ -53,11 +53,18 @@ public class CBSGlobalExceptionHandler {
 
 	}
 	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(CBSValidationException.class)
 	public ResponseEntity<CBSApplicationException> handleValidationException(RuntimeException runtimeException) {
 		CBSApplicationException cbsErrorMessage =  new CBSApplicationException(runtimeException.getMessage());
 		return new ResponseEntity<>(cbsErrorMessage, HttpStatus.BAD_REQUEST);
 
+	}
+	
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ExceptionHandler(CBSUnAuthorizedException.class)
+	public String handleHTTP403Exception(RuntimeException runtimeException){
+		return runtimeException.getMessage();
 	}
 	
 

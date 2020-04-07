@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
+import com.imagination.cbs.domain.Approver;
 import com.imagination.cbs.domain.ApproverOverrides;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -41,12 +42,14 @@ import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.exception.CBSUnAuthorizedException;
 import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.repository.ApproverOverridesRepository;
+import com.imagination.cbs.repository.ApproverRepository;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -128,6 +131,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private ApproverOverridesRepository approverOverridesRepository;
+	
+	@Autowired
+	private ApproverRepository approverRepository;
 
 	@Transactional
 	@Override
@@ -366,76 +372,144 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDto approveBooking(ApproveRequest request) {
-
+	public BookingDto approveBooking(ApproveRequest request) throws Exception{
+		
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
+		
 		Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
-
-		BookingRevision latestRevision = getLatestRevision(booking);
-
-		String jobNumber = latestRevision.getJobNumber();
-		Team approverTeam = latestRevision.getTeam();
-
-		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
-		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
-
-		if (isInApprovalStatus) {
-			ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(1000L).get(); // pass
-																									// next
-																									// status
-																									// id;
-
-			switch (request.getAction()) {
-			case "APPROVE":
-				// check if booking can be overrided.
-				ApproverOverrides approverOverride = approverOverridesRepository
-						.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
-				if (approverOverride != null) {
-					// TODO: process request
-				} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
-					// TODO: process request
-
-				} else {
-					// TODO:throw 403 error
-				}
-				break;
-			case "HRAPPROVE":
-
-			}
-
-			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+		
+		if("APPROVE".equalsIgnoreCase(request.getAction())) {
+			
+			approve(booking, user);
+			
+		}else if("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+			//TODO:hr approve
+		}else {
+			throw new CBSValidationException("Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
 		}
-
 		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
 	}
-
-	private BookingRevision getLatestRevision(Booking booking) {
-
-		return booking.getBookingRevisions().stream().max(Comparator.comparing(BookingRevision::getRevisionNumber))
-				.get();
-
+	
+	private void approve(Booking booking, CBSUser user) {
+		
+		BookingRevision latestRevision = getLatestRevision(booking);
+		
+		String jobNumber = latestRevision.getJobNumber();
+		Team approverTeam = latestRevision.getTeam();
+		
+		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
+		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
+		if(isInApprovalStatus) {
+			//find next approval status based on current status and approval order
+			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
+			ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get(); 
+			
+				//check if booking can be override.
+				ApproverOverrides approverOverride = approverOverridesRepository.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
+				if(approverOverride != null) {
+					nextApprovalStatus = approvalStatusDmRepository.findById(1005L).get();
+					//save new revision with next status
+					latestRevision.setBookingRevisionId(null);
+					latestRevision.setApprovalStatus(nextApprovalStatus);//1005L sent to HR
+					latestRevision.setRevisionNumber(latestRevision.getRevisionNumber()+1);
+					latestRevision.setChangedBy(user.getDisplayName());
+					
+					booking.setApprovalStatus(nextApprovalStatus);
+					booking.addBookingRevision(latestRevision);
+					
+					bookingRepository.save(booking);
+					//TODO:send mail to next approver based on status
+					
+				}else if(isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)){
+					
+					//save new revision with next status
+					latestRevision.setBookingRevisionId(null);
+					latestRevision.setApprovalStatus(nextApprovalStatus);
+					latestRevision.setRevisionNumber(latestRevision.getRevisionNumber()+1);
+					latestRevision.setChangedBy(user.getDisplayName());
+					
+					booking.setApprovalStatus(nextApprovalStatus);
+					booking.addBookingRevision(latestRevision);
+					
+					bookingRepository.save(booking);
+					//TODO:send mail to next approver based on status
+					
+				}else {
+					throw new CBSUnAuthorizedException("Not Authorized to perform this operation; insufficient previllages");
+				}
+				
+		}else {
+			throw new CBSValidationException("Request can't be processed, Booking is not in approval status");
+		}
+		
 	}
-
+	
+	private BookingRevision getLatestRevision(Booking booking) {
+		
+		return booking.getBookingRevisions().stream()
+				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get();
+		
+	}
+	
 	private boolean isUserCanApprove(Long teamId, Long empId, Long currentStatus) {
-		// TODO:check if user is part of approval process as per team
+		//TODO:check if user is part of approval process as per team
 		return true;
 	}
-
+	
 	private boolean isInApproverStatus(int status) {
-		// TODO:implement switch to get status, with ENUM;
-		/*
-		 * switch(currentApprovalStatus.intValue()) { case
-		 * ApprovalStatusConstant.APPROVAL_1: }
-		 */
 		boolean result = false;
-		switch (status) {
-		case 10001:
-		case 10002:
-		case 10003:
-			result = true;
+		switch(status) {
+			case 10001: //Waiting for Approval 1
+			case 10002: //Waiting for Approval 2
+			case 10003: //Waiting for Approval 3
+				result = true;
 		}
 		return result;
+	}
+	
+	private Long getNextApprovalStatus(Long currentStatus, Team approverTeam) {
+		
+		List<Approver> approvers = approverRepository.findAllByTeamId(approverTeam.getTeamId());
+		Long maxApproverOrder = approvers.stream()
+				.max(Comparator.comparing(Approver::getApproverOrder)).get().getApproverOrder();
+		
+		Long nextStatus = null;
+		
+		switch(currentStatus.intValue()) {
+		
+		case 1002: //current status - waiting for approval 1
+			
+			switch(maxApproverOrder.intValue()) {
+			case 1:
+				nextStatus = 1005L; //Sent to HR
+				break;
+			case 2:
+				nextStatus = 1003L; //waiting for approval 2
+				break;
+			case 3:
+				nextStatus = 1004L; //waiting for approval 3
+				break;
+			}
+			break;
+			
+		case 1003: //current status - waiting for approval 2
+			
+			switch(maxApproverOrder.intValue()) {
+			case 2:
+				nextStatus = 1005L; //Sent to HR
+				break;
+			case 3:
+				nextStatus = 1004L; //waiting for approval 3
+				break;
+			}
+			break;
+			
+		case 1004: //current status - waiting for approval 3
+			nextStatus = 1005L; //Sent to HR
+			break;
+		
+		}
+		return nextStatus;
 	}
 
 }
