@@ -58,12 +58,6 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contracted_to_date")
 	private Timestamp contractedToDate;
 
-	@Column(name = "contractor_contact_details")
-	private String contractorContactDetails;
-
-	@Column(name = "contractor_employee_name")
-	private String contractorEmployeeName;
-
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id")
 	private RoleDm role;
@@ -71,9 +65,6 @@ public class BookingRevision implements Serializable {
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "contractor_id")
 	private Contractor contractor;
-
-	@Column(name = "contractor_name")
-	private String contractorName;
 
 	@Column(name = "contractor_signed_date")
 	private Timestamp contractorSignedDate;
@@ -84,15 +75,9 @@ public class BookingRevision implements Serializable {
 	@Column(name = "contractor_total_working_days")
 	private Long contractorTotalWorkingDays;
 
-	@Column(name = "contractor_type")
-	private String contractorType;
-
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "currency_id")
 	private CurrencyDm currency;
-
-	@Column(name = "employee_contact_details")
-	private String employeeContactDetails;
 
 	@Column(name = "employer_tax_percent")
 	private BigDecimal employerTaxPercent;
@@ -102,9 +87,6 @@ public class BookingRevision implements Serializable {
 
 	@Column(name = "job_number")
 	private String jobNumber;
-
-	@Column(name = "known_as")
-	private String knownAs;
 
 	private BigDecimal rate;
 
@@ -149,10 +131,6 @@ public class BookingRevision implements Serializable {
 	private ApprovalStatusDm approvalStatus;
 
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "supplier_work_location_type")
-	private SupplierWorkLocationTypeDm supplierWorkLocationType;
-
-	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "booking_id")
 	private Booking booking;
 
@@ -169,6 +147,17 @@ public class BookingRevision implements Serializable {
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "contractor_work_region")
 	private Region contractorWorkRegion;
+
+	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
+	private List<ContractorWorkSite> contractorWorkSites;
+
+	public List<ContractorWorkSite> getContractorWorkSites() {
+		return contractorWorkSites;
+	}
+
+	public void setContractorWorkSites(List<ContractorWorkSite> contractorWorkSites) {
+		this.contractorWorkSites = contractorWorkSites;
+	}
 
 	public ApprovalStatusDm getApprovalStatus() {
 		return approvalStatus;
@@ -298,36 +287,12 @@ public class BookingRevision implements Serializable {
 		this.contractedToDate = contractedToDate;
 	}
 
-	public String getContractorContactDetails() {
-		return contractorContactDetails;
-	}
-
-	public void setContractorContactDetails(String contractorContactDetails) {
-		this.contractorContactDetails = contractorContactDetails;
-	}
-
-	public String getContractorEmployeeName() {
-		return contractorEmployeeName;
-	}
-
-	public void setContractorEmployeeName(String contractorEmployeeName) {
-		this.contractorEmployeeName = contractorEmployeeName;
-	}
-
 	public Contractor getContractor() {
 		return contractor;
 	}
 
 	public void setContractor(Contractor contractor) {
 		this.contractor = contractor;
-	}
-
-	public String getContractorName() {
-		return contractorName;
-	}
-
-	public void setContractorName(String contractorName) {
-		this.contractorName = contractorName;
 	}
 
 	public Timestamp getContractorSignedDate() {
@@ -354,22 +319,6 @@ public class BookingRevision implements Serializable {
 		this.contractorTotalWorkingDays = contractorTotalWorkingDays;
 	}
 
-	public String getContractorType() {
-		return contractorType;
-	}
-
-	public void setContractorType(String contractorType) {
-		this.contractorType = contractorType;
-	}
-
-	public String getEmployeeContactDetails() {
-		return employeeContactDetails;
-	}
-
-	public void setEmployeeContactDetails(String employeeContactDetails) {
-		this.employeeContactDetails = employeeContactDetails;
-	}
-
 	public BigDecimal getEmployerTaxPercent() {
 		return employerTaxPercent;
 	}
@@ -392,14 +341,6 @@ public class BookingRevision implements Serializable {
 
 	public void setJobNumber(String jobNumber) {
 		this.jobNumber = jobNumber;
-	}
-
-	public String getKnownAs() {
-		return knownAs;
-	}
-
-	public void setKnownAs(String knownAs) {
-		this.knownAs = knownAs;
 	}
 
 	public BigDecimal getRate() {
@@ -490,14 +431,6 @@ public class BookingRevision implements Serializable {
 		this.jobname = jobname;
 	}
 
-	public SupplierWorkLocationTypeDm getSupplierWorkLocationType() {
-		return supplierWorkLocationType;
-	}
-
-	public void setSupplierWorkLocationType(SupplierWorkLocationTypeDm supplierWorkLocationType) {
-		this.supplierWorkLocationType = supplierWorkLocationType;
-	}
-
 	public Booking getBooking() {
 		return booking;
 	}
@@ -505,5 +438,4 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
-
 }

@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -17,13 +19,36 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "office_dm")
 public class OfficeDm implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "office_id")
+	private Long officeId;
 
 	@Column(name = "office_name")
 	private String officeName;
+
+	@Column(name = "office_description")
+	private String officeDescription;
+
+	@Column(name = "created_by")
+	private String createdBy;
+
+	@Column(name = "created_date")
+	private Timestamp createdDate;
+
+	@OneToOne
+	@JoinColumn(name = "region_id")
+	private Region region;
+
+	public Region getRegion() {
+		return region;
+	}
+
+	public void setRegion(Region region) {
+		this.region = region;
+	}
 
 	public String getOfficeName() {
 		return officeName;
@@ -64,18 +89,4 @@ public class OfficeDm implements Serializable {
 	public void setCreatedDate(Timestamp createdDate) {
 		this.createdDate = createdDate;
 	}
-
-	@Column(name = "office_description")
-	private String officeDescription;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "office_id")
-	private Long officeId;
-
-	@Column(name = "created_by")
-	private String createdBy;
-
-	@Column(name = "created_date")
-	private Timestamp createdDate;
 }

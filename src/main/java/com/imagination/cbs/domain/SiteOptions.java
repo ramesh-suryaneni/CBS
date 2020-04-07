@@ -13,14 +13,15 @@ import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "supplier_work_location_type_dm")
-public class SupplierWorkLocationTypeDm implements Serializable {
+@Table(name = "site_options")
+public class SiteOptions implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "site_name")
 	private String name;
 
 	@Column(name = "changed_by")
