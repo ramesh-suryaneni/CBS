@@ -41,7 +41,6 @@ import com.imagination.cbs.service.ContractorService;
 @SpringBootTest
 public class ContractorControllerTest {
 
-
 	@Autowired
     private WebApplicationContext context;
 	
@@ -107,7 +106,7 @@ public class ContractorControllerTest {
 		
 	}
 	
-	@WithMockUser("devloper")
+	@WithMockUser("developer")
 	@Test
 	public void shouldAddNewContractor() throws Exception
 	{
@@ -151,7 +150,7 @@ public class ContractorControllerTest {
 		verify(contractorService).getContractorDeatils(0, 10, "contractorName", "ASC");
 	}
 
-	public List<ContractorDto> getContractorDtos() {
+	private List<ContractorDto> getContractorDtos() {
 		
 		List<ContractorDto> contractorDtoList = new ArrayList<>();
 		
@@ -167,7 +166,7 @@ public class ContractorControllerTest {
 		return contractorDtoList;
 	}
 	
-	public ContractorDto createContractorDto()
+	private ContractorDto createContractorDto()
 	{
 		ContractorDto contractorDto  = new ContractorDto();
 		contractorDto.setCountry("United Kingdom");
@@ -177,7 +176,7 @@ public class ContractorControllerTest {
 		return contractorDto;
 	}
 	
-	public ContractorEmployeeDto createContractorEmployeeDto()
+	private ContractorEmployeeDto createContractorEmployeeDto()
 	{
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setEmployeeName("Alex");
@@ -187,7 +186,7 @@ public class ContractorControllerTest {
 		return contractorEmployeeDto;
 	}
 	
-	public ContractorEmployeeRequest createContractorEmployeeRequest()
+	private ContractorEmployeeRequest createContractorEmployeeRequest()
 	{
 		ContractorEmployeeRequest contractorEmpRequest = new ContractorEmployeeRequest();
 		contractorEmpRequest.setContractorEmployeeName("Akshay");
@@ -199,7 +198,7 @@ public class ContractorControllerTest {
 		return contractorEmpRequest;
 	}
 	
-	public ContractorRequest createContractorRequest()
+	private ContractorRequest createContractorRequest()
 	{
 		ContractorRequest contractorRequest = new ContractorRequest();
 		contractorRequest.setContactDetails("Details5");
@@ -209,7 +208,7 @@ public class ContractorControllerTest {
 		return contractorRequest;
 	}
 	
-	public Page<ContractorDto> createPageData()
+	private Page<ContractorDto> createPageData()
 	{
 		return new PageImpl<>(getContractorDtos(),PageRequest.of(0, 10),2);
 	}
