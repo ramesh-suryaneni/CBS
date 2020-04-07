@@ -370,24 +370,34 @@ public class BookingServiceImpl implements BookingService {
 
 		return retrieveBookingDetails(bookingId);
 	}
-
+	
+	@Transactional
 	@Override
 	public BookingDto approveBooking(ApproveRequest request) throws Exception{
 		
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
 		
-		Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
-		
-		if("APPROVE".equalsIgnoreCase(request.getAction())) {
+		try {
+
+			Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
+
+			if ("APPROVE".equalsIgnoreCase(request.getAction())) {
+
+				approve(booking, user);
+
+			} else if ("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+
+				hrApprove(booking, user);
+
+			} else {
+				throw new CBSValidationException(
+						"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
+			}
+			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
 			
-			approve(booking, user);
-			
-		}else if("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
-			//TODO:hr approve
-		}else {
-			throw new CBSValidationException("Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
+		} catch (Exception ex) {
+			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
 		}
-		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
 	}
 	
 	private void approve(Booking booking, CBSUser user) {
@@ -402,36 +412,21 @@ public class BookingServiceImpl implements BookingService {
 		if(isInApprovalStatus) {
 			//find next approval status based on current status and approval order
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
-			ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get(); 
 			
 				//check if booking can be override.
 				ApproverOverrides approverOverride = approverOverridesRepository.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
 				if(approverOverride != null) {
-					nextApprovalStatus = approvalStatusDmRepository.findById(1005L).get();
+
 					//save new revision with next status
-					latestRevision.setBookingRevisionId(null);
-					latestRevision.setApprovalStatus(nextApprovalStatus);//1005L sent to HR
-					latestRevision.setRevisionNumber(latestRevision.getRevisionNumber()+1);
-					latestRevision.setChangedBy(user.getDisplayName());
+					saveBooking(booking, latestRevision, 1005L, user);
 					
-					booking.setApprovalStatus(nextApprovalStatus);
-					booking.addBookingRevision(latestRevision);
-					
-					bookingRepository.save(booking);
 					//TODO:send mail to next approver based on status
 					
 				}else if(isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)){
 					
 					//save new revision with next status
-					latestRevision.setBookingRevisionId(null);
-					latestRevision.setApprovalStatus(nextApprovalStatus);
-					latestRevision.setRevisionNumber(latestRevision.getRevisionNumber()+1);
-					latestRevision.setChangedBy(user.getDisplayName());
+					saveBooking(booking, latestRevision, nextStatus, user);
 					
-					booking.setApprovalStatus(nextApprovalStatus);
-					booking.addBookingRevision(latestRevision);
-					
-					bookingRepository.save(booking);
 					//TODO:send mail to next approver based on status
 					
 				}else {
@@ -442,6 +437,25 @@ public class BookingServiceImpl implements BookingService {
 			throw new CBSValidationException("Request can't be processed, Booking is not in approval status");
 		}
 		
+	}
+	
+	private void hrApprove(Booking booking, CBSUser user){
+		
+	}
+	
+	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
+		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
+		revision.setBookingRevisionId(null);
+		revision.setApprovalStatus(nextApprovalStatus);
+		revision.setRevisionNumber(revision.getRevisionNumber()+1);
+		revision.setChangedBy(user.getDisplayName());
+		
+		booking.setApprovalStatus(nextApprovalStatus);
+		booking.addBookingRevision(revision);
+		
+		bookingRepository.save(booking);
+		
+		return booking;
 	}
 	
 	private BookingRevision getLatestRevision(Booking booking) {
