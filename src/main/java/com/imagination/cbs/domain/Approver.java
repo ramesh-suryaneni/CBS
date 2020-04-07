@@ -42,8 +42,8 @@ public class Approver implements Serializable {
 
 	// bi-directional one-to-one association to EmployeeMapping
 	@OneToOne
-	@JoinColumn(name = "employe_id")
-	private EmployeeMapping employeeMapping;
+	@JoinColumn(name = "employee_id")
+	private EmployeeMapping employee;
 
 	public Approver() {
 	}
@@ -88,12 +88,12 @@ public class Approver implements Serializable {
 		this.team = team;
 	}
 
-	public EmployeeMapping getEmployeeMapping() {
-		return this.employeeMapping;
+	public EmployeeMapping getEmployee() {
+		return this.employee;
 	}
 
 	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
-		this.employeeMapping = employeeMapping;
+		this.employee = employeeMapping;
 	}
 
 }

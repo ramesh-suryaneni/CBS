@@ -13,4 +13,6 @@ import com.imagination.cbs.domain.Team;
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
 	Team findByTeamName(String name);
+	
+	
 }
