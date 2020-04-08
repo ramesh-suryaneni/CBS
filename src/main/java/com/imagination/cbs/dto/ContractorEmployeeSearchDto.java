@@ -14,7 +14,7 @@ public class ContractorEmployeeSearchDto {
 	private String role;
 	private Long contractorId;
 	private String company;
-	private int noOfBookingsInPast;
+	private Integer noOfBookingsInPast;
 	private String recommandations;
 
 }
