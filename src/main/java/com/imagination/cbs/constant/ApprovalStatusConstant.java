@@ -5,27 +5,26 @@ package com.imagination.cbs.constant;
  *
  */
 public enum ApprovalStatusConstant {
-	APPROVAL_DRAFT("Draft"),
-	APPROVAL_1("Waiting on Approval 1"),
-	APPROVAL_2("Waiting on Approval 2"),
-	APPROVAL_3("Waiting on Approval 3"),
-	APPROVAL_SENT_TO_HR("Sent to HR"),
-	APPROVAL_SENT_FOR_CONTRACTOR("Contract Sent For Contractor Approval"),
-	APPROVAL_CONTRACT_SIGNED("Contract Signed"),
-	APPROVAL_PO_GENERATED("PO Generated"),
-	APPROVAL_COMPLETED("Completed"),
-	APPROVAL_CANCELLED("Cancelled"),
-	APPROVAL_REJECTED("Rejected");
+	APPROVAL_DRAFT(1001L),
+	APPROVAL_1(1002L),
+	APPROVAL_2(1003L),
+	APPROVAL_3(1004L),
+	APPROVAL_SENT_TO_HR(1005L),
+	APPROVAL_SENT_FOR_CONTRACTOR(1006L),
+	APPROVAL_CONTRACT_SIGNED(1007L),
+	APPROVAL_PO_GENERATED(1008L),
+	APPROVAL_COMPLETED(1009L),
+	APPROVAL_CANCELLED(1010L),
+	APPROVAL_REJECTED(1011L);
 	
+	private Long approvalStatusId;
 
-	private String status;
-
-	private ApprovalStatusConstant(String status) {
-		this.status = status;
+	ApprovalStatusConstant(Long approvalStatusId) {
+		this.approvalStatusId = approvalStatusId;
 	}
 
-	public String getStatus() {
-		return status;
+	public Long getApprovalStatusId() {
+		return approvalStatusId;
 	}
 
 }

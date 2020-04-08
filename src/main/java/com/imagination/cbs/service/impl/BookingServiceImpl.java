@@ -131,7 +131,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private ApproverOverridesRepository approverOverridesRepository;
-	
+
 	@Autowired
 	private ApproverRepository approverRepository;
 
@@ -188,11 +188,11 @@ public class BookingServiceImpl implements BookingService {
 			bookingRevision.setInsideIr35(roleDm.getInsideIr35());
 		}
 		// Booking Status
-		ApprovalStatusDm status = null;
+		ApprovalStatusDm status = new ApprovalStatusDm();
 		if (isSubmit) {
-			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_1.getStatus());
+			status.setApprovalStatusId(ApprovalStatusConstant.APPROVAL_1.getApprovalStatusId());
 		} else {
-			status = approvalStatusDmRepository.findByApprovalName(ApprovalStatusConstant.APPROVAL_DRAFT.getStatus());
+			status.setApprovalStatusId(ApprovalStatusConstant.APPROVAL_DRAFT.getApprovalStatusId());
 		}
 		bookingDomain.setApprovalStatus(status);
 		bookingRevision.setApprovalStatus(status);
@@ -370,13 +370,13 @@ public class BookingServiceImpl implements BookingService {
 
 		return retrieveBookingDetails(bookingId);
 	}
-	
+
 	@Transactional
 	@Override
-	public BookingDto approveBooking(ApproveRequest request) throws Exception{
-		
+	public BookingDto approveBooking(ApproveRequest request) throws Exception {
+
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-		
+
 		try {
 
 			Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
@@ -394,85 +394,88 @@ public class BookingServiceImpl implements BookingService {
 						"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
 			}
 			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
-			
+
 		} catch (Exception ex) {
 			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
 		}
 	}
-	
+
 	private void approve(Booking booking, CBSUser user) {
-		
+
 		BookingRevision latestRevision = getLatestRevision(booking);
-		
+
 		String jobNumber = latestRevision.getJobNumber();
 		Team approverTeam = latestRevision.getTeam();
-		
+
 		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
-		if(isInApprovalStatus) {
-			//find next approval status based on current status and approval order
+		if (isInApprovalStatus) {
+			// find next approval status based on current status and approval
+			// order
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
-			
-				//check if booking can be override.
-				ApproverOverrides approverOverride = approverOverridesRepository.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
-				if(approverOverride != null) {
 
-					//save new revision with next status
-					saveBooking(booking, latestRevision, 1005L, user);
-					
-					//TODO:send mail to next approver based on status
-					
-				}else if(isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)){
-					
-					//save new revision with next status
-					saveBooking(booking, latestRevision, nextStatus, user);
-					
-					//TODO:send mail to next approver based on status
-					
-				}else {
-					throw new CBSUnAuthorizedException("Not Authorized to perform this operation; insufficient previllages");
-				}
-				
-		}else {
+			// check if booking can be override.
+			ApproverOverrides approverOverride = approverOverridesRepository
+					.findByEmployeeIdAndJobNumber(user.getEmpId(), jobNumber);
+			if (approverOverride != null) {
+
+				// save new revision with next status
+				saveBooking(booking, latestRevision, 1005L, user);
+
+				// TODO:send mail to next approver based on status
+
+			} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
+
+				// save new revision with next status
+				saveBooking(booking, latestRevision, nextStatus, user);
+
+				// TODO:send mail to next approver based on status
+
+			} else {
+				throw new CBSUnAuthorizedException(
+						"Not Authorized to perform this operation; insufficient previllages");
+			}
+
+		} else {
 			throw new CBSValidationException("Request can't be processed, Booking is not in approval status");
 		}
-		
+
 	}
-	
-	private void hrApprove(Booking booking, CBSUser user){
-		
+
+	private void hrApprove(Booking booking, CBSUser user) {
+
 	}
-	
+
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
 		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
 		revision.setBookingRevisionId(null);
 		revision.setApprovalStatus(nextApprovalStatus);
-		revision.setRevisionNumber(revision.getRevisionNumber()+1);
+		revision.setRevisionNumber(revision.getRevisionNumber() + 1);
 		revision.setChangedBy(user.getDisplayName());
-		
+
 		booking.setApprovalStatus(nextApprovalStatus);
 		booking.addBookingRevision(revision);
-		
+
 		bookingRepository.save(booking);
-		
+
 		return booking;
 	}
-	
+
 	private BookingRevision getLatestRevision(Booking booking) {
-		
-		return booking.getBookingRevisions().stream()
-				.max(Comparator.comparing(BookingRevision::getRevisionNumber)).get();
-		
+
+		return booking.getBookingRevisions().stream().max(Comparator.comparing(BookingRevision::getRevisionNumber))
+				.get();
+
 	}
-	
+
 	private boolean isUserCanApprove(Long teamId, Long empId, Long currentStatus) {
 		Long order = 0L;
 		Team team = new Team();
 		team.setTeamId(teamId);
-		
+
 		EmployeeMapping employee = new EmployeeMapping();
 		employee.setEmployeeId(empId);
-		switch(currentStatus.intValue()) {
+		switch (currentStatus.intValue()) {
 		case 1002:
 			order = 1L;
 			break;
@@ -483,63 +486,63 @@ public class BookingServiceImpl implements BookingService {
 			order = 3L;
 			break;
 		}
-		
+
 		Approver approver = approverRepository.findByTeamAndEmployeeAndApproverOrder(team, employee, order);
 		return (approver != null);
 	}
-	
+
 	private boolean isInApproverStatus(int status) {
 		boolean result = false;
-		switch(status) {
-			case 10001: //Waiting for Approval 1
-			case 10002: //Waiting for Approval 2
-			case 10003: //Waiting for Approval 3
-				result = true;
+		switch (status) {
+		case 10001: // Waiting for Approval 1
+		case 10002: // Waiting for Approval 2
+		case 10003: // Waiting for Approval 3
+			result = true;
 		}
 		return result;
 	}
-	
+
 	private Long getNextApprovalStatus(Long currentStatus, Team approverTeam) {
-		
+
 		List<Approver> approvers = approverRepository.findAllByTeam(approverTeam);
-		Long maxApproverOrder = approvers.stream()
-				.max(Comparator.comparing(Approver::getApproverOrder)).get().getApproverOrder();
-		
+		Long maxApproverOrder = approvers.stream().max(Comparator.comparing(Approver::getApproverOrder)).get()
+				.getApproverOrder();
+
 		Long nextStatus = null;
-		
-		switch(currentStatus.intValue()) {
-		
-		case 1002: //current status - waiting for approval 1
-			
-			switch(maxApproverOrder.intValue()) {
+
+		switch (currentStatus.intValue()) {
+
+		case 1002: // current status - waiting for approval 1
+
+			switch (maxApproverOrder.intValue()) {
 			case 1:
-				nextStatus = 1005L; //Sent to HR
+				nextStatus = 1005L; // Sent to HR
 				break;
 			case 2:
-				nextStatus = 1003L; //waiting for approval 2
+				nextStatus = 1003L; // waiting for approval 2
 				break;
 			case 3:
-				nextStatus = 1004L; //waiting for approval 3
+				nextStatus = 1004L; // waiting for approval 3
 				break;
 			}
 			break;
-			
-		case 1003: //current status - waiting for approval 2
-			
-			switch(maxApproverOrder.intValue()) {
+
+		case 1003: // current status - waiting for approval 2
+
+			switch (maxApproverOrder.intValue()) {
 			case 2:
-				nextStatus = 1005L; //Sent to HR
+				nextStatus = 1005L; // Sent to HR
 				break;
 			case 3:
-				nextStatus = 1004L; //waiting for approval 3
+				nextStatus = 1004L; // waiting for approval 3
 				break;
 			}
 			break;
-			
-		case 1004: //current status - waiting for approval 3
-			nextStatus = 1005L; //Sent to HR
+
+		case 1004: // current status - waiting for approval 3
+			nextStatus = 1005L; // Sent to HR
 			break;
-		
+
 		}
 		return nextStatus;
 	}
