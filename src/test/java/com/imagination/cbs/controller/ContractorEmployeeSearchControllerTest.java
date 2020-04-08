@@ -52,6 +52,21 @@ public class ContractorEmployeeSearchControllerTest {
 
 	@WithMockUser("/developer")
 	@Test
+	public void shouldReturnPageResponseOfContractorEmployeeDto() throws Exception {
+
+		when(contractorServiceImpl.geContractorEmployeeDetails(Mockito.anyInt(), 
+				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
+		.thenReturn(createPagedData());
+
+		mockMvc.perform(get("/contractor-employees").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
+
+		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetails(0, 10, "roleId", "ASC");
+	}
+
+	@WithMockUser("/developer")
+	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleId() throws Exception {
 
 		when(contractorServiceImpl.geContractorEmployeeDetailsByRoleId(Mockito.anyLong(), Mockito.anyInt(),
