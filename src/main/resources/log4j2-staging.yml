@@ -1,5 +1,5 @@
-Configutation:
-  name: Default
+Configuration:
+  name: Staging
 
   Properties:
     Property:

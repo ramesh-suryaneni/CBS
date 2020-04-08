@@ -11,12 +11,29 @@ spring:
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
+
+   mail:
+     protocol: smtp
+     host: smtp.gmail.com
+     username: #your mail id
+     password: #your mail pwd
+     port: 587
+     test-connection: false
+     default-encoding: UTF-8
+     properties:
+       mail:
+         smtp:
+           auth: true
+           starttls:
+             enable: true   
+
 cbssecurity:
-     enabled: true
+     enabled: false
 
 cest_outcome:
   inside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf
   outside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf
-    
-                
+
+logging:
+  config: classpath:log4j2-local.yml              
                
