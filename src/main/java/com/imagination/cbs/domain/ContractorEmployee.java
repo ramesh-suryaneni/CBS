@@ -7,67 +7,63 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the contractor_employee database table.
  * 
  */
 @Entity
-@Table(name="contractor_employee")
-@NamedQuery(name="ContractorEmployee.findAll", query="SELECT c FROM ContractorEmployee c")
+@Table(name = "contractor_employee")
+@NamedQuery(name = "ContractorEmployee.findAll", query = "SELECT c FROM ContractorEmployee c")
 public class ContractorEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="contractor_employee_id")
-	private long contractorEmployeeId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "contractor_employee_id")
+	private Long contractorEmployeeId;
 
-	@Column(name="changed_by")
+	@Column(name = "changed_by")
 	private String changedBy;
 
 	@CreationTimestamp
-	@Column(name="changed_date")
+	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	@Column(name="contact_details")
+	@Column(name = "contact_details")
 	private String contactDetails;
 
-	@Column(name="employee_id")
-	private long employeeId;
-
-	@Column(name="employee_name")
+	@Column(name = "employee_name")
 	private String employeeName;
 
-	@Column(name="known_as")
+	@Column(name = "known_as")
 	private String knownAs;
 
 	private String status;
-	
+
 	@ManyToOne
-	@JoinColumn(name="contractor_id")
+	@JoinColumn(name = "contractor_id")
 	private Contractor contractor;
-	
-	//bi-directional one-to-one association to ContractorEmployeeDefaultRate
-	@OneToOne(mappedBy="contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+	// bi-directional one-to-one association to ContractorEmployeeDefaultRate
+	@OneToOne(mappedBy = "contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ContractorEmployeeDefaultRate contractorEmployeeDefaultRate;
 
-	//bi-directional one-to-one association to ContractorEmployeeRating
-	@OneToOne(mappedBy="contractorEmployee")
+	// bi-directional one-to-one association to ContractorEmployeeRating
+	@OneToOne(mappedBy = "contractorEmployee")
 	private ContractorEmployeeRating contractorEmployeeRating;
-	
-	//bi-directional one-to-one association to ContractorEmployeeRole
-	@OneToOne(mappedBy="contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+	// bi-directional one-to-one association to ContractorEmployeeRole
+	@OneToOne(mappedBy = "contractorEmployee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private ContractorEmployeeRole contractorEmployeeRole;
-	
+
 	public ContractorEmployee() {
 	}
 
-	public long getContractorEmployeeId() {
+	public Long getContractorEmployeeId() {
 		return this.contractorEmployeeId;
 	}
 
-	public void setContractorEmployeeId(long contractorEmployeeId) {
+	public void setContractorEmployeeId(Long contractorEmployeeId) {
 		this.contractorEmployeeId = contractorEmployeeId;
 	}
 
@@ -93,14 +89,6 @@ public class ContractorEmployee implements Serializable {
 
 	public void setContactDetails(String contactDetails) {
 		this.contactDetails = contactDetails;
-	}
-
-	public long getEmployeeId() {
-		return this.employeeId;
-	}
-
-	public void setEmployeeId(long employeeId) {
-		this.employeeId = employeeId;
 	}
 
 	public String getEmployeeName() {
