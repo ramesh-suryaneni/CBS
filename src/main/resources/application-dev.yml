@@ -18,4 +18,6 @@ cbssecurity:
 cest_outcome:
   inside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF inside.pdf
   outside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf              
-               
+
+logging:
+  config: classpath:log4j2-staging.yml               

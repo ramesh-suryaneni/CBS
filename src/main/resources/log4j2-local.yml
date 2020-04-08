@@ -1,0 +1,27 @@
+Configutation:
+  name: Default
+
+ 
+  Appenders:
+
+    Console:
+      name: Console-Appender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+
+    
+
+  Loggers:
+
+      Root:
+        level: error info
+        AppenderRef:
+          - ref: Console-Appender
+
+      Logger:
+        - name: com.imagination.cbs
+          level: info
+          AppenderRef:
+            - ref: Console-Appender
+              
