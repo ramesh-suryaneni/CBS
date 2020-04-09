@@ -4,6 +4,7 @@ spring:
       username:   yash@imagination-cbs
       password:   test@123
    jpa:
+      show-sql: true
       generate-ddl:   false
       properties:
          hibernate:
@@ -14,8 +15,8 @@ spring:
    mail:
      protocol: smtp
      host: smtp.gmail.com
-     username: #your mail id
-     password: #your mail pwd
+     username: ${SPRING_EMAIL_ID}
+     password: ${SPRING_EMAIL_PASSWORD}
      port: 587
      test-connection: false
      default-encoding: UTF-8
