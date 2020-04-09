@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.AdobeSignResponse;
+import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.ConfigService;
 import com.imagination.cbs.util.AdobeConstant;
 
@@ -33,12 +34,16 @@ public class WebhookController {
 	@Autowired
 	ConfigService configService;
 	
+	@Autowired
+	BookingService bookingService; 
+	
 	@PostMapping("/adobesign-callback")
 	public String adobeSignCallback(@RequestHeader Map<String, String> headers) {
 	    headers.forEach((key, value) -> {
 	        System.out.println(String.format("Header '%s' = %s", key, value));
 	    });
 	    //TODO:implement contractor signed event to update in database for booking
+	    bookingService.updateContract("contractor", "date");
 	    return String.format("Listed %d headers", headers.size());
 		
 	}

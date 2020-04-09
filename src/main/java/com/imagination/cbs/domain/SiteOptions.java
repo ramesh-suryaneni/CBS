@@ -12,6 +12,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+/**
+ * @author pravin.budage
+ *
+ */
 @Entity
 @Table(name = "site_options")
 public class SiteOptions implements Serializable {

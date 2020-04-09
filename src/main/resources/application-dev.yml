@@ -11,7 +11,20 @@ spring:
             dialect:   org.hibernate.dialect.SQLServer2012Dialect
             temp:
                use_jdbc_metadata_defaults:   false
-  
+   mail:
+     protocol: smtp
+     host: smtp.gmail.com
+     username: ${SPRING_EMAIL_ID}
+     password: ${SPRING_EMAIL_PASSWORD}
+     port: 587
+     test-connection: true
+     default-encoding: UTF-8
+     properties:
+       mail:
+         smtp:
+           auth: true
+           starttls:
+             enable: true
 cbssecurity:
      enabled: true
 

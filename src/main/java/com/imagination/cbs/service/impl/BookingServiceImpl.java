@@ -6,7 +6,6 @@ package com.imagination.cbs.service.impl;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Approver;
 import com.imagination.cbs.domain.ApproverOverrides;
@@ -169,6 +169,8 @@ public class BookingServiceImpl implements BookingService {
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
+		//TODO: 1. identify approver based on booking team and approver order from approver table
+		//TODO: 2. send email to approver using his email
 		return retrieveBookingDetails(bookingId);
 	}
 
@@ -176,6 +178,7 @@ public class BookingServiceImpl implements BookingService {
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
 		String loggedInUser = user.getDisplayName();
+
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
@@ -351,7 +354,7 @@ public class BookingServiceImpl implements BookingService {
 		if (bookingRequest.getWorkTasks() != null) {
 			List<BookingWorkTask> bookingWorkTasks = bookingRequest.getWorkTasks().stream().map(work -> {
 				BookingWorkTask bookingWorkTask = new BookingWorkTask();
-				bookingWorkTask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
+				bookingWorkTask.setTaskDeliveryDate(CBSDateUtils.convertStringToDate(work.getTaskDeliveryDate()));
 				bookingWorkTask.setTaskName(work.getTaskName());
 				bookingWorkTask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
 				bookingWorkTask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));
@@ -377,32 +380,36 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDto approveBooking(ApproveRequest request) throws Exception {
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
+		Booking booking = null;
 		try {
-
-			Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
-
-			if ("APPROVE".equalsIgnoreCase(request.getAction())) {
-
-				approve(booking, user);
-
-			} else if ("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
-
-				hrApprove(booking, user);
-
-			} else {
-				throw new CBSValidationException(
-						"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
-			}
-			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+			booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
 
 		} catch (Exception ex) {
 			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
 		}
+
+		if (UserActionConstant.APPROVE.getAction().equalsIgnoreCase(request.getAction())) {
+
+			approve(booking, user);
+
+		} else if (UserActionConstant.HRAPPROVE.getAction().equalsIgnoreCase(request.getAction())) {
+
+			hrApprove(booking, user);
+
+		}else if(UserActionConstant.DECLINE.getAction().equalsIgnoreCase(request.getAction())) {
+			decline(booking, user);
+		}
+		else {
+			throw new CBSValidationException(
+					"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE||DECLINE");
+		}
+		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+
+		
 	}
 
 	private void approve(Booking booking, CBSUser user) {
-
+		
 		BookingRevision latestRevision = getLatestRevision(booking);
 
 		String jobNumber = latestRevision.getJobNumber();
@@ -412,7 +419,6 @@ public class BookingServiceImpl implements BookingService {
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
 		if (isInApprovalStatus) {
 			// find next approval status based on current status and approval
-			// order
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
 
 			// check if booking can be override.
@@ -421,9 +427,9 @@ public class BookingServiceImpl implements BookingService {
 			if (approverOverride != null) {
 
 				// save new revision with next status
-				saveBooking(booking, latestRevision, 1005L, user);
+				saveBooking(booking, latestRevision, ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(), user);
 
-				// TODO:send mail to next approver based on status
+				// TODO:send mail to HR approver
 
 			} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
 
@@ -444,7 +450,31 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	private void hrApprove(Booking booking, CBSUser user) {
+		
+		if(loggedInUserService.isCurrentUserInHRRole()){
+			Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
+			
+			//TODO:Generate PDF.
+			//TODO:integrate Adobe - upload, create agreement
+			//TODO:populate document id and agreement id to revision
+		
+			saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
+			//send Email to creator - need to confirm
+			
+		}else {
+			throw new CBSUnAuthorizedException(
+					"Not Authorized to perform this operation; insufficient previllages");
+		}
 
+	}
+	
+	private void decline(Booking booking, CBSUser user) {
+		
+		Long nextStatus = ApprovalStatusConstant.APPROVAL_REJECTED.getApprovalStatusId();
+		
+		saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
+		//TODO:send mail to creator.
+		
 	}
 
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
@@ -478,13 +508,13 @@ public class BookingServiceImpl implements BookingService {
 		employee.setEmployeeId(empId);
 		switch (currentStatus.intValue()) {
 		case 1002:
-			order = 1L;
+			order = 1L; //approver order#1
 			break;
 		case 1003:
-			order = 2L;
+			order = 2L; //approver order#2
 			break;
 		case 1004:
-			order = 3L;
+			order = 3L; //approver order#3
 			break;
 		}
 
@@ -495,9 +525,9 @@ public class BookingServiceImpl implements BookingService {
 	private boolean isInApproverStatus(int status) {
 		boolean result = false;
 		switch (status) {
-		case 10001: // Waiting for Approval 1
-		case 10002: // Waiting for Approval 2
-		case 10003: // Waiting for Approval 3
+		case 1002: // Waiting for Approval 1
+		case 1003: // Waiting for Approval 2
+		case 1004: // Waiting for Approval 3
 			result = true;
 		}
 		return result;
@@ -517,13 +547,13 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 1:
-				nextStatus = 1005L; // Sent to HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 2:
-				nextStatus = 1003L; // waiting for approval 2
+				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval 2
 				break;
 			case 3:
-				nextStatus = 1004L; // waiting for approval 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval 3
 				break;
 			}
 			break;
@@ -532,20 +562,32 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 2:
-				nextStatus = 1005L; // Sent to HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 3:
-				nextStatus = 1004L; // waiting for approval 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval 3
 				break;
 			}
 			break;
 
 		case 1004: // current status - waiting for approval 3
-			nextStatus = 1005L; // Sent to HR
+			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 			break;
 
 		}
 		return nextStatus;
 	}
+
+	@Override
+	public void updateContract(String contractor, String date) {
+		//TODO:update contract signed details to booking
+		//TODO:download agreement from adobe
+		//TODO:upload agreement to azure
+		//TODO:send email to creator/HR/?
+		
+	}
+	
+	
+	
 
 }
