@@ -580,6 +580,8 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public void updateContract(String contractor, String date) {
 		//TODO:update contract signed details to booking
+		//TODO:download agreement from adobe
+		//TODO:upload agreement to azure
 		//TODO:send email to creator/HR/?
 		
 	}

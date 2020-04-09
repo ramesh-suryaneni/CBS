@@ -17,8 +17,8 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
-@Component("templatesUtility")
-public class TemplateUtility {
+@Component("azureStorageUtility")
+public class AzureStorageUtility {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
