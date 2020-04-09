@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Approver;
 import com.imagination.cbs.domain.ApproverOverrides;
@@ -386,15 +387,15 @@ public class BookingServiceImpl implements BookingService {
 			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
 		}
 
-		if ("APPROVE".equalsIgnoreCase(request.getAction())) {
+		if (UserActionConstant.APPROVE.getAction().equalsIgnoreCase(request.getAction())) {
 
 			approve(booking, user);
 
-		} else if ("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+		} else if (UserActionConstant.HRAPPROVE.getAction().equalsIgnoreCase(request.getAction())) {
 
 			hrApprove(booking, user);
 
-		}else if("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+		}else if(UserActionConstant.DECLINE.getAction().equalsIgnoreCase(request.getAction())) {
 			decline(booking, user);
 		}
 		else {
