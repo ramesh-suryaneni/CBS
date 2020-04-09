@@ -418,7 +418,6 @@ public class BookingServiceImpl implements BookingService {
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
 		if (isInApprovalStatus) {
 			// find next approval status based on current status and approval
-			// order
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
 
 			// check if booking can be override.
@@ -429,7 +428,7 @@ public class BookingServiceImpl implements BookingService {
 				// save new revision with next status
 				saveBooking(booking, latestRevision, ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(), user);
 
-				// TODO:send mail to next approver based on status
+				// TODO:send mail to HR approver
 
 			} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
 
@@ -454,8 +453,12 @@ public class BookingServiceImpl implements BookingService {
 		if(loggedInUserService.isCurrentUserInHRRole()){
 			Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 			
+			//TODO:Generate PDF.
+			//TODO:integrate Adobe - upload, create agreement
+			//TODO:populate document id and agreement id to revision
+		
 			saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
-			//TODO:send mail.
+			//send Email to creator - need to confirm
 			
 		}else {
 			throw new CBSUnAuthorizedException(
@@ -469,7 +472,7 @@ public class BookingServiceImpl implements BookingService {
 		Long nextStatus = ApprovalStatusConstant.APPROVAL_REJECTED.getApprovalStatusId();
 		
 		saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
-		//TODO:send mail.
+		//TODO:send mail to creator.
 		
 	}
 
@@ -573,5 +576,15 @@ public class BookingServiceImpl implements BookingService {
 		}
 		return nextStatus;
 	}
+
+	@Override
+	public void updateContract(String contractor, String date) {
+		//TODO:update contract signed details to booking
+		//TODO:send email to creator/HR/?
+		
+	}
+	
+	
+	
 
 }
