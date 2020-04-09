@@ -376,28 +376,32 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDto approveBooking(ApproveRequest request) throws Exception {
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
+		Booking booking = null;
 		try {
-
-			Booking booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
-
-			if ("APPROVE".equalsIgnoreCase(request.getAction())) {
-
-				approve(booking, user);
-
-			} else if ("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
-
-				hrApprove(booking, user);
-
-			} else {
-				throw new CBSValidationException(
-						"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE");
-			}
-			return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+			booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
 
 		} catch (Exception ex) {
 			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
 		}
+
+		if ("APPROVE".equalsIgnoreCase(request.getAction())) {
+
+			approve(booking, user);
+
+		} else if ("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+
+			hrApprove(booking, user);
+
+		}else if("HRAPPROVE".equalsIgnoreCase(request.getAction())) {
+			decline(booking, user);
+		}
+		else {
+			throw new CBSValidationException(
+					"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE||DECLINE");
+		}
+		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
+
+		
 	}
 
 	private void approve(Booking booking, CBSUser user) {
@@ -420,7 +424,7 @@ public class BookingServiceImpl implements BookingService {
 			if (approverOverride != null) {
 
 				// save new revision with next status
-				saveBooking(booking, latestRevision, 1005L, user);
+				saveBooking(booking, latestRevision, ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(), user);
 
 				// TODO:send mail to next approver based on status
 
@@ -444,6 +448,11 @@ public class BookingServiceImpl implements BookingService {
 
 	private void hrApprove(Booking booking, CBSUser user) {
 
+	}
+	
+	private void decline(Booking booking, CBSUser user) {
+		// TODO: Auto-generated method stub
+		
 	}
 
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
@@ -477,13 +486,13 @@ public class BookingServiceImpl implements BookingService {
 		employee.setEmployeeId(empId);
 		switch (currentStatus.intValue()) {
 		case 1002:
-			order = 1L;
+			order = 1L; //approver order#1
 			break;
 		case 1003:
-			order = 2L;
+			order = 2L; //approver order#2
 			break;
 		case 1004:
-			order = 3L;
+			order = 3L; //approver order#3
 			break;
 		}
 
@@ -494,9 +503,9 @@ public class BookingServiceImpl implements BookingService {
 	private boolean isInApproverStatus(int status) {
 		boolean result = false;
 		switch (status) {
-		case 10001: // Waiting for Approval 1
-		case 10002: // Waiting for Approval 2
-		case 10003: // Waiting for Approval 3
+		case 1002: // Waiting for Approval 1
+		case 1003: // Waiting for Approval 2
+		case 1004: // Waiting for Approval 3
 			result = true;
 		}
 		return result;
@@ -516,13 +525,13 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 1:
-				nextStatus = 1005L; // Sent to HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 2:
-				nextStatus = 1003L; // waiting for approval 2
+				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval 2
 				break;
 			case 3:
-				nextStatus = 1004L; // waiting for approval 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval 3
 				break;
 			}
 			break;
@@ -531,16 +540,16 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 2:
-				nextStatus = 1005L; // Sent to HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 3:
-				nextStatus = 1004L; // waiting for approval 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval 3
 				break;
 			}
 			break;
 
 		case 1004: // current status - waiting for approval 3
-			nextStatus = 1005L; // Sent to HR
+			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 			break;
 
 		}
