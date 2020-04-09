@@ -6,7 +6,6 @@ package com.imagination.cbs.service.impl;
 import static java.util.stream.Collectors.toList;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -175,6 +174,7 @@ public class BookingServiceImpl implements BookingService {
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
 		String loggedInUser = user.getDisplayName();
+
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
 
@@ -350,7 +350,7 @@ public class BookingServiceImpl implements BookingService {
 		if (bookingRequest.getWorkTasks() != null) {
 			List<BookingWorkTask> bookingWorkTasks = bookingRequest.getWorkTasks().stream().map(work -> {
 				BookingWorkTask bookingWorkTask = new BookingWorkTask();
-				bookingWorkTask.setTaskDeliveryDate(Date.valueOf(work.getTaskDeliveryDate()));
+				bookingWorkTask.setTaskDeliveryDate(CBSDateUtils.convertStringToDate(work.getTaskDeliveryDate()));
 				bookingWorkTask.setTaskName(work.getTaskName());
 				bookingWorkTask.setTaskDateRate(Double.parseDouble(work.getTaskDateRate()));
 				bookingWorkTask.setTaskTotalDays(Long.parseLong(work.getTaskTotalDays()));

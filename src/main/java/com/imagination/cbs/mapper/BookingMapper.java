@@ -20,5 +20,4 @@ public interface BookingMapper {
 	@Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target = "contractedToDate")
 	@Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy", target = "contractorSignedDate")
 	public BookingDto convertToDto(BookingRevision bookingRevision);
-
 }

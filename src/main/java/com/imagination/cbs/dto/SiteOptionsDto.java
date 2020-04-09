@@ -15,8 +15,4 @@ public class SiteOptionsDto {
 	private String id;
 
 	private String name;
-
-	private String changedBy;
-
-	private String changedDateTime;
 }
