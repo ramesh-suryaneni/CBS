@@ -36,4 +36,9 @@ cest_outcome:
 
 logging:
   config: classpath:log4j2-local.yml              
-               
+
+azure:                                                                                                                                           
+  storage:                                                                                             
+   connectionString: DefaultEndpointsProtocol=https;AccountName=imaginationcbs;AccountKey=uE2RZa+UXuI++dhdKlSreySCJvxMVszBhvO1ZLha1W4wFSQi8P8dAx5qBX/wLU7xhPlsUbWtIXdrbDd0tKj5fg==;EndpointSuffix=core.windows.net               
+   container:                                                          
+     name: templates            

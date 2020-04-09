@@ -36,7 +36,7 @@ public class ContractorEmployeeSearch {
 	private String company;
 
 	@Column(name="no_of_bookings")
-	private int noOfBookingsInPast;
+	private Integer noOfBookingsInPast;
 
 	public Long getRowNo() {
 		return rowNo;
@@ -102,11 +102,11 @@ public class ContractorEmployeeSearch {
 		this.company = company;
 	}
 
-	public int getNoOfBookingsInPast() {
+	public Integer getNoOfBookingsInPast() {
 		return noOfBookingsInPast;
 	}
 
-	public void setNoOfBookingsInPast(int noOfBookingsInPast) {
+	public void setNoOfBookingsInPast(Integer noOfBookingsInPast) {
 		this.noOfBookingsInPast = noOfBookingsInPast;
 	}
 
