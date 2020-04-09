@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,6 +45,9 @@ public class ContractorEmployeeSearchControllerTest {
 	@MockBean
 	private ContractorService contractorServiceImpl;
 
+	@MockBean
+	private JavaMailSender javaMailSender;
+	
 	@Before
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity())
@@ -134,4 +138,4 @@ public class ContractorEmployeeSearchControllerTest {
 		return new PageImpl<>(contractorEmployeeSearchDtoList, PageRequest.of(0, 5), 2);
 	}
 
-}*/
+}

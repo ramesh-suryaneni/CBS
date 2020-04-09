@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,6 +47,9 @@ public class ContractorControllerTest {
 	
 	private MockMvc mockMvc;
 
+	@MockBean
+	private JavaMailSender javaMailSender;
+	
 	@MockBean
 	private ContractorService contractorService;
 	
@@ -215,4 +219,3 @@ public class ContractorControllerTest {
 		return new PageImpl<>(getContractorDtos(),PageRequest.of(0, 10),2);
 	}
 }
-*/

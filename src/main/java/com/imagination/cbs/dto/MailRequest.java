@@ -1,11 +1,17 @@
 package com.imagination.cbs.dto;
 
-/*@Entity
-@Table(name = "MailTable")*/
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "MailTable")
 public class MailRequest {
 	
-	/*@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)*/
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	
 	private Integer id;
 
@@ -21,9 +27,6 @@ public class MailRequest {
     private String subject;
 	
     private String mailRequest;
-	
-    
-    
 	
 	public int getId() {
 		return id;

@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.Mockito.verify;
@@ -13,10 +13,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,6 +35,7 @@ import com.imagination.cbs.service.DisciplineService;
 @SpringBootTest
 public class DisciplineControllerTest {
 
+	
 	@Autowired
     private WebApplicationContext context;
 	
@@ -39,10 +43,14 @@ public class DisciplineControllerTest {
 
 	@MockBean
 	private DisciplineService disciplineService;
+	
+	@MockBean
+	private JavaMailSender javaMailSender;
 
 	
 	@Before
     public void setup() {
+    
         this.mvc = MockMvcBuilders
           .webAppContextSetup(context)
           .apply(SecurityMockMvcConfigurers.springSecurity())
@@ -107,4 +115,3 @@ public class DisciplineControllerTest {
 		 return roleDto;
 	}
 }
-*/

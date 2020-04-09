@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import static org.mockito.Mockito.times;
@@ -38,6 +39,9 @@ public class RoleControllerTest {
 	
 	@MockBean
 	private RoleService roleservice;
+	
+	@MockBean
+	private JavaMailSender javaMailSender;
 	
 	@Before
     public void setup() {
@@ -91,4 +95,3 @@ public class RoleControllerTest {
 		return roleDto;
 	}
 }
-*/
