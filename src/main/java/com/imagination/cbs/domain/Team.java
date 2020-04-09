@@ -2,14 +2,18 @@ package com.imagination.cbs.domain;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * The persistent class for the team database table.
@@ -34,8 +38,19 @@ public class Team implements Serializable {
 	@Column(name = "team_name")
 	private String teamName;
 
-	@OneToOne(mappedBy = "team")
-	private Approver approver;
+	@OneToMany(mappedBy = "team")
+	private List<Approver> approvers;
+
+	public List<Approver> getApprovers() {
+		if (CollectionUtils.isEmpty(this.approvers)) {
+			return this.approvers = new ArrayList<Approver>();
+		}
+		return approvers;
+	}
+
+	public void setApprovers(List<Approver> approvers) {
+		this.approvers = approvers;
+	}
 
 	public Team() {
 	}
@@ -72,12 +87,8 @@ public class Team implements Serializable {
 		this.teamName = teamName;
 	}
 
-	public Approver getApprover() {
-		return this.approver;
+	public void addApprover(Approver approver) {
+		getApprovers().add(approver);
+		approver.setTeam(this);
 	}
-
-	public void setApprover(Approver approver) {
-		this.approver = approver;
-	}
-
 }

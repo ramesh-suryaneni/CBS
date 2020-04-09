@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -35,12 +36,10 @@ public class Approver implements Serializable {
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	// bi-directional one-to-one association to Team
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "team_id")
 	private Team team;
 
-	// bi-directional one-to-one association to EmployeeMapping
 	@OneToOne
 	@JoinColumn(name = "employee_id")
 	private EmployeeMapping employee;
@@ -95,5 +94,4 @@ public class Approver implements Serializable {
 	public void setEmployeeMapping(EmployeeMapping employeeMapping) {
 		this.employee = employeeMapping;
 	}
-
 }
