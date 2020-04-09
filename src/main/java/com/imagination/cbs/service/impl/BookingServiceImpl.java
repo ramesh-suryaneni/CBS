@@ -167,6 +167,8 @@ public class BookingServiceImpl implements BookingService {
 		newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
+		//TODO: 1. identify approver based on booking team and approver order from approver table
+		//TODO: 2. send email to approver using his email
 		return retrieveBookingDetails(bookingId);
 	}
 
@@ -405,7 +407,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	private void approve(Booking booking, CBSUser user) {
-
+		
 		BookingRevision latestRevision = getLatestRevision(booking);
 
 		String jobNumber = latestRevision.getJobNumber();
@@ -447,11 +449,26 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	private void hrApprove(Booking booking, CBSUser user) {
+		
+		if(loggedInUserService.isCurrentUserInHRRole()){
+			Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
+			
+			saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
+			//TODO:send mail.
+			
+		}else {
+			throw new CBSUnAuthorizedException(
+					"Not Authorized to perform this operation; insufficient previllages");
+		}
 
 	}
 	
 	private void decline(Booking booking, CBSUser user) {
-		// TODO: Auto-generated method stub
+		
+		Long nextStatus = ApprovalStatusConstant.APPROVAL_REJECTED.getApprovalStatusId();
+		
+		saveBooking(booking, getLatestRevision(booking),nextStatus, loggedInUserService.getLoggedInUserDetails());
+		//TODO:send mail.
 		
 	}
 
