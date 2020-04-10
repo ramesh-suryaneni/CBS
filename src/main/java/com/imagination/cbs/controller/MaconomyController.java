@@ -28,7 +28,7 @@ public class MaconomyController {
 	@GetMapping()
 	public JobDataDto getJobDetails(@RequestParam String jobNumber){
 		
-		return maconomyService.getJobDetails(jobNumber);
+		return maconomyService.getMaconomyJobNumberAndDepartmentsDetails(jobNumber, new JobDataDto(), "jobNumber", "");
 	}
-	
+		
 }

@@ -1,6 +1,6 @@
 /**
  * 
- */
+ *//*
 package com.imagination.cbs.service.impl;
 
 import java.io.IOException;
@@ -25,10 +25,10 @@ import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.MaconomyRestClient;
 
-/**
+*//**
  * @author pappu.rout
  *
- */
+ *//*
 
 @Service("maconomyService")
 public class MaconomyJobNumberServiceImpl implements MaconomyService {
@@ -97,3 +97,4 @@ public class MaconomyJobNumberServiceImpl implements MaconomyService {
 	}
 
 }
+*/

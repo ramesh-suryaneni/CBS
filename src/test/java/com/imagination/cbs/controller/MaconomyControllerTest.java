@@ -56,7 +56,7 @@ public class MaconomyControllerTest {
 	public void shouldReturnJobDataDtoBasedOnJobNumber() throws Exception
 	{
 		String jobNo="6000";
-		when(maconomyService.getJobDetails(jobNo)).thenReturn(createJobDataDto());
+		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(jobNo, createJobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto());
 		
 		this.mockMvc.perform(get("/macanomy?jobNumber=6000").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())

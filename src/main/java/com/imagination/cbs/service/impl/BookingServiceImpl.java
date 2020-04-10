@@ -11,12 +11,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.MaconomyConstant;
 import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Approver;
@@ -84,9 +86,6 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private MaconomyService maconomyService;
-
-	@Autowired
-	private MaconomyApproverTeamServiceImpl maconomyApproverTeamService;
 
 	@Autowired
 	private TeamRepository teamRepository;
@@ -203,13 +202,15 @@ public class BookingServiceImpl implements BookingService {
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
-				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+				//JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+				JobDataDto jobDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails(bookingRequest.getJobNumber(),new JobDataDto() , MaconomyConstant.MACANOMY_JOB_NUMBER.getMacanomy(), "");
 				String deptName = jobDetails.getData().getText3();
 				bookingRevision.setJobDeptName(deptName);
 				bookingRevision.setJobname(jobDetails.getData().getJobName());
 				bookingRevision.setJobNumber(jobDetails.getData().getJobNumber());
-				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
-
+				//ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
+				ApproverTeamDto approverTeamDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails("", new ApproverTeamDto() , MaconomyConstant.MACANOMY_DEPARTMENT_NAME.getMacanomy(), deptName);
+				
 				String remark3 = approverTeamDetails.getData().getRemark3();
 				Team teamOne = teamRepository.findByTeamName(remark3);
 				bookingDomain.setTeam(teamOne);
@@ -368,12 +369,53 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDto cancelooking(Long bookingId) {
+	@Transactional
+	public BookingDto cancelBooking(Long bookingId) {
+		
+		String  loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		Booking booking = bookingRepository.findById(bookingId).get();
+		
+		if(booking.getChangedBy().equalsIgnoreCase(loggedInUser) && 
+				ApprovalStatusConstant.APPROVAL_DRAFT.getApprovalStatusId()
+				.equals(booking.getApprovalStatus().getApprovalStatusId())){
+			
+			bookingRepository.delete(booking);
+			
+		}else if (booking.getChangedBy().equalsIgnoreCase(loggedInUser)){
+			
+			BookingRevision latestBookingRevision = getLatestRevision(booking);
+			/*
+			 * Long revisionNumber = latestBookingRevision.getRevisionNumber(); // I will
+			 * change this mapper later ModelMapper modelMapper = new ModelMapper();
+			 * modelMapper.map(latestBookingRevision, bookingRevision);
+			 * 
+			 * 
+			 * 
+			 * latestBookingRevision.setRevisionNumber(revisionNumber + 1);
+			 * latestBookingRevision.setChangedBy(loggedInUser);
+			 * latestBookingRevision.setApprovalStatus(cancelledStatusDetails);
+			 * latestBookingRevision.setChangedDate(new
+			 * Timestamp(System.currentTimeMillis()));
+			 * latestBookingRevision.setBookingRevisionId(null);
+			 * 
+			 * bookingDetails.setApprovalStatus(cancelledStatusDetails);
+			 * bookingDetails.setChangedBy(loggedInUser); bookingDetails.setChangedDate(new
+			 * Timestamp(System.currentTimeMillis()));
+			 * bookingDetails.addBookingRevision(bookingRevision);
+			 * 
+			 * Booking savedBooking = bookingRepository.save(bookingDetails);
+			 */
+			
+			saveBooking(booking, latestBookingRevision, ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(), 
+					loggedInUserService.getLoggedInUserDetails());
 
-		// TODO: cancel booking
-
-		return retrieveBookingDetails(bookingId);
+			return retrieveBookingDetails(bookingId);
+			
+		}
+		
+		return new BookingDto();
 	}
+
 
 	@Transactional
 	@Override

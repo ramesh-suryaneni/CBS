@@ -65,7 +65,7 @@ public class BookingDto {
 
 	private CurrencyDto currency;
 
-	private ContractorEmployeeSearchDto contractEmployee;
+	private ContractorEmployeeDto contractEmployee;
 
 	private RegionDto commOffRegion;
 
