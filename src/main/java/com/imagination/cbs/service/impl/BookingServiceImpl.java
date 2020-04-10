@@ -423,29 +423,6 @@ public class BookingServiceImpl implements BookingService {
 		} else if (booking.getChangedBy().equalsIgnoreCase(loggedInUser)) {
 
 			BookingRevision latestBookingRevision = getLatestRevision(booking);
-			/*
-			 * Long revisionNumber = latestBookingRevision.getRevisionNumber();
-			 * // I will change this mapper later ModelMapper modelMapper = new
-			 * ModelMapper(); modelMapper.map(latestBookingRevision,
-			 * bookingRevision);
-			 * 
-			 * 
-			 * 
-			 * latestBookingRevision.setRevisionNumber(revisionNumber + 1);
-			 * latestBookingRevision.setChangedBy(loggedInUser);
-			 * latestBookingRevision.setApprovalStatus(cancelledStatusDetails);
-			 * latestBookingRevision.setChangedDate(new
-			 * Timestamp(System.currentTimeMillis()));
-			 * latestBookingRevision.setBookingRevisionId(null);
-			 * 
-			 * bookingDetails.setApprovalStatus(cancelledStatusDetails);
-			 * bookingDetails.setChangedBy(loggedInUser);
-			 * bookingDetails.setChangedDate(new
-			 * Timestamp(System.currentTimeMillis()));
-			 * bookingDetails.addBookingRevision(bookingRevision);
-			 * 
-			 * Booking savedBooking = bookingRepository.save(bookingDetails);
-			 */
 
 			saveBooking(booking, latestBookingRevision, ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(),
 					loggedInUserService.getLoggedInUserDetails());
