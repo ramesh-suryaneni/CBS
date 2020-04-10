@@ -73,6 +73,7 @@ import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
+import com.imagination.cbs.util.SecurityConstants;
 
 /**
  * @author Ramesh.Suryaneni
@@ -144,7 +145,11 @@ public class BookingServiceImpl implements BookingService {
 
 	private static final String FROM_EMAIL = "CBS@imagination.com";
 
-	private static final String SUBJECT_LINE = "Please Approve: Contractor Booking request from ";
+	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
+
+	private static final String DECLINE_SUBJECT_LINE = "Declined : Contractor Booking request # from ";
+
+	private static final String CANCELED_SUBJECT_LINE = "Cancelled: Contractor Booking request # from ";
 
 	@Autowired
 	private EmployeeMappingRepository employeeMappingRepository;
@@ -196,7 +201,8 @@ public class BookingServiceImpl implements BookingService {
 		MailRequest request = new MailRequest();
 		String[] toEmail = new String[] { employee.getGoogleAccount() };
 		request.setMailTo(toEmail);
-		request.setSubject(SUBJECT_LINE + latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
+		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
+				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
 		emailService.sendForBookingApprovalEmail(request, latestRevision);
 	}
@@ -546,16 +552,20 @@ public class BookingServiceImpl implements BookingService {
 
 	private void prepareMailAndSendToHR(BookingRevision latestRevision) {
 		Permission permission = new Permission();
-		permission.setPermissionId(5L);
-		EmployeePermissions employeePermission = employeePermissionsRepository.findByPermission(permission);
-		EmployeeMapping employee = employeeMappingRepository
-				.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
-		MailRequest request = new MailRequest();
-		String[] toEmail = new String[] { employee.getGoogleAccount() };
-		request.setMailTo(toEmail);
-		request.setSubject(SUBJECT_LINE + latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
-		request.setMailFrom(FROM_EMAIL);
-		emailService.sendForBookingApprovalEmail(request, latestRevision);
+		permission.setPermissionId(SecurityConstants.ROLE_CONTRACT_MGT_ID);
+		List<EmployeePermissions> employeePermissions = employeePermissionsRepository.findAllByPermission(permission);
+		for (EmployeePermissions employeePermission : employeePermissions) {
+			EmployeeMapping employee = employeeMappingRepository
+					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
+			String[] toEmail = new String[] { employee.getGoogleAccount() };
+			MailRequest request = new MailRequest();
+			request.setMailTo(toEmail);
+			request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
+					+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
+			request.setMailFrom(FROM_EMAIL);
+			emailService.sendForBookingApprovalEmail(request, latestRevision);
+		}
+
 	}
 
 	private void hrApprove(Booking booking, CBSUser user) {
@@ -580,8 +590,15 @@ public class BookingServiceImpl implements BookingService {
 
 		Long nextStatus = ApprovalStatusConstant.APPROVAL_REJECTED.getApprovalStatusId();
 
-		saveBooking(booking, getLatestRevision(booking), nextStatus, loggedInUserService.getLoggedInUserDetails());
-		// TODO:send mail to creator.
+		BookingRevision latestRevision = getLatestRevision(booking);
+		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
+		// TODO:send mail to creator
+		MailRequest request = new MailRequest();
+		request.setMailTo(new String[] { booking.getChangedBy() });
+		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
+				+ "-" + latestRevision.getChangedBy());
+		request.setMailFrom(FROM_EMAIL);
+		emailService.sendForBookingApprovalEmail(request, latestRevision);
 
 	}
 
@@ -707,7 +724,6 @@ public class BookingServiceImpl implements BookingService {
 		// TODO:download agreement from adobe
 		// TODO:upload agreement to azure
 		// TODO:send email to creator/HR/?
-
 	}
 
 }
