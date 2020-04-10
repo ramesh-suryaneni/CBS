@@ -33,7 +33,7 @@ public class DisciplineControllerTest {
 	
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
-	
+
 	@MockBean
 	private GoogleAuthenticationEntryPoint googleAuthenticationEntryPoint;
 	
