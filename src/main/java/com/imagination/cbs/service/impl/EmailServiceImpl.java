@@ -24,77 +24,80 @@ import com.imagination.cbs.util.EmailUtility;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-@Service("emailServiceImpl")
-public class EmailServiceImpl implements EmailService{
+@Service("emailService")
+public class EmailServiceImpl implements EmailService {
 
 	@Autowired
 	private EmailUtility emailUtility;
-	
+
 	@Autowired
 	private Configuration config;
-	
+
 	@Autowired
 	private BookingRevisionRepository bookingRevisionRepository;
-	
+
 	@Autowired
 	private LoggedInUserService loggedInUserService;
-	
-	private Logger logger=LoggerFactory.getLogger(EmailServiceImpl.class);
-	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+
 	@Override
 	public void sendMail(MailRequest request) {
-		
-		
-		Optional<BookingRevision> optionalBookingRevision=bookingRevisionRepository.findById(2523l);
-		
+
+		Optional<BookingRevision> optionalBookingRevision = bookingRevisionRepository.findById(2523l);
+
 		sendForBookingApprovalEmail(request, optionalBookingRevision.get());
 	}
 
 	@Override
-	public void sendForBookingApprovalEmail(MailRequest request,BookingRevision bookingRevision){
-		
+	public void sendForBookingApprovalEmail(MailRequest request, BookingRevision bookingRevision) {
+
 		try {
-			
+
 			Template contractNotificationEmailTemplate = config.getTemplate("email.template41page.ftl");
-			
-			String body = FreeMarkerTemplateUtils.processTemplateIntoString(contractNotificationEmailTemplate, getBookingApprovalDataModel(bookingRevision));
-			
-			
+
+			String body = FreeMarkerTemplateUtils.processTemplateIntoString(contractNotificationEmailTemplate,
+					getBookingApprovalDataModel(bookingRevision));
+
 			emailUtility.sendEmail(request, body);
-		
+
 		} catch (Exception e) {
-			
-			logger.error("Not able to send Booking approval email");
+
+			LOGGER.error("Not able to send Booking approval email");
 			e.printStackTrace();
-		} 
+		}
 	}
-	
-	private Map<String,Object> getBookingApprovalDataModel(BookingRevision bookingRevision){
-		
-		Map<String,Object> mapOfTemplateValues=new HashMap<>();
-		
-		mapOfTemplateValues.put(EmailConstants.DESCIPLINE, bookingRevision.getRole().getDiscipline());
+
+	private Map<String, Object> getBookingApprovalDataModel(BookingRevision bookingRevision) {
+
+		Map<String, Object> mapOfTemplateValues = new HashMap<>();
+
+		mapOfTemplateValues.put(EmailConstants.DESCIPLINE,
+				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE, bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, bookingRevision.getContractor().getContractorName());
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE, bookingRevision.getSupplierType().getName());
-		mapOfTemplateValues.put(EmailConstants.START_DATE, CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedFromDate()));
-		mapOfTemplateValues.put(EmailConstants.END_DATE, CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedToDate()));
-		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS,bookingRevision.getContractWorkLocation().getOfficeName());
-		
-		BookingWorkTask task=bookingRevision.getBookingWorkTasks().get(0);
-		
-		mapOfTemplateValues.put(EmailConstants.TASK,task.getTaskName() );
+		mapOfTemplateValues.put(EmailConstants.START_DATE,
+				CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedFromDate()));
+		mapOfTemplateValues.put(EmailConstants.END_DATE,
+				CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedToDate()));
+		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS,
+				bookingRevision.getContractWorkLocation().getOfficeName());
+
+		BookingWorkTask task = bookingRevision.getBookingWorkTasks().get(0);
+
+		mapOfTemplateValues.put(EmailConstants.TASK, task.getTaskName());
 		mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE, task.getTaskDeliveryDate());
 		mapOfTemplateValues.put(EmailConstants.DAY_RATE, task.getTaskDateRate());
 		mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS, task.getTaskTotalDays());
 		mapOfTemplateValues.put(EmailConstants.TOTAL, task.getTaskTotalAmount());
 		mapOfTemplateValues.put(EmailConstants.TOTAL_COST, task.getTaskTotalAmount());
-		
+
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-		
+
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY, user.getDisplayName());
-		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS, user.getEmail()+EmailConstants.DOMAIN);
-		
+		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS, user.getEmail() + EmailConstants.DOMAIN);
+
 		return mapOfTemplateValues;
 	}
 }

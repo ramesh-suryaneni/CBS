@@ -19,5 +19,6 @@ public interface BookingMapper {
 	@Mapping(source = "contractedFromDate", dateFormat = "dd/MM/yyyy", target = "contractedFromDate")
 	@Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target = "contractedToDate")
 	@Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy", target = "contractorSignedDate")
+//	@Mapping(source = "bookingRevision.bookingWorkTasks.taskDeliveryDate", dateFormat = "dd/MM/yyyy", target = "bookingDto.bookingWorkTasks.taskDeliveryDate")
 	public BookingDto convertToDto(BookingRevision bookingRevision);
 }
