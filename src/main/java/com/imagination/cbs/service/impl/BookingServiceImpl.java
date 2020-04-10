@@ -607,12 +607,13 @@ public class BookingServiceImpl implements BookingService {
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
 		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
 		// revision.setBookingRevisionId(null);
-		revision.setApprovalStatus(nextApprovalStatus);
-		revision.setRevisionNumber(revision.getRevisionNumber() + 1);
-		revision.setChangedBy(user.getDisplayName());
+		BookingRevision newObject = new BookingRevision(revision);
+		newObject.setApprovalStatus(nextApprovalStatus);
+		newObject.setRevisionNumber(revision.getRevisionNumber() + 1);
+		newObject.setChangedBy(user.getDisplayName());
 
 		booking.setApprovalStatus(nextApprovalStatus);
-		booking.addBookingRevision(revision);
+		booking.addBookingRevision(newObject);
 
 		bookingRepository.save(booking);
 
