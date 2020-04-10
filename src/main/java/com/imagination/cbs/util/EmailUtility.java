@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.dto.MailResponse;
 
-import freemarker.template.Configuration;
-
 @Component("emailUtility")
 public class EmailUtility {
 

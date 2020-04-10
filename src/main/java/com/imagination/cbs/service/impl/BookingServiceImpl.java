@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +43,8 @@ import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.JobDataDto;
+import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.exception.CBSUnAuthorizedException;
-import com.imagination.cbs.exception.CBSValidationException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
@@ -215,7 +214,7 @@ public class BookingServiceImpl implements BookingService {
 				bookingDomain.setTeam(teamOne);
 			} catch (Exception e) {
 				if (isSubmit) {
-					throw new CBSValidationException("Invalid Job Number");
+					throw new CBSApplicationException("Invalid Job Number");
 				}
 			}
 		}
@@ -426,7 +425,7 @@ public class BookingServiceImpl implements BookingService {
 			booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
 
 		} catch (Exception ex) {
-			throw new CBSValidationException("No Booking Available with this number :" + request.getBookingId());
+			throw new CBSApplicationException("No Booking Available with this number :" + request.getBookingId());
 		}
 
 		if (UserActionConstant.APPROVE.getAction().equalsIgnoreCase(request.getAction())) {
@@ -441,7 +440,7 @@ public class BookingServiceImpl implements BookingService {
 			decline(booking, user);
 		}
 		else {
-			throw new CBSValidationException(
+			throw new CBSApplicationException(
 					"Request can't be processed, action should be anyone of APPROVE||HRAPPROVE||DECLINE");
 		}
 		return retrieveBookingDetails(Long.valueOf(request.getBookingId()));
@@ -485,7 +484,7 @@ public class BookingServiceImpl implements BookingService {
 			}
 
 		} else {
-			throw new CBSValidationException("Request can't be processed, Booking is not in approval status");
+			throw new CBSApplicationException("Request can't be processed, Booking is not in approval status");
 		}
 
 	}

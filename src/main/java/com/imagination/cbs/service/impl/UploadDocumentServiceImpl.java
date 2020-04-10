@@ -118,8 +118,8 @@ public class UploadDocumentServiceImpl implements UploadDocumentService {
 
 			return response.getBody().path("id").asText();
 
-		} catch (IOException | ParseException e) {
-			throw new CBSApplicationException(e.getLocalizedMessage());
+		} catch (IOException | ParseException exception) {
+			throw new CBSApplicationException(exception.getLocalizedMessage());
 		}
 	}
 

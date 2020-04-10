@@ -42,17 +42,14 @@ public class AzureStorageUtility {
 				uris.add(blobItem.getUri());
 			}
 
-		} catch (URISyntaxException e) {
-			throw new CBSApplicationException(e.getLocalizedMessage());
-
-		} catch (StorageException e) {
-			throw new CBSApplicationException(e.getLocalizedMessage());
+		} catch (Exception exception) {
+			throw new CBSApplicationException(exception.getLocalizedMessage());
 		}
 
 		return uris;
 	}
 
-	public String downloadTemplateAsText(String templateName) {
+	public String downloadTemplateAsText(String templateName) throws URISyntaxException, StorageException {
 
 		logger.info("templateName:::{}", templateName);
 
@@ -69,9 +66,9 @@ public class AzureStorageUtility {
 				logger.info("blobName::{} blobText::{}", blob.getName(), templateText);
 			}
 
-		} catch (Exception e) {
+		} catch (Exception exception) {
 
-			throw new CBSApplicationException(e.getLocalizedMessage());
+			throw new CBSApplicationException(exception.getLocalizedMessage());
 
 		}
 

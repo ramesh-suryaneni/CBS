@@ -95,7 +95,7 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 
 			return BEARER + oauthAccessToken;
 		
-		} catch (Exception e) {
+		} catch (RuntimeException runtimeException) {
 			throw new CBSApplicationException("Adobe Keys not found inside Config table");
 		}
 	}
@@ -198,9 +198,9 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 				log.info("Get Access Token Used by Refresh Token :::{}", adobeOAuthDto);
 			}
 
-		} catch (Exception e) {
-			log.info("Exception insdie the:::{}", e);
-			throw new CBSApplicationException(e.getLocalizedMessage());
+		} catch (RuntimeException runtimeException) {
+			log.info("Exception insdie the:::{}", runtimeException);
+			throw new CBSApplicationException(runtimeException.getLocalizedMessage());
 		}
 
 		saveOrUpdateAdobeKeys(adobeOAuthDto);
