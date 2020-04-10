@@ -18,7 +18,9 @@ public enum MaconomyConstant {
 	MACONOMY_HEADER_VALUE("X-Force-Maconomy-Credentials"),
 	MEDIA_TYPE("application/json"),
 	MACANOMY_REVENUS_DEPARTMENT("/find_theoption/filter?fields=name,remark3&restriction=optionlistnumber "
-			+ "= \"JobRevenueDepartment\"&limit=1000");
+			+ "= \"JobRevenueDepartment\"&limit=1000"),
+	MACANOMY_JOB_NUMBER("jobNumber"),
+	MACANOMY_DEPARTMENT_NAME("Department");
 			
 	
 	private String macanomy;

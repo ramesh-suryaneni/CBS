@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.MaconomyConstant;
 import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Approver;
@@ -83,9 +84,6 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private MaconomyService maconomyService;
-
-	@Autowired
-	private MaconomyApproverTeamServiceImpl maconomyApproverTeamService;
 
 	@Autowired
 	private TeamRepository teamRepository;
@@ -202,13 +200,15 @@ public class BookingServiceImpl implements BookingService {
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
-				JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+				//JobDataDto jobDetails = maconomyService.getJobDetails(bookingRequest.getJobNumber());
+				JobDataDto jobDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails(bookingRequest.getJobNumber(),new JobDataDto() , MaconomyConstant.MACANOMY_JOB_NUMBER.getMacanomy(), "");
 				String deptName = jobDetails.getData().getText3();
 				bookingRevision.setJobDeptName(deptName);
 				bookingRevision.setJobname(jobDetails.getData().getJobName());
 				bookingRevision.setJobNumber(jobDetails.getData().getJobNumber());
-				ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
-
+				//ApproverTeamDto approverTeamDetails = maconomyApproverTeamService.getApproverTeamDetails(deptName);
+				ApproverTeamDto approverTeamDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails("", new ApproverTeamDto() , MaconomyConstant.MACANOMY_DEPARTMENT_NAME.getMacanomy(), deptName);
+				
 				String remark3 = approverTeamDetails.getData().getRemark3();
 				Team teamOne = teamRepository.findByTeamName(remark3);
 				bookingDomain.setTeam(teamOne);
