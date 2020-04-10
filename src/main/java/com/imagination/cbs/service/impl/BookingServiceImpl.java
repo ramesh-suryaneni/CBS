@@ -73,6 +73,7 @@ import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
+import com.imagination.cbs.util.EmailConstants;
 import com.imagination.cbs.util.SecurityConstants;
 
 /**
@@ -199,7 +200,7 @@ public class BookingServiceImpl implements BookingService {
 		Approver approver = approverRepository.findByTeamAndApproverOrder(booking.getTeam(), 1L);
 		EmployeeMapping employee = approver.getEmployee();
 		MailRequest request = new MailRequest();
-		String[] toEmail = new String[] { employee.getGoogleAccount() };
+		String[] toEmail = new String[] { employee.getGoogleAccount() + EmailConstants.DOMAIN };
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
@@ -252,6 +253,7 @@ public class BookingServiceImpl implements BookingService {
 				String remark3 = approverTeamDetails.getData().getRemark3();
 				Team teamOne = teamRepository.findByTeamName(remark3);
 				bookingDomain.setTeam(teamOne);
+				bookingRevision.setTeam(teamOne);
 			} catch (Exception e) {
 				if (isSubmit) {
 					throw new CBSApplicationException("Invalid Job Number");
@@ -557,7 +559,7 @@ public class BookingServiceImpl implements BookingService {
 		for (EmployeePermissions employeePermission : employeePermissions) {
 			EmployeeMapping employee = employeeMappingRepository
 					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
-			String[] toEmail = new String[] { employee.getGoogleAccount() };
+			String[] toEmail = new String[] { employee.getGoogleAccount() + EmailConstants.DOMAIN };
 			MailRequest request = new MailRequest();
 			request.setMailTo(toEmail);
 			request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
@@ -604,7 +606,7 @@ public class BookingServiceImpl implements BookingService {
 
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
 		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
-		revision.setBookingRevisionId(null);
+		// revision.setBookingRevisionId(null);
 		revision.setApprovalStatus(nextApprovalStatus);
 		revision.setRevisionNumber(revision.getRevisionNumber() + 1);
 		revision.setChangedBy(user.getDisplayName());
