@@ -372,39 +372,43 @@ public class BookingServiceImpl implements BookingService {
 	public BookingDto cancelBooking(Long bookingId) {
 		
 		String  loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
-		Booking bookingDetails = bookingRepository.findById(bookingId).get();
+		Booking booking = bookingRepository.findById(bookingId).get();
 		
-		if(bookingDetails.getChangedBy().equalsIgnoreCase(loggedInUser) && 
-				bookingDetails.getApprovalStatus().getApprovalName().equalsIgnoreCase("Draft")){
+		if(booking.getChangedBy().equalsIgnoreCase(loggedInUser) && 
+				ApprovalStatusConstant.APPROVAL_DRAFT.getApprovalStatusId()
+				.equals(booking.getApprovalStatus().getApprovalStatusId())){
 			
-			bookingRepository.delete(bookingDetails);
+			bookingRepository.delete(booking);
 			
-		}else if (bookingDetails.getChangedBy().equalsIgnoreCase(loggedInUser)){
+		}else if (booking.getChangedBy().equalsIgnoreCase(loggedInUser)){
 			
-			BookingRevision bookingRevision = new BookingRevision(); 
+			BookingRevision latestBookingRevision = getLatestRevision(booking);
+			/*
+			 * Long revisionNumber = latestBookingRevision.getRevisionNumber(); // I will
+			 * change this mapper later ModelMapper modelMapper = new ModelMapper();
+			 * modelMapper.map(latestBookingRevision, bookingRevision);
+			 * 
+			 * 
+			 * 
+			 * latestBookingRevision.setRevisionNumber(revisionNumber + 1);
+			 * latestBookingRevision.setChangedBy(loggedInUser);
+			 * latestBookingRevision.setApprovalStatus(cancelledStatusDetails);
+			 * latestBookingRevision.setChangedDate(new
+			 * Timestamp(System.currentTimeMillis()));
+			 * latestBookingRevision.setBookingRevisionId(null);
+			 * 
+			 * bookingDetails.setApprovalStatus(cancelledStatusDetails);
+			 * bookingDetails.setChangedBy(loggedInUser); bookingDetails.setChangedDate(new
+			 * Timestamp(System.currentTimeMillis()));
+			 * bookingDetails.addBookingRevision(bookingRevision);
+			 * 
+			 * Booking savedBooking = bookingRepository.save(bookingDetails);
+			 */
 			
-			BookingRevision latestBookingRevision = getLatestRevision(bookingDetails);
-			Long revisionNumber = latestBookingRevision.getRevisionNumber();
-			// I will change this mapper later
-			ModelMapper modelMapper = new ModelMapper();
-			modelMapper.map(latestBookingRevision, bookingRevision);
-			
-			ApprovalStatusDm cancelledStatusDetails = approvalStatusDmRepository.findByApprovalName("Cancelled");
-			
-			bookingRevision.setRevisionNumber(revisionNumber+1);
-			bookingRevision.setChangedBy(loggedInUser);
-			bookingRevision.setApprovalStatus(cancelledStatusDetails);
-			bookingRevision.setChangedDate(new Timestamp(System.currentTimeMillis()));
-			bookingRevision.setBookingRevisionId(null);
-			
-			bookingDetails.setApprovalStatus(cancelledStatusDetails);
-			bookingDetails.setChangedBy(loggedInUser);
-			bookingDetails.setChangedDate(new Timestamp(System.currentTimeMillis()));
-			bookingDetails.addBookingRevision(bookingRevision);
-			
-			Booking savedBooking = bookingRepository.save(bookingDetails);
-			
-			return retrieveBookingDetails(savedBooking.getBookingId());
+			saveBooking(booking, latestBookingRevision, ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(), 
+					loggedInUserService.getLoggedInUserDetails());
+
+			return retrieveBookingDetails(bookingId);
 			
 		}
 		
