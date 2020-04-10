@@ -21,7 +21,7 @@ public interface BookingService {
 
 	public BookingDto retrieveBookingDetails(Long bookingId);
 	
-	public BookingDto cancelooking(Long bookingId);
+	public BookingDto cancelBooking(Long bookingId);
 	
 	public BookingDto approveBooking(ApproveRequest request) throws Exception;
 	

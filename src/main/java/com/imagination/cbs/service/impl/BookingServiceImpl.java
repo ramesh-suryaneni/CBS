@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -367,12 +368,49 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDto cancelooking(Long bookingId) {
-
-		// TODO: cancel booking
-
-		return retrieveBookingDetails(bookingId);
+	@Transactional
+	public BookingDto cancelBooking(Long bookingId) {
+		
+		String  loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
+		Booking bookingDetails = bookingRepository.findById(bookingId).get();
+		
+		if(bookingDetails.getChangedBy().equalsIgnoreCase(loggedInUser) && 
+				bookingDetails.getApprovalStatus().getApprovalName().equalsIgnoreCase("Draft")){
+			
+			bookingRepository.delete(bookingDetails);
+			
+		}else if (bookingDetails.getChangedBy().equalsIgnoreCase(loggedInUser)){
+			
+			BookingRevision bookingRevision = new BookingRevision(); 
+			
+			BookingRevision latestBookingRevision = getLatestRevision(bookingDetails);
+			Long revisionNumber = latestBookingRevision.getRevisionNumber();
+			// I will change this mapper later
+			ModelMapper modelMapper = new ModelMapper();
+			modelMapper.map(latestBookingRevision, bookingRevision);
+			
+			ApprovalStatusDm cancelledStatusDetails = approvalStatusDmRepository.findByApprovalName("Cancelled");
+			
+			bookingRevision.setRevisionNumber(revisionNumber+1);
+			bookingRevision.setChangedBy(loggedInUser);
+			bookingRevision.setApprovalStatus(cancelledStatusDetails);
+			bookingRevision.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			bookingRevision.setBookingRevisionId(null);
+			
+			bookingDetails.setApprovalStatus(cancelledStatusDetails);
+			bookingDetails.setChangedBy(loggedInUser);
+			bookingDetails.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			bookingDetails.addBookingRevision(bookingRevision);
+			
+			Booking savedBooking = bookingRepository.save(bookingDetails);
+			
+			return retrieveBookingDetails(savedBooking.getBookingId());
+			
+		}
+		
+		return new BookingDto();
 	}
+
 
 	@Transactional
 	@Override
