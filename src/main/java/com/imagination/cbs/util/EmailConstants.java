@@ -22,18 +22,6 @@ public class EmailConstants {
 	public static final String REQUESTED_BY="requestedBy";
 	public static final String DOMAIN="@imagination.com";
 	public static final String EMAIL_ADDRESS="mailAddress";
+	public static final String JOB_NUMBER="jobNumber";
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
