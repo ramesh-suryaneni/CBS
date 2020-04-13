@@ -16,6 +16,7 @@ public class BookingDashBoardDto {
 	private String changedBy;
 	private String changedDate;
 	private BigInteger bookingId;
+	private BigInteger bookingRevisionId;
 
 }
 

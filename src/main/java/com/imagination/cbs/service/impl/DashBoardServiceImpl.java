@@ -53,7 +53,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		if (status.equalsIgnoreCase("Submitted")) {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, pageable);
 		} else if(status.equalsIgnoreCase("waiting")){
-			return retrieveBookingRevisionForWaitingForApproval(employeeId,pageable, bookingDashboradDtos);
+			return retrieveBookingRevisionForWaitingForApproval(employeeId, PageRequest.of(pageNo, pageSize), bookingDashboradDtos);
 		} else {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
 		}
@@ -104,6 +104,7 @@ private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple
             bookingDashBoardDto.setChangedBy(bookingRevision.get("changedBy", String.class));
             bookingDashBoardDto.setChangedDate(CBSDateUtils.convertTimeStampToString(bookingRevision.get("changedDate", Timestamp.class)));
             bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
+            bookingDashBoardDto.setBookingRevisionId(bookingRevision.get("bookingRevisionId", BigInteger.class));
             
             return bookingDashBoardDto;
             
