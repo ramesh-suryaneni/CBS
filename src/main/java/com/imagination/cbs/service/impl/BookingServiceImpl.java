@@ -555,16 +555,21 @@ public class BookingServiceImpl implements BookingService {
 	private void hrApprove(Booking booking, CBSUser user) {
 
 		if (loggedInUserService.isCurrentUserInHRRole()) {
-			Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
+			Long currentStatus = booking.getApprovalStatus().getApprovalStatusId();
+			if(ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
+				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 
-			// TODO:Generate PDF.
-			// TODO:integrate Adobe - upload, create agreement
-			// TODO:populate document id and agreement id to revision
-			BookingRevision latestRevision = getLatestRevision(booking);
-			saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
-			// send Email to creator - need to confirm
-			prepareMailAndSendToHR(latestRevision);
-
+				// TODO:Generate PDF.
+				// TODO:integrate Adobe - upload, create agreement
+				// TODO:populate document id and agreement id to revision
+				BookingRevision latestRevision = getLatestRevision(booking);
+				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
+				// send Email to creator - need to confirm
+				prepareMailAndSendToHR(latestRevision);
+			}else {
+				throw new CBSApplicationException("Booking already approved or not in approval status");
+			}
+			
 		} else {
 			throw new CBSUnAuthorizedException("Not Authorized to perform this operation; insufficient previllages");
 		}

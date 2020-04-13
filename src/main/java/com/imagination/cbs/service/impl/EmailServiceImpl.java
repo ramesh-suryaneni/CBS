@@ -74,10 +74,9 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail) {
 
-
 		try {
 
-			Template pushNotificationEmailTemplate = config.getTemplate("email.template50page.ftl");
+			Template pushNotificationEmailTemplate = config.getTemplate("email.internalsource.ftl");
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(pushNotificationEmailTemplate,getInternalResourceEmailDataModel(internalResourceEmail));
 
