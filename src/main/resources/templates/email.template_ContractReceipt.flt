@@ -54,9 +54,8 @@ body {
 </div>
 
  <p>Requested by:<br>
-Max Schaaf<br>
-maxschaaf@imagination.com</p>
-
+${requestedBy}<br>
+${mailAddress}</p>
 
 
 </style>
@@ -87,7 +86,7 @@ th, td {
     <th colspan="2">Contract</th>
   </tr>
   <tr>
-    <td  width="5">pdf</td>
+    <td  width="5">${contractorPdf}</td>
     <td></td>
     
   </tr>
@@ -99,7 +98,7 @@ th, td {
     
   </tr>
   <tr>
-    <td  width="5">pdf</td>
+    <td  width="5">${scopeOfWorkPdf}</td>
     <td></td>
     
   </tr>
