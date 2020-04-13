@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import org.springframework.core.io.FileSystemResource;
 
-public interface AdobeOAuthTokensService {
+public interface AdobeSignService {
 
 	String getOauthAccessToken();
 

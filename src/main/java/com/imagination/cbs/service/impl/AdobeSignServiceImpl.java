@@ -67,14 +67,14 @@ import com.imagination.cbs.dto.AdobeOAuthDto;
 import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
-import com.imagination.cbs.service.AdobeOAuthTokensService;
+import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.util.AdobeUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
+public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Autowired
 	private ConfigRepository configRepository;
