@@ -8,7 +8,7 @@ public interface EmailService {
 
 	void sendMail(MailRequest request);
 
-	void sendForBookingApprovalEmail(MailRequest request, BookingRevision bookingRevision);
+	void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision);
 
 	void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail);
 

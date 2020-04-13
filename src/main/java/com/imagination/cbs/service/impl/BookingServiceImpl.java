@@ -205,7 +205,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
-		emailService.sendForBookingApprovalEmail(request, latestRevision);
+		emailService.sendEmailForBookingApproval(request, latestRevision);
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
@@ -533,17 +533,22 @@ public class BookingServiceImpl implements BookingService {
 		Permission permission = new Permission();
 		permission.setPermissionId(SecurityConstants.ROLE_CONTRACT_MGT_ID);
 		List<EmployeePermissions> employeePermissions = employeePermissionsRepository.findAllByPermission(permission);
+		List<String> emails = new ArrayList<>();
+		
 		for (EmployeePermissions employeePermission : employeePermissions) {
 			EmployeeMapping employee = employeeMappingRepository
 					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
-			String[] toEmail = new String[] { employee.getGoogleAccount() + EmailConstants.DOMAIN };
-			MailRequest request = new MailRequest();
-			request.setMailTo(toEmail);
-			request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
-					+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
-			request.setMailFrom(FROM_EMAIL);
-			emailService.sendForBookingApprovalEmail(request, latestRevision);
+			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN);
+			
 		}
+		
+		String[] toEmail = emails.stream().toArray(n -> new String[n]);
+		MailRequest request = new MailRequest();
+		request.setMailTo(toEmail);
+		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
+				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
+		request.setMailFrom(FROM_EMAIL);
+		emailService.sendEmailForBookingApproval(request, latestRevision);
 
 	}
 
@@ -573,11 +578,11 @@ public class BookingServiceImpl implements BookingService {
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 		// TODO:send mail to creator
 		MailRequest request = new MailRequest();
-		request.setMailTo(new String[] { booking.getChangedBy() });
+		request.setMailTo(new String[] { booking.getChangedBy()+ EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
-		emailService.sendForBookingApprovalEmail(request, latestRevision);
+		emailService.sendEmailForBookingApproval(request, latestRevision);
 
 	}
 

@@ -47,11 +47,11 @@ public class EmailServiceImpl implements EmailService {
 
 		Optional<BookingRevision> optionalBookingRevision = bookingRevisionRepository.findById(2523l);
 
-		sendForBookingApprovalEmail(request, optionalBookingRevision.get());
+		sendEmailForBookingApproval(request, optionalBookingRevision.get());
 	}
 
 	@Override
-	public void sendForBookingApprovalEmail(MailRequest request, BookingRevision bookingRevision) {
+	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision) {
 
 		try {
 
