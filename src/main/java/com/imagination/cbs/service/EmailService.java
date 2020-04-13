@@ -6,9 +6,9 @@ import com.imagination.cbs.dto.MailRequest;
 
 public interface EmailService {
 
-	void sendMail(MailRequest request);
+	void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName);
 
-	void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision);
+	void sendContractReceipt(MailRequest request);
 
 	void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail);
 

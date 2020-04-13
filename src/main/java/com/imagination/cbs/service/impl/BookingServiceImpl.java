@@ -205,7 +205,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
-		emailService.sendEmailForBookingApproval(request, latestRevision);
+		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
@@ -548,7 +548,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
 				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
-		emailService.sendEmailForBookingApproval(request, latestRevision);
+		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 
 	}
 
@@ -587,7 +587,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
-		emailService.sendEmailForBookingApproval(request, latestRevision);
+		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 
 	}
 
