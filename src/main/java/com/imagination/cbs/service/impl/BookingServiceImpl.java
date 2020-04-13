@@ -214,7 +214,6 @@ public class BookingServiceImpl implements BookingService {
 		String loggedInUser = user.getDisplayName();
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setChangedBy(loggedInUser);
-
 		Booking bookingDomain = bookingMapper.toBookingDomainFromBookingDto(bookingRequest);
 		bookingDomain.setChangedBy(loggedInUser);
 		bookingDomain.setBookingDescription(bookingRequest.getBookingDescription());
@@ -357,6 +356,7 @@ public class BookingServiceImpl implements BookingService {
 		bookingDto.setTeam(teamMapper.toTeamDtoFromTeamDomain(booking.getTeam()));
 		bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
 		bookingDto.setBookingDescription(booking.getBookingDescription());
+		bookingDto.setInsideIr35(bookingRevision.getRole().getInsideIr35());
 		bookingDto.setDiscipline(
 				disciplineMapper.toDisciplineDtoFromDisciplineDomain(bookingRevision.getRole().getDiscipline()));
 		return bookingDto;
