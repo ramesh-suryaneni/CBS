@@ -99,10 +99,10 @@ private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple
             bookingDashBoardDto.setJobName(bookingRevision.get("jobName", String.class));
             bookingDashBoardDto.setRoleName(bookingRevision.get("roleName", String.class));
             bookingDashBoardDto.setContractorName(bookingRevision.get("contractorName", String.class));
-            bookingDashBoardDto.setContractedFromDate(CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.get("contractedFromDate", Timestamp.class)));
-            bookingDashBoardDto.setContractedToDate(CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.get("contractedToDate", Timestamp.class)));
+            bookingDashBoardDto.setContractedFromDate(CBSDateUtils.convertTimeStampToString(bookingRevision.get("contractedFromDate", Timestamp.class)));
+            bookingDashBoardDto.setContractedToDate(CBSDateUtils.convertTimeStampToString(bookingRevision.get("contractedToDate", Timestamp.class)));
             bookingDashBoardDto.setChangedBy(bookingRevision.get("changedBy", String.class));
-            bookingDashBoardDto.setChangedDate(CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.get("changedDate", Timestamp.class)));
+            bookingDashBoardDto.setChangedDate(CBSDateUtils.convertTimeStampToString(bookingRevision.get("changedDate", Timestamp.class)));
             bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
             
             return bookingDashBoardDto;

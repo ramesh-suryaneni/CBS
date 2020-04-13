@@ -78,9 +78,9 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, bookingRevision.getContractor().getContractorName());
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE, bookingRevision.getSupplierType().getName());
 		mapOfTemplateValues.put(EmailConstants.START_DATE,
-				CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedFromDate()));
+				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedFromDate()));
 		mapOfTemplateValues.put(EmailConstants.END_DATE,
-				CBSDateUtils.conevrtTimeStampIntoStringFormat(bookingRevision.getContractedToDate()));
+				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedToDate()));
 		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS,
 				bookingRevision.getContractWorkLocation().getOfficeName());
 
