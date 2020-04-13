@@ -85,7 +85,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	@Autowired
 	Environment env;
 
-	public String getOauthAccessToken() {
+	private String getOauthAccessToken() {
 
 		String oauthAccessToken = "";
 		String oauthRefreshToken = "";
@@ -154,7 +154,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		return adobeOAuthDto;
 	}
 
-	public String getBaseURIForRestAPI(String accessToken) {
+	private String getBaseURIForRestAPI(String accessToken) {
 
 		String servicesBaseUrl = "";
 		Map<String, Config> keyValue = getAdobeKeyDetails("ADOBE_SERVICES_BASE_URL");
@@ -314,7 +314,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	}
 
-	public InputStream downloadAgreementsById(String agreementId) {
+	public InputStream downloadAgreement(String agreementId) {
 
 		ResponseEntity<byte[]> result = null;
 		InputStream inputStream = null;
@@ -411,7 +411,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@Override
-	public String uploadDocUsingTransientDocument(FileSystemResource file) {
+	public String uploadAndCreateAgreement(FileSystemResource file) {
 
 		try {
 
@@ -455,7 +455,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public String sendAgreement(String transientDocId) {
+	private String sendAgreement(String transientDocId) {
 
 		try {
 
@@ -494,6 +494,20 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			throw new CBSApplicationException(exception.getLocalizedMessage());
 		}
+	}
+	
+	@Override
+	public boolean saveOrUpdateAuthCode(String authcode) {
+		Config c4 = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
+			c.setKeyValue(authcode);
+			return configRepository.save(c);
+		}).orElseGet(() -> {
+			Config con = new Config();
+			con.setKeyName(ADOBE_AUTH_CODE);
+			con.setKeyValue(authcode);
+			return configRepository.save(con);
+		});
+		return false;
 	}
 
 }

@@ -6,11 +6,15 @@ import org.springframework.core.io.FileSystemResource;
 
 public interface AdobeSignService {
 
-	String getOauthAccessToken();
+	/*
+	 * String getOauthAccessToken();
+	 * 
+	 * String getBaseURIForRestAPI(String accessToken);
+	 */
 
-	String getBaseURIForRestAPI(String accessToken);
+	String uploadAndCreateAgreement(FileSystemResource file);
 
-	String uploadDocUsingTransientDocument(FileSystemResource file);
-
-	InputStream downloadAgreementsById(String agreementId);
+	InputStream downloadAgreement(String agreementId);
+	
+	public boolean saveOrUpdateAuthCode(String authcode);
 }
