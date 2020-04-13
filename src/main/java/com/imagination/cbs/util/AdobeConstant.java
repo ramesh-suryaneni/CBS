@@ -42,6 +42,7 @@ public class AdobeConstant {
 
 	
 	public static final String AGREEMENTS_ENDPOINT = "/agreements";
+	public static final String AGREEMENTS_COMBINEDDOCUMENT = "/agreements/{agreementId}/combinedDocument";
 	public static final String AUDIT_ENDPOINT = "/auditTrail";
 	public static final String DOCUMENTS_ENDPOINT = "/documents";
 	public static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";

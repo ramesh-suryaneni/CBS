@@ -10,6 +10,7 @@ import static com.imagination.cbs.util.AdobeConstant.ADOBE_CLIENT_SECRET;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_GRANT_TYPE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REDIRECT_URL;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REFRESH_TOKEN;
+import static com.imagination.cbs.util.AdobeConstant.AGREEMENTS_COMBINEDDOCUMENT;
 import static com.imagination.cbs.util.AdobeConstant.BEARER;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_ID;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_SECRET;
@@ -23,6 +24,9 @@ import static com.imagination.cbs.util.AdobeConstant.REDIRECT_URI;
 import static com.imagination.cbs.util.AdobeConstant.REFRESH_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.TOKEN_TYPE;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,11 +41,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.dto.AdobeOAuthDto;
 import com.imagination.cbs.exception.CBSApplicationException;
+import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeOAuthTokensService;
 import com.imagination.cbs.service.OAuthService;
@@ -285,6 +292,40 @@ public class AdobeOAuthTokensServiceImpl implements AdobeOAuthTokensService {
 		log.info("Config object config= {} key= {}" + config);
 
 		return (config == null || config.getKeyValue().isEmpty());
+
+	}
+
+	public InputStream downloadAgreementsById(String agreementId) {
+
+		ResponseEntity<byte[]> result = null;
+		InputStream inputStream = null;
+
+		try {
+
+			String accessToken = getOauthAccessToken();
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.AUTHORIZATION, getOauthAccessToken());
+
+			HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+
+			String url = getBaseURIForRestAPI(accessToken) + AGREEMENTS_COMBINEDDOCUMENT;
+
+			UriComponents uriComponents = UriComponentsBuilder.fromUriString(url).build();
+			uriComponents = uriComponents.expand(Collections.singletonMap("agreementId", agreementId));
+
+			log.info("uri::: {}" + uriComponents.toUriString());
+
+			result = restTemplate.exchange(uriComponents.toUriString(), HttpMethod.GET, httpEntity, byte[].class);
+
+			inputStream = new ByteArrayInputStream(result.getBody());
+
+		} catch (Exception e) {
+
+			throw new ResourceNotFoundException(e.getMessage());
+		}
+
+		return inputStream;
 
 	}
 
