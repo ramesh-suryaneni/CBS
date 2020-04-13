@@ -15,7 +15,7 @@ public class ContractorEmployeeDto {
 
 	private String employeeId;
 
-	private String employeeName;
+	private String contractorEmployeeName;
 
 	private String knownAs;
 

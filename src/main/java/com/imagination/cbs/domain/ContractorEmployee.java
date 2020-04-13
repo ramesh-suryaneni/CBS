@@ -33,7 +33,7 @@ public class ContractorEmployee implements Serializable {
 	private String contactDetails;
 
 	@Column(name = "employee_name")
-	private String employeeName;
+	private String contractorEmployeeName;
 
 	@Column(name = "known_as")
 	private String knownAs;
@@ -91,12 +91,12 @@ public class ContractorEmployee implements Serializable {
 		this.contactDetails = contactDetails;
 	}
 
-	public String getEmployeeName() {
-		return this.employeeName;
+	public String getContractorEmployeeName() {
+		return contractorEmployeeName;
 	}
 
-	public void setEmployeeName(String employeeName) {
-		this.employeeName = employeeName;
+	public void setContractorEmployeeName(String contractorEmployeeName) {
+		this.contractorEmployeeName = contractorEmployeeName;
 	}
 
 	public String getKnownAs() {

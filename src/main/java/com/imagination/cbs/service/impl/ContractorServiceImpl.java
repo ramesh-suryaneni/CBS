@@ -48,7 +48,7 @@ public class ContractorServiceImpl implements ContractorService {
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private ContractorEmployeeMapper contractorEmployeeMapper;
 
@@ -57,7 +57,7 @@ public class ContractorServiceImpl implements ContractorService {
 
 	@Autowired
 	private LoggedInUserService loggedInUserService;
-	
+
 	@Override
 	public Page<ContractorDto> getContractorDeatils(int pageNo, int pageSize, String sortingField,
 			String sortingOrder) {
@@ -130,22 +130,21 @@ public class ContractorServiceImpl implements ContractorService {
 
 		Contractor contractorDomain = contractorMapper.toContractorDomainFromContractorRequest(contractorRequest);
 		contractorDomain.setChangedBy(loggedInUser);
-		
+
 		Contractor savedContractor = contractorRepository.save(contractorDomain);
-		
+
 		return contractorMapper.toContractorDtoFromContractorDomain(savedContractor);
 	}
-	
 
 	@Override
 	public ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		ContractorEmployee contractorEmpDomain = new ContractorEmployee();
-		contractorEmpDomain.setEmployeeName(request.getContractorEmployeeName());
+		contractorEmpDomain.setContractorEmployeeName(request.getContractorEmployeeName());
 		contractorEmpDomain.setKnownAs(request.getKnownAs());
 		contractorEmpDomain.setChangedBy(loggedInUser);
-		
+
 		Optional<Contractor> optionalContractor = contractorRepository.findById(contractorId);
 		if (!optionalContractor.isPresent()) {
 			throw new ResourceNotFoundException("Contactor Not Found with Id:- " + contractorId);
@@ -163,7 +162,7 @@ public class ContractorServiceImpl implements ContractorService {
 		contractorEmployeeRole.setChangedBy(loggedInUser);
 		contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
 		contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
-		
+
 		ContractorEmployeeDefaultRate contractorEmployeeDefaultRate = new ContractorEmployeeDefaultRate();
 		contractorEmployeeDefaultRate.setCurrencyId(request.getCurrencyId());
 		contractorEmployeeDefaultRate.setRate(request.getDayRate());
@@ -171,7 +170,7 @@ public class ContractorServiceImpl implements ContractorService {
 		contractorEmployeeDefaultRate.setChangedBy(loggedInUser);
 		contractorEmployeeDefaultRate.setContractorEmployee(contractorEmpDomain);
 		contractorEmpDomain.setContractorEmployeeDefaultRate(contractorEmployeeDefaultRate);
-		
+
 		ContractorEmployee savedcontractorEmployee = contractorEmployeeRepository.save(contractorEmpDomain);
 		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(savedcontractorEmployee);
 	}
