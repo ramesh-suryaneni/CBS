@@ -26,7 +26,7 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 	public void generateConfirmationOfService(Map<String, Object> data) {
 		
 		try {
-			Template template=config.getTemplate("ConfirmationOfService.ftl");
+			Template template=config.getTemplate("pdf.agreement.ftl");
 			 
 			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
 			HtmlConverter.convertToPdf(html, new FileOutputStream("service.pdf"));

@@ -55,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
 
 		try {
 
-			Template contractNotificationEmailTemplate = config.getTemplate("email.template41page.ftl");
+			Template contractNotificationEmailTemplate = config.getTemplate("email.approval.ftl");
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(contractNotificationEmailTemplate,
 					getBookingApprovalDataModel(bookingRevision));
@@ -107,7 +107,7 @@ public class EmailServiceImpl implements EmailService {
 
 		try {
 
-			Template pushNotificationEmailTemplate = config.getTemplate("email.template50page.ftl");
+			Template pushNotificationEmailTemplate = config.getTemplate("email.internalsource.ftl");
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(pushNotificationEmailTemplate,getInternalResourceEmailDataModel(internalResourceEmail));
 
