@@ -6,7 +6,7 @@
 margin-left: 25%;
     margin-right: 25%;
   width: 600px;
-  height: 75px;
+  height: 50px;
   border: 2px solid black;
 }
 
@@ -27,6 +27,17 @@ background-color: #C0C0C0;
 
 }
 
+.wordart {
+  font-family: Arial, sans-serif;
+  font-size: 2em;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+}
   .flex-container {
         
         align-items: center; 
@@ -37,13 +48,15 @@ margin-right:25%;
         
  
       }
+
 </style>
 </head>
 <body>
 
 <div class="div1" >
 
-<center><p style="font-size:20px;">CONTRACTOR BOOKING SYSTEM</p></div></center>
+<div class="wordart rainbow">IMAGINATION</span>
+</div></div>
 <div class="div2">
 <div class="boxed">
   
@@ -54,13 +67,13 @@ margin-right:25%;
 <tr><th>
 <td >Discipline and Role</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${descipline}, ${role}</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${discipline}, ${role}</td>
 </th></tr>
 
 <tr><th>
 <td>Contractor</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${contractor}</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${contractorEmployee}-'${contractor}'</td>
 </th></tr>
 
 <tr><th>
@@ -84,7 +97,7 @@ margin-right:25%;
 <tr><th>
 <td>Reason for recruiting</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Budgeted Addition</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${reasonForRecruiting}</td>
 </th></tr>
 
 </table>
@@ -97,17 +110,16 @@ margin-right:25%;
     <th bgcolor="#A9A9A9">Task</th>
     <th bgcolor="#A9A9A9">Delivery date</th>
     <th bgcolor="#A9A9A9">Day rate</th>
-
-<th bgcolor="#A9A9A9">Total days</th>
-<th bgcolor="#A9A9A9"> Total(£)
+	<th bgcolor="#A9A9A9">Total days</th>
+	<th bgcolor="#A9A9A9"> Total(£)
   </tr>
   <tr style="border: 1px solid black;"background-color: #dddddd;">
     <td>1</td>
     <td>${task}</td>
     <td>${deliveryDate}</td>
-<td>${dayRate}</td>
-<td>${totalDays}</td>
-<td>${total}<td>
+    <td>${dayRate}</td>
+    <td>${totalDays}</td>
+    <td>${total}<td>
   </tr>
 </table>
 <br>
@@ -132,7 +144,7 @@ margin-right:25%;
 }
 </style>
 
-<center><button class="button">Review Document</button></center>
+<center><button class="button">REVIEW CONTRACT</button></center>
 <p style="font-size:12px;">  Please review and approve documents  <br> </br>Requested by:<br>
 <b>${requestedBy}</b>  <br>
 ${mailAddress}</p>

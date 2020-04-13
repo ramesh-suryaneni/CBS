@@ -6,7 +6,7 @@
 margin-left: 25%;
     margin-right: 25%;
   width: 600px;
-  height: 50px;
+  height: 75px;
   border: 2px solid black;
 }
 
@@ -27,17 +27,6 @@ background-color: #C0C0C0;
 
 }
 
-.wordart {
-  font-family: Arial, sans-serif;
-  font-size: 2em;
-  font-weight: bold;
-  position: relative;
-  z-index: 1;
-  display: inline-block;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  
-}
   .flex-container {
         
         align-items: center; 
@@ -48,15 +37,13 @@ margin-right:25%;
         
  
       }
-
 </style>
 </head>
 <body>
 
 <div class="div1" >
 
-<div class="wordart rainbow">IMAGINATION</span>
-</div></div>
+<center><p style="font-size:20px;">CONTRACTOR BOOKING SYSTEM</p></div></center>
 <div class="div2">
 <div class="boxed">
   
@@ -67,37 +54,37 @@ margin-right:25%;
 <tr><th>
 <td >Discipline and Role</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Creative, 3D Senior</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${discipline}, ${role}</td>
 </th></tr>
 
 <tr><th>
 <td>Contractor</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Dean Andrew -'DEAN ANDREW CONSULTING lTD'</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${contractorEmployee}-'${contractor}'</td>
 </th></tr>
 
 <tr><th>
 <td>Supplier Type</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Limited Company</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${supplierType}</td>
 </th></tr>
 
 <tr><th>
 <td>Start and End Date</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> 12 February - 15 March 2020</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${startDate} - ${endDate}</td>
 </th></tr>
 
 <tr><th>
 <td>Assignment Work Locations</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Clients premises,home office</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${workLocations}</td>
 </th></tr>
 
 <tr><th>
 <td>Reason for recruiting</td></th></tr>
 <tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> Budgeted Addition</td>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${reasonForRecruiting}</td>
 </th></tr>
 
 </table>
@@ -110,22 +97,21 @@ margin-right:25%;
     <th bgcolor="#A9A9A9">Task</th>
     <th bgcolor="#A9A9A9">Delivery date</th>
     <th bgcolor="#A9A9A9">Day rate</th>
-
-<th bgcolor="#A9A9A9">Total days</th>
-<th bgcolor="#A9A9A9"> Total(£)
+	<th bgcolor="#A9A9A9">Total days</th>
+	<th bgcolor="#A9A9A9"> Total(£)
   </tr>
   <tr style="border: 1px solid black;"background-color: #dddddd;">
     <td>1</td>
-    <td>Develop Visual	 identity spec</td>
-    <td>01/01/2020</td>
-<td>300</td>
-<td>20</td>
-<td>6000.00<td>
+    <td>${task}</td>
+    <td>${deliveryDate}</td>
+    <td>${dayRate}</td>
+    <td>${totalDays}</td>
+    <td>${total}<td>
   </tr>
 </table>
 <br>
  <div class="flex-container">
- <div >Total Cost            6000.00</div>
+ <div >Total Cost            ${totalCost}</div>
 
 </div>
 <style>
@@ -145,10 +131,10 @@ margin-right:25%;
 }
 </style>
 
-<center><button class="button">REVIEW CONTRACT</button></center>
+<center><button class="button">Review Document</button></center>
 <p style="font-size:12px;">  Please review and approve documents  <br> </br>Requested by:<br>
-<b>${Name}</b>  <br>
-${MailRequest}</p>
+<b>${requestedBy}</b>  <br>
+${mailAddress}</p>
 </div>
 
 
