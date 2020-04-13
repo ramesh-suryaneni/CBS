@@ -12,6 +12,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
+import com.imagination.cbs.dto.InternalResourceEmail;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.security.CBSUser;
@@ -98,6 +99,41 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY, user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS, user.getEmail() + EmailConstants.DOMAIN);
 
+		return mapOfTemplateValues;
+	}
+	
+	@Override
+	public void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail) {
+
+		try {
+
+			Template pushNotificationEmailTemplate = config.getTemplate("email.template50page.ftl");
+
+			String body = FreeMarkerTemplateUtils.processTemplateIntoString(pushNotificationEmailTemplate,getInternalResourceEmailDataModel(internalResourceEmail));
+
+			emailUtility.sendEmail(request, body);
+			
+			LOGGER.info("Email send Successfully :: {}",request);
+
+		} catch (Exception e) {
+
+			LOGGER.error("Not able to send internal resource push notification");
+			e.printStackTrace();
+		}
+
+	}
+
+	private Map<String, Object> getInternalResourceEmailDataModel(InternalResourceEmail internalResourceEmail) {
+
+		Map<String, Object> mapOfTemplateValues = new HashMap<>();
+		mapOfTemplateValues.put(EmailConstants.DESCIPLINE,internalResourceEmail.getDescipline());
+		mapOfTemplateValues.put(EmailConstants.ROLE, internalResourceEmail.getRole());
+		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, internalResourceEmail.getContractorName());
+		mapOfTemplateValues.put(EmailConstants.START_DATE,internalResourceEmail.getContractedFromDate());
+		mapOfTemplateValues.put(EmailConstants.END_DATE,internalResourceEmail.getContractedToDate());
+		mapOfTemplateValues.put(EmailConstants.JOB_NUMBER, internalResourceEmail.getJobNumber());
+		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE, internalResourceEmail.getSupplierType());
+		
 		return mapOfTemplateValues;
 	}
 }
