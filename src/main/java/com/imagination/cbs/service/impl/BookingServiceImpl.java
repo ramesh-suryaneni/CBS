@@ -149,7 +149,7 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private EmailService emailService;
 
-	private static final String FROM_EMAIL = "CBS@imagination.com";
+	
 
 	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
 
@@ -209,7 +209,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(FROM_EMAIL);
+		request.setMailFrom(EmailConstants.FROM_EMAIL);
 		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 	}
 
@@ -552,7 +552,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
 				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
-		request.setMailFrom(FROM_EMAIL);
+		request.setMailFrom(EmailConstants.FROM_EMAIL);
 		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 
 	}
@@ -592,7 +592,7 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(FROM_EMAIL);
+		request.setMailFrom(EmailConstants.FROM_EMAIL);
 		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE);
 
 	}
