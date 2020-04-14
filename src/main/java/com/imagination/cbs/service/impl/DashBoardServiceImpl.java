@@ -23,6 +23,7 @@ import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.service.DashBoardService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.util.CBSDateUtils;
+import com.itextpdf.text.log.SysoCounter;
 
 /**
  * @author Pappu Rout
@@ -82,13 +83,13 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId, pageable);
 		
-        bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId));
+		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId));
 		
-		return new PageImpl<>(bookingDashboradDtosList, pageable, bookingDashboradDtosList.size());
+		return new PageImpl<>(bookingDashboradDtosList.stream().distinct().collect(Collectors.toList()), pageable, bookingDashboradDtosList.size());
 		
 	}
 	
-private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
+	private List<BookingDashBoardDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
         
         return bookingRevisions.stream().filter((bookingRevision)-> Objects.nonNull((bookingRevision.get("bookingId",BigInteger.class))))
             .map(bookingRevision -> {
