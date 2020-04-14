@@ -6,7 +6,7 @@ public class EmailConstants {
 		
 	}
 	
-	public static final String BOOKING_ID ="discipline";
+	public static final String BOOKING_ID ="bookingId";
 	public static final String DISCIPLINE="discipline";
 	public static final String ROLE="role";
 	public static final String CONTRCTOR_EMPLOYEE="contractorEmployee";
