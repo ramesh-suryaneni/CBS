@@ -47,22 +47,22 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		List<BookingDashBoardDto> bookingDashboradDtos = new ArrayList<>();
 
-		Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
+		//Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
 		List<Tuple> bookingRevisions = null;
 
 		if (status.equalsIgnoreCase("Submitted")) {
-			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, pageable);
+			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, PageRequest.of(pageNo, pageSize));
 		} else if(status.equalsIgnoreCase("waiting")){
 			return retrieveBookingRevisionForWaitingForApproval(employeeId, PageRequest.of(pageNo, pageSize), bookingDashboradDtos);
 		} else {
-			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, pageable);
+			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, PageRequest.of(pageNo, pageSize));
 		}
         List<BookingDashBoardDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
 
-		return new PageImpl<>(bookingDashBoardDtos, pageable, bookingDashBoardDtos.size());
+		return new PageImpl<>(bookingDashBoardDtos, PageRequest.of(pageNo, pageSize), bookingDashBoardDtos.size());
 	}
 	
-	private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
+	/*private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Sort sort = null;
 		if (sortingOrder.equals("ASC")) {
 			sort = Sort.by(Direction.ASC, sortingField);
@@ -72,7 +72,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		}
 
 		return PageRequest.of(pageNo, pageSize, sort);
-	}
+	}*/
 	
 	private Page<BookingDashBoardDto> retrieveBookingRevisionForWaitingForApproval(Long employeeId,  Pageable pageable, List<BookingDashBoardDto> bookingDashboradDtos){
 		
