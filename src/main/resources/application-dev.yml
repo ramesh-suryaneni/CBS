@@ -39,4 +39,7 @@ azure:
   storage:                                                                                             
    connectionString: DefaultEndpointsProtocol=https;AccountName=imaginationcbs;AccountKey=uE2RZa+UXuI++dhdKlSreySCJvxMVszBhvO1ZLha1W4wFSQi8P8dAx5qBX/wLU7xhPlsUbWtIXdrbDd0tKj5fg==;EndpointSuffix=core.windows.net               
    container:                                                          
-     name: templates              
+     name: templates
+                
+internal_sourcing:
+    email_to: ramesh.suryaneni@imagination.com,pappu.rout@imagination.com,mitul.deshmukh@imagination.com

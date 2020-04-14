@@ -27,6 +27,7 @@ public class EmailConstants {
 	public static final String DOMAIN = "@imagination.com";
 	public static final String EMAIL_ADDRESS = "mailAddress";
 	public static final String JOB_NUMBER = "jobNumber";
+	public static final String JOB_NAME="jobName";
 
 	public static final String CONTRACTOR_PDF_LINK = "contractorPdf";
 	public static final String SCOPE_OF_WORK_LINK = "scopeOfWorkPdf";
@@ -37,7 +38,7 @@ public class EmailConstants {
 	public static final String CONTRACT_RECEIPT_TEMPLATE = "ContractReceipt";
 
 	public static final String FROM_EMAIL = "CBS@imagination.com";
-	public static final String TO_EMAIL = "ramesh.suryaneni@imagination.com";
+	public static final String TO_EMAIL = "internal_sourcing.email_to";
 	public static final String INTERNAL_NOTIFICATION_SUBJECT_LINE = "Internal Email Notification : Contractor Booking request #  ";
 	
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
@@ -34,6 +35,9 @@ public class EmailServiceImpl implements EmailService {
 
 	@Autowired
 	private LoggedInUserService loggedInUserService;
+	
+	@Autowired
+	private Environment env;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
@@ -74,27 +78,22 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public void sendInternalResourceEmail(InternalResourceEmailDto internalResourceEmail) {
 
-		try {
+	try {
+			String[] internalResourceToEmailReceipt = env.getProperty(EmailConstants.TO_EMAIL, String[].class);
 			
 			MailRequest emailrequestDetails = new MailRequest();
 			emailrequestDetails.setMailFrom(EmailConstants.FROM_EMAIL);
-			String[] toEmail = new String[] {EmailConstants.TO_EMAIL};
-			emailrequestDetails.setMailTo(toEmail);
+			emailrequestDetails.setMailTo(internalResourceToEmailReceipt);
 			emailrequestDetails.setSubject(EmailConstants.INTERNAL_NOTIFICATION_SUBJECT_LINE);
 			
 			Template pushNotificationEmailTemplate = config.getTemplate("email.internalsource.ftl");
-
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(pushNotificationEmailTemplate,getInternalResourceEmailDataModel(internalResourceEmail));
-
-			
-			
 			emailUtility.sendEmail(emailrequestDetails, body);
 			
 			LOGGER.info("Email send Successfully :: {}",emailrequestDetails);
-
 		} catch (Exception exception) {
 			
-			exception.getMessage();
+			exception.printStackTrace();
 		}
 
 	}
@@ -137,11 +136,12 @@ public class EmailServiceImpl implements EmailService {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 		
-		mapOfTemplateValues.put(EmailConstants.DISCIPLINE_ID,internalResourceEmail.getDisciplineId());
-		mapOfTemplateValues.put(EmailConstants.ROLE_ID, internalResourceEmail.getRoleId());
+		mapOfTemplateValues.put(EmailConstants.DISCIPLINE,internalResourceEmail.getDiscipline());
+		mapOfTemplateValues.put(EmailConstants.ROLE, internalResourceEmail.getRole());
 		mapOfTemplateValues.put(EmailConstants.START_DATE,internalResourceEmail.getContractedFromDate());
 		mapOfTemplateValues.put(EmailConstants.END_DATE,internalResourceEmail.getContractedToDate());
 		mapOfTemplateValues.put(EmailConstants.JOB_NUMBER, internalResourceEmail.getJobNumber());
+		mapOfTemplateValues.put(EmailConstants.JOB_NAME, internalResourceEmail.getJobName());
 		
 		return mapOfTemplateValues;
 	}

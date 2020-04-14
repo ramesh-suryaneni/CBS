@@ -4,16 +4,12 @@ import lombok.Data;
 
 @Data
 public class InternalResourceEmailDto {
-	
-	
-	private Long disciplineId;
 
-	private Long roleId;
-	
+	private String discipline;
+	private String role;
 	private String jobNumber;
-	
+	private String jobName;
 	private String contractedFromDate;
-
 	private String contractedToDate;
 
 }
