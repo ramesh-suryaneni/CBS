@@ -19,7 +19,7 @@ public class AdobeConstant {
 	public static final String OAUTH_ACCESS_TOKEN_ENDPOINT = "/token";
 	public static final String OAUTH_REFRESH_TOKEN_ENDPOINT = "/refresh";
 	public static final String BEARER = "Bearer ";
-	public static final String ADOBE_API_ACCESSPOINT = "adobe.apiAccessPoint";
+	//public static final String ADOBE_API_ACCESSPOINT = "adobe.apiAccessPoint";
 	public static final String OAUTH_BASE_URL = "https://secure.echosign.com/oauth";
 	public static final String ACCESS_TOKEN = "access_token";
 	public static final String REFRESH_TOKEN = "refresh_token";
@@ -42,6 +42,7 @@ public class AdobeConstant {
 
 	
 	public static final String AGREEMENTS_ENDPOINT = "/agreements";
+	public static final String AGREEMENTS_COMBINEDDOCUMENT = "/agreements/{agreementId}/combinedDocument";
 	public static final String AUDIT_ENDPOINT = "/auditTrail";
 	public static final String DOCUMENTS_ENDPOINT = "/documents";
 	public static final String COMBINEDDOC_ENDPOINT = "/combinedDocument";

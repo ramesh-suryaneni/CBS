@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.AdobeSignResponse;
+import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.ConfigService;
 import com.imagination.cbs.util.AdobeConstant;
@@ -36,6 +38,9 @@ public class WebhookController {
 	
 	@Autowired
 	BookingService bookingService; 
+	
+	@Autowired
+	AdobeSignService adobeSignService;
 	
 	@PostMapping("/adobesign-callback")
 	public String adobeSignCallback(@RequestHeader Map<String, String> headers) {
@@ -65,6 +70,16 @@ public class WebhookController {
 	    		response.setXAdobeSignClientId(reqClientId);
 	    
 	    return response;
+		
+	}
+	
+	@GetMapping("/code-callback")
+	public String callbackAdobeSignInCode(@RequestParam(required = false, name = "code") String code,
+			@RequestParam(required = false, name = "client_id") String adobeSignClientId) {
+		
+		adobeSignService.saveOrUpdateAuthCode(code);
+				
+		return "sucess";
 		
 	}
 	

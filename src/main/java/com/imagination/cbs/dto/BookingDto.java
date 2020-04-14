@@ -72,4 +72,6 @@ public class BookingDto {
 	private RegionDto contractorWorkRegion;
 
 	private List<ContractorWorkSiteDto> contractorWorkSites;
+	
+	private String insideIr35;
 }

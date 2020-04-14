@@ -24,7 +24,7 @@ public class CBSDateUtils {
 		return timeStamp;
 	}
 
-	public static String conevrtTimeStampIntoStringFormat(Timestamp timestamp) {
+	public static String convertTimeStampToString(Timestamp timestamp) {
 		if (null != timestamp) {
 			Date date = new Date(timestamp.getTime());
 			return new SimpleDateFormat(DATE_FORMAT).format(date);
@@ -41,5 +41,13 @@ public class CBSDateUtils {
 			e.printStackTrace();
 		}
 		return new java.sql.Date(parsedDate.getTime());
+	}
+
+	public static String convertDateToString(java.sql.Date date) {
+		if (null != date) {
+			Date newDate = new Date(date.getTime());
+			return new SimpleDateFormat(DATE_FORMAT).format(newDate);
+		}
+		return null;
 	}
 }

@@ -21,7 +21,8 @@ import com.imagination.cbs.constant.MaconomyConstant;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.JobDataDto;
-import com.imagination.cbs.exception.CBSValidationException;
+import com.imagination.cbs.exception.CBSApplicationException;
+import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.MaconomyRestClient;
@@ -68,8 +69,11 @@ public class MaconomyServiceImpl implements MaconomyService {
 				String password = maconomyConfigMap.get(MaconomyConstant.MACONOMY_PASSWORD.getMacanomy()).getKeyValue();
 				
 				String maconomyUrl = isJobNumberOrDepartmentName.equalsIgnoreCase("jobNumber") ? maconomyJobUrl : maconomyDepartmentUrl;
-
+				try{
 					responseEntity = (ResponseEntity<JsonNode>) maconomyRestClient.callRestServiceForGet(maconomyUrl, username, password);
+				}catch(RuntimeException runtimeException){
+					throw new ResourceNotFoundException("Plase provide valid JobNumber or DepartmentName ");
+				}
 			}
 			return extractResponse(responseEntity, (T) maconomyDto, isJobNumberOrDepartmentName, departname);
 		}
@@ -85,7 +89,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 
 		if (null == responseEntity.getBody()) {
 
-			throw new CBSValidationException("Please Provide Valid Department Name ");
+			throw new CBSApplicationException("Please Provide Valid Department Name ");
 		}
 		
 		

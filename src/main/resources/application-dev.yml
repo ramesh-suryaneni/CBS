@@ -17,7 +17,7 @@ spring:
      username: ${SPRING_EMAIL_ID}
      password: ${SPRING_EMAIL_PASSWORD}
      port: 587
-     test-connection: true
+     test-connection: false
      default-encoding: UTF-8
      properties:
        mail:
@@ -33,4 +33,10 @@ cest_outcome:
   outside_ir35_pdf: https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf              
 
 logging:
-  config: classpath:log4j2-staging.yml               
+  config: classpath:log4j2-staging.yml
+  
+azure:                                                                                                                                           
+  storage:                                                                                             
+   connectionString: DefaultEndpointsProtocol=https;AccountName=imaginationcbs;AccountKey=uE2RZa+UXuI++dhdKlSreySCJvxMVszBhvO1ZLha1W4wFSQi8P8dAx5qBX/wLU7xhPlsUbWtIXdrbDd0tKj5fg==;EndpointSuffix=core.windows.net               
+   container:                                                          
+     name: templates              

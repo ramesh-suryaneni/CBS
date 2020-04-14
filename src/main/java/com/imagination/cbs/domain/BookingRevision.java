@@ -150,6 +150,53 @@ public class BookingRevision implements Serializable {
 
 	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
 	private List<ContractorWorkSite> contractorWorkSites;
+	
+	/**
+	 * 
+	 */
+	public BookingRevision() {
+	}
+	
+	/**
+	 * clone existing object without id 
+	 */
+	public BookingRevision(BookingRevision revision) {
+		this.agreementDocumentId = revision.agreementDocumentId;
+		this.agreementId = revision.agreementId;
+		this.changedBy = revision.changedBy;
+		this.changedDate = revision.changedDate;
+		this.contractAmountAftertax = revision.contractAmountAftertax;
+		this.contractAmountBeforetax = revision.contractAmountBeforetax;
+		this.contractedFromDate = revision.contractedFromDate;
+		this.contractedToDate = revision.contractedToDate;
+		this.role = revision.role;
+		this.contractor = revision.contractor;
+		this.contractorSignedDate = revision.contractorSignedDate;
+		this.contractorTotalAvailableDays = revision.contractorTotalAvailableDays;
+		this.contractorTotalWorkingDays = revision.contractorTotalWorkingDays;
+		this.currency = revision.currency;
+		this.employerTaxPercent = revision.employerTaxPercent;
+		this.insideIr35 = revision.insideIr35;
+		this.jobNumber = revision.jobNumber;
+		this.rate = revision.rate;
+		this.revisionNumber = revision.revisionNumber;
+		this.jobDeptName = revision.jobDeptName;
+		this.supplierType = revision.supplierType;
+		this.approverComments = revision.approverComments;
+		this.commisioningOffice = revision.commisioningOffice;
+		this.contractWorkLocation = revision.contractWorkLocation;
+		this.reasonForRecruiting = revision.reasonForRecruiting;
+		this.contractEmployee = revision.contractEmployee;
+		this.team = revision.team;
+		this.jobname = revision.jobname;
+		this.approvalStatus = revision.approvalStatus;
+		this.booking = revision.booking;
+		this.monthlyWorkDays = revision.monthlyWorkDays;
+		this.bookingWorkTasks = revision.bookingWorkTasks;
+		this.commOffRegion = revision.commOffRegion;
+		this.contractorWorkRegion = revision.contractorWorkRegion;
+		this.contractorWorkSites = revision.contractorWorkSites;
+	}
 
 	public List<ContractorWorkSite> getContractorWorkSites() {
 		return contractorWorkSites;
@@ -438,4 +485,5 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
+	
 }
