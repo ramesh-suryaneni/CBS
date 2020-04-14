@@ -139,11 +139,9 @@ public class EmailServiceImpl implements EmailService {
 		
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE_ID,internalResourceEmail.getDisciplineId());
 		mapOfTemplateValues.put(EmailConstants.ROLE_ID, internalResourceEmail.getRoleId());
-		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, internalResourceEmail.getContractorName());
 		mapOfTemplateValues.put(EmailConstants.START_DATE,internalResourceEmail.getContractedFromDate());
 		mapOfTemplateValues.put(EmailConstants.END_DATE,internalResourceEmail.getContractedToDate());
 		mapOfTemplateValues.put(EmailConstants.JOB_NUMBER, internalResourceEmail.getJobNumber());
-		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE, internalResourceEmail.getSupplierType());
 		
 		return mapOfTemplateValues;
 	}

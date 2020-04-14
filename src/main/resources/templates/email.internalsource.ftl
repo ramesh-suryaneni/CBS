@@ -58,23 +58,10 @@ margin-right:25%;
 </th></tr>
 
 <tr><th>
-<td>Contractor</td></th></tr>
-<tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${contractor}</td>
-</th></tr>
-
-<tr><th>
 <td>Job Number</td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${jobNumber}</td>
 </th></tr>
-
-<tr><th>
-<td>Supplier Type</td></th></tr>
-<tr><th>
-<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${supplierType}</td>
-</th></tr>
-
 
 <tr><th>
 <td>Start and End Date</td></th></tr>
