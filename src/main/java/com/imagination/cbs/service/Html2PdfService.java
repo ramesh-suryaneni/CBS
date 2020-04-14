@@ -1,10 +1,15 @@
 package com.imagination.cbs.service;
 
-import java.util.Map;
+import java.io.OutputStream;
 
+import com.imagination.cbs.domain.BookingRevision;
+
+/**
+ * @author pravin.budage
+ *
+ */
 public interface Html2PdfService {
-	
 
-	void generateConfirmationOfService(Map<String, Object> data);
+	OutputStream generateAgreementPdf(BookingRevision revision);
 
 }

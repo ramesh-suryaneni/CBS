@@ -22,10 +22,10 @@ table, th, td {
 </style>
 </head>
 <body>
-
-<center><b>CONFIRMATION OF SERVICE</b></center>
-
 <div>
+<img src="imagination_logo.png" width="18%" height="7%">
+<br></br><br></br><br></br>
+<center><b>CONFIRMATION OF SERVICE</b></center>
    <b><p><font size="4">Private and Confidential</font></p></b>
 
    <b><p><font size="4">Parties:</font></p></b>
@@ -126,8 +126,9 @@ table, th, td {
        <p><b>The Imagination Group Limited</b></p>
        <br>
        <br>
+	   <img src="signature.png" width="280" height="50">
        <b>Date:</b>[e-
-       signatur date]<p class="b"><b>D       D M M Y Y       </b></p>
+       signature date]<p class="b"><b>D D M M Y Y       </b></p>
      </div>
      <div style="width: 30%; display: inline-block;">
    
@@ -136,7 +137,7 @@ table, th, td {
            <p><b>${consultancyCompanyName}</b></p>
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
-       signatur date]<p class="b"><b>D       D M M Y Y       </b></p>
+       signatur date]<p class="b"><b>D D M M Y Y       </b></p>
          </div>
 
   </div>

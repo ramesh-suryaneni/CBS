@@ -5,6 +5,7 @@ package com.imagination.cbs.service.impl;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.EmailService;
+import com.imagination.cbs.service.Html2PdfService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
@@ -140,6 +142,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private ApproverRepository approverRepository;
+
+	@Autowired
+	private Html2PdfService html2PdfService;
 
 	@Autowired
 	private EmailService emailService;
@@ -534,14 +539,14 @@ public class BookingServiceImpl implements BookingService {
 		permission.setPermissionId(SecurityConstants.ROLE_CONTRACT_MGT_ID);
 		List<EmployeePermissions> employeePermissions = employeePermissionsRepository.findAllByPermission(permission);
 		List<String> emails = new ArrayList<>();
-		
+
 		for (EmployeePermissions employeePermission : employeePermissions) {
 			EmployeeMapping employee = employeeMappingRepository
 					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
 			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN);
-			
+
 		}
-		
+
 		String[] toEmail = emails.stream().toArray(n -> new String[n]);
 		MailRequest request = new MailRequest();
 		request.setMailTo(toEmail);
@@ -556,20 +561,21 @@ public class BookingServiceImpl implements BookingService {
 
 		if (loggedInUserService.isCurrentUserInHRRole()) {
 			Long currentStatus = booking.getApprovalStatus().getApprovalStatusId();
-			if(ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
+			if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
 				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
-
+				BookingRevision latestRevision = getLatestRevision(booking);
 				// TODO:Generate PDF.
+
+				OutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
 				// TODO:integrate Adobe - upload, create agreement
 				// TODO:populate document id and agreement id to revision
-				BookingRevision latestRevision = getLatestRevision(booking);
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 				// send Email to creator - need to confirm
 				prepareMailAndSendToHR(latestRevision);
-			}else {
+			} else {
 				throw new CBSApplicationException("Booking already approved or not in approval status");
 			}
-			
+
 		} else {
 			throw new CBSUnAuthorizedException("Not Authorized to perform this operation; insufficient previllages");
 		}
@@ -583,7 +589,7 @@ public class BookingServiceImpl implements BookingService {
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 		// TODO:send mail to creator
 		MailRequest request = new MailRequest();
-		request.setMailTo(new String[] { booking.getChangedBy()+ EmailConstants.DOMAIN });
+		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(FROM_EMAIL);
