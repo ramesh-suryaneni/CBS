@@ -136,9 +136,9 @@ public class EmailServiceImpl implements EmailService {
 	private Map<String, Object> getInternalResourceEmailDataModel(InternalResourceEmailDto internalResourceEmail) {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
-		mapOfTemplateValues.put(EmailConstants.BOOKING_ID,internalResourceEmail.getBookingId());
-		mapOfTemplateValues.put(EmailConstants.DISCIPLINE,internalResourceEmail.getDescipline());
-		mapOfTemplateValues.put(EmailConstants.ROLE, internalResourceEmail.getRole());
+		
+		mapOfTemplateValues.put(EmailConstants.DISCIPLINE_ID,internalResourceEmail.getDisciplineId());
+		mapOfTemplateValues.put(EmailConstants.ROLE_ID, internalResourceEmail.getRoleId());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, internalResourceEmail.getContractorName());
 		mapOfTemplateValues.put(EmailConstants.START_DATE,internalResourceEmail.getContractedFromDate());
 		mapOfTemplateValues.put(EmailConstants.END_DATE,internalResourceEmail.getContractedToDate());

@@ -5,10 +5,11 @@ public class EmailConstants {
 	public EmailConstants(){
 		
 	}
-	
-	public static final String BOOKING_ID ="bookingId";
-	public static final String DISCIPLINE="discipline";
-	public static final String ROLE="role";
+
+	public static final String DISCIPLINE ="discipline";
+	public static final String ROLE="role"; 
+	public static final String DISCIPLINE_ID ="disciplineId";
+	public static final String ROLE_ID ="roleId";
 	public static final String CONTRCTOR_EMPLOYEE="contractorEmployee";
 	public static final String CONTRCTOR="contractor";
 	public static final String SUPPLIER_TYPE="supplierType";

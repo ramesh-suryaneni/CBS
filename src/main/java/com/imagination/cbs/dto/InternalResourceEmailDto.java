@@ -6,13 +6,11 @@ import lombok.Data;
 public class InternalResourceEmailDto {
 	
 	
-	private Long bookingId;
-
 	private String contractorName;
 
-	private String descipline;
+	private Long disciplineId;
 
-	private String role;
+	private Long roleId;
 	
 	private String jobNumber;
 	
