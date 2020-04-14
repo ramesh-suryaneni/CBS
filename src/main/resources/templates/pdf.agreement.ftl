@@ -128,7 +128,7 @@ table, th, td {
        <br>
 	   <img src="signature.png" width="280" height="50">
        <b>Date:</b>[e-
-       signature date]<p class="b"><b>D D M M Y Y       </b></p>
+       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}   </b></p>
      </div>
      <div style="width: 30%; display: inline-block;">
    
@@ -137,7 +137,7 @@ table, th, td {
            <p><b>${consultancyCompanyName}</b></p>
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
-       signatur date]<p class="b"><b>D D M M Y Y       </b></p>
+       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2} </b></p>
          </div>
 
   </div>

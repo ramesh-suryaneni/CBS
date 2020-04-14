@@ -2,6 +2,9 @@ package com.imagination.cbs.service.impl;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +77,8 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 				builder.append(bookingWorkTask.getTaskTotalDays() + "\n");
 			}
 		}
+		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+		String dateString = dateFormat.format(new Date());
 
 		dataModel.put("consultancyCompanyName", latestRevision.getContractor().getContractorName());
 		dataModel.put("consultancyCompanyNumber", latestRevision.getContractor().getMaconomyVendorNumber());
@@ -92,6 +97,12 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("cestTestOutput", Boolean.valueOf(role.getInsideIr35()) ? "INSIDE" : "OUTSIDE");
 		dataModel.put("signedBy", latestRevision.getContractor().getAttention());
 		dataModel.put("signedDate", " ");
+		dataModel.put("d1", dateString.charAt(0));
+		dataModel.put("d2", dateString.charAt(1));
+		dataModel.put("m1", dateString.charAt(2));
+		dataModel.put("m2", dateString.charAt(3));
+		dataModel.put("y1", dateString.charAt(4));
+		dataModel.put("y2", dateString.charAt(5));
 		return dataModel;
 	}
 }
