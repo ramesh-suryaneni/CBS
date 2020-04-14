@@ -14,7 +14,7 @@ spring:
    mail:
      protocol: smtp
      host: smtp.gmail.com
-     username: ${SPRING_EMAIL_ID}
+     username: ${SPRING_EMAIL_USERNAME}
      password: ${SPRING_EMAIL_PASSWORD}
      port: 587
      test-connection: false
@@ -44,4 +44,4 @@ azure:
      name: templates
      
 internal_sourcing:
-    email_to: ramesh.suryaneni@imagination.com,pappu.rout@imagination.com,mitul.deshmukh@imagination.com              
+    email_to: ramesh.suryaneni@imagination.com,pappu.rout@imagination.com,mitul.deshmukh@imagination.com, david.harman@imagination.com, niall.mcdonough@imagination.com

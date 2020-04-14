@@ -37,7 +37,7 @@ public class EmailConstants {
 	public static final String CONTRACT_TO_CONTRACTOR_TEMPLATE = "ContractToContractor";
 	public static final String CONTRACT_RECEIPT_TEMPLATE = "ContractReceipt";
 
-	public static final String FROM_EMAIL = "CBS@imagination.com";
+	public static final String FROM_EMAIL = "contractorbookingsystem@imagination.com";
 	public static final String TO_EMAIL = "internal_sourcing.email_to";
 	public static final String INTERNAL_NOTIFICATION_SUBJECT_LINE = "Internal Email Notification : Contractor Booking request #  ";
 	
