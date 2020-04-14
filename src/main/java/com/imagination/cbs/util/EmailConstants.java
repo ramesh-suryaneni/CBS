@@ -6,6 +6,7 @@ public class EmailConstants {
 		
 	}
 	
+	public static final String BOOKING_ID ="discipline";
 	public static final String DISCIPLINE="discipline";
 	public static final String ROLE="role";
 	public static final String CONTRCTOR_EMPLOYEE="contractorEmployee";
@@ -33,5 +34,10 @@ public class EmailConstants {
 	public static final String BOOKING_REQUEST_FOR_APPROVAL_TEMPLATE="RequestForApproval";
 	public static final String CONTRACT_TO_CONTRACTOR_TEMPLATE="ContractToContractor";
 	public static final String CONTRACT_RECEIPT_TEMPLATE="ContractReceipt";
+	
+	
+	public static final String FROM_EMAIL = "CBS@imagination.com";
+	public static final String TO_EMAIL = "ramesh.suryaneni@imagination.com";
+	public static final String INTERNAL_NOTIFICATION_SUBJECT_LINE = "Internal Email Notification : Contractor Booking request #  ";
 	
 }

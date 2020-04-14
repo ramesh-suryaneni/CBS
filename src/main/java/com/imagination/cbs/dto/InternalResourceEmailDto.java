@@ -3,7 +3,10 @@ package com.imagination.cbs.dto;
 import lombok.Data;
 
 @Data
-public class InternalResourceEmail {
+public class InternalResourceEmailDto {
+	
+	
+	private Long bookingId;
 
 	private String contractorName;
 
@@ -18,7 +21,5 @@ public class InternalResourceEmail {
 	private String contractedFromDate;
 
 	private String contractedToDate;
-	
-	private MailRequest mailRequest;
 
 }

@@ -52,6 +52,12 @@ margin-right:25%;
 <table style="font-size: 10px;margin-left: 15%;margin-bottom: 22px;">
 
 <tr><th>
+<td >Booking ID</td></th></tr>
+<tr><th>
+<td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${bookingId}, ${role}</td>
+</th></tr>
+
+<tr><th>
 <td >Discipline and Role</td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${descipline}, ${role}</td>

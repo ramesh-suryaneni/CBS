@@ -11,7 +11,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
-import com.imagination.cbs.dto.InternalResourceEmail;
+import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.EmailService;
@@ -72,22 +72,29 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail) {
+	public void sendInternalResourceEmail(InternalResourceEmailDto internalResourceEmail) {
 
 		try {
-
+			
+			MailRequest emailrequestDetails = new MailRequest();
+			emailrequestDetails.setMailFrom(EmailConstants.FROM_EMAIL);
+			String[] toEmail = new String[] {EmailConstants.TO_EMAIL};
+			emailrequestDetails.setMailTo(toEmail);
+			emailrequestDetails.setSubject(EmailConstants.INTERNAL_NOTIFICATION_SUBJECT_LINE);
+			
 			Template pushNotificationEmailTemplate = config.getTemplate("email.internalsource.ftl");
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(pushNotificationEmailTemplate,getInternalResourceEmailDataModel(internalResourceEmail));
 
-			emailUtility.sendEmail(request, body);
 			
-			LOGGER.info("Email send Successfully :: {}",request);
+			
+			emailUtility.sendEmail(emailrequestDetails, body);
+			
+			LOGGER.info("Email send Successfully :: {}",emailrequestDetails);
 
-		} catch (Exception e) {
-
-			LOGGER.error("Not able to send internal resource push notification");
-			e.printStackTrace();
+		} catch (Exception exception) {
+			
+			exception.getMessage();
 		}
 
 	}
@@ -126,9 +133,10 @@ public class EmailServiceImpl implements EmailService {
 		return mapOfTemplateValues;
 	}
 	
-	private Map<String, Object> getInternalResourceEmailDataModel(InternalResourceEmail internalResourceEmail) {
+	private Map<String, Object> getInternalResourceEmailDataModel(InternalResourceEmailDto internalResourceEmail) {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
+		mapOfTemplateValues.put(EmailConstants.BOOKING_ID,internalResourceEmail.getBookingId());
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE,internalResourceEmail.getDescipline());
 		mapOfTemplateValues.put(EmailConstants.ROLE, internalResourceEmail.getRole());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR, internalResourceEmail.getContractorName());
