@@ -7,12 +7,12 @@
 
   margin-top: 80px;
   margin-bottom: 100px;
-  margin-right: 100px;
-  margin-left: 80px;
+  margin-right: 10%;
+  margin-left: 4%;
 
 }
 p.b { 
-  word-spacing: 30px;
+  word-spacing: 10px;
 }
 
 table, th, td {
@@ -23,7 +23,7 @@ table, th, td {
 </head>
 <body>
 <div>
-<img src="imagination_logo.png" width="18%" height="7%">
+<img src="./imagination_logo.png" width="18%" height="7%">
 <br></br><br></br><br></br>
 <center><b>CONFIRMATION OF SERVICE</b></center>
    <b><p><font size="4">Private and Confidential</font></p></b>
@@ -120,24 +120,23 @@ table, th, td {
   <div style="display: inline">
    
 
-    <div style="width:30%; display: inline-block; float:left; margin-right: 10px;">
+    <div style="width:35%; display: inline-block; float:left;">
         <p><b>SIGNED by Claire Dykes</b></p>
        <p class="b"><b>For       and       on       behalf       of</b></p>
        <p><b>The Imagination Group Limited</b></p>
        <br>
-       <br>
-	   <img src="signature.png" width="280" height="50">
+	   <img src="signature.png" width="70%" height="18%"><br>
        <b>Date:</b>[e-
-       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}   </b></p>
+       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}</b></p>
      </div>
-     <div style="width: 30%; display: inline-block;">
+     <div style="width: 30%; display: inline-block;float:right;">
    
            <p><b>SIGNED by ${signedBy}</b></p>
            <p><b>For and on behalf of</b></p>
            <p><b>${consultancyCompanyName}</b></p>
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
-       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2} </b></p>
+       signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}</b></p>
          </div>
 
   </div>
