@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import lombok.Data;
 
 @Data
-public class BookingDashBoardDto {
+public class DashBoardBookingDto {
 	
 	private String status;
 	private String jobName;

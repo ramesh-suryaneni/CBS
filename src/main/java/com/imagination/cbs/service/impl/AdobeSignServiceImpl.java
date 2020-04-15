@@ -486,7 +486,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Override
 	public boolean saveOrUpdateAuthCode(String authcode) {
-		Config c4 = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
+		Config config = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
 			c.setKeyValue(authcode);
 			return configRepository.save(c);
 		}).orElseGet(() -> {
