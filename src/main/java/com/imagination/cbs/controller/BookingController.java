@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.ApproveRequest;
-import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
+import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.DashBoardService;
 import com.imagination.cbs.util.BookingValidator;
@@ -52,14 +52,14 @@ public class BookingController {
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
 		BookingDto draftBooking = bookingServiceImpl.addBookingDetails(booking);
-		return new ResponseEntity<BookingDto>(draftBooking, HttpStatus.CREATED);
+		return new ResponseEntity<>(draftBooking, HttpStatus.CREATED);
 	}
 
 	@PatchMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> updateBookingDetails(@PathVariable("booking_id") Long bookingId,
 			@RequestBody BookingRequest booking) {
 		BookingDto updatedBooking = bookingServiceImpl.updateBookingDetails(bookingId, booking);
-		return new ResponseEntity<BookingDto>(updatedBooking, HttpStatus.OK);
+		return new ResponseEntity<>(updatedBooking, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
@@ -70,7 +70,7 @@ public class BookingController {
 			throw new MethodArgumentNotValidException(null, result);
 		}
 		BookingDto processedBooking = bookingServiceImpl.submitBookingDetails(bookingId, booking);
-		return new ResponseEntity<BookingDto>(processedBooking, HttpStatus.OK);
+		return new ResponseEntity<>(processedBooking, HttpStatus.OK);
 	}
 
 	@GetMapping()

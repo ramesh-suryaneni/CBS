@@ -22,7 +22,7 @@ import com.imagination.cbs.constant.SecurityConstants;
 @Component(value="googleIDTokenValidationFilter")
 public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 
-	private static Logger logger = LoggerFactory.getLogger(GoogleIDTokenValidationFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GoogleIDTokenValidationFilter.class);
 	
 	@Autowired
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
@@ -33,7 +33,7 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		logger.info("inside filter");
+		LOGGER.info("inside filter");
 		
 		String header = request.getHeader(SecurityConstants.HEADER_STRING.getSecurityConstants());
         String username = null;
@@ -43,12 +43,12 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
                 authToken = header.replace(SecurityConstants.TOKEN_PREFIX.getSecurityConstants(),"");
                 UsernamePasswordAuthenticationToken authentication = googleIDTokenValidationUtility.validateTokenAndLoadUser(authToken);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("authenticated user " + username + ", setting security context");
+                LOGGER.info("Authenticated user {}, setting security context", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
         	}
             
         }catch(Exception e) {
-        	e.printStackTrace();
+        	LOGGER.error("Exception occured during token validation and loading an user: ",e);
         }
         
         chain.doFilter(request, response);
