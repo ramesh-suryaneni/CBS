@@ -17,21 +17,32 @@ import static com.imagination.cbs.util.AdobeConstant.BEARER;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_ID;
 import static com.imagination.cbs.util.AdobeConstant.CLIENT_SECRET;
 import static com.imagination.cbs.util.AdobeConstant.CODE;
+import static com.imagination.cbs.util.AdobeConstant.EMAIL;
 import static com.imagination.cbs.util.AdobeConstant.EXPIRES_IN;
+import static com.imagination.cbs.util.AdobeConstant.FILEINFOS;
 import static com.imagination.cbs.util.AdobeConstant.GRANT_TYPE;
+import static com.imagination.cbs.util.AdobeConstant.ID;
+import static com.imagination.cbs.util.AdobeConstant.MEMBERINFOS;
+import static com.imagination.cbs.util.AdobeConstant.NAME;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_ACCESS_TOKEN_ENDPOINT;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_BASE_URL;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_REFRESH_TOKEN_ENDPOINT;
+import static com.imagination.cbs.util.AdobeConstant.ORDER;
+import static com.imagination.cbs.util.AdobeConstant.PARTICIPANTSETSINFO;
 import static com.imagination.cbs.util.AdobeConstant.REDIRECT_URI;
 import static com.imagination.cbs.util.AdobeConstant.REFRESH_TOKEN;
+import static com.imagination.cbs.util.AdobeConstant.ROLE;
+import static com.imagination.cbs.util.AdobeConstant.SIGNATURETYPE;
+import static com.imagination.cbs.util.AdobeConstant.SIGNATURE_ESIGN;
+import static com.imagination.cbs.util.AdobeConstant.STATE;
+import static com.imagination.cbs.util.AdobeConstant.STATE_IN_PROCESS;
 import static com.imagination.cbs.util.AdobeConstant.TOKEN_TYPE;
 import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENTS_ENDPOINT;
+import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENT_ID;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,14 +51,10 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -60,6 +67,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.domain.Config;
@@ -81,9 +89,6 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
-	@Autowired
-	Environment env;
 
 	private String getOauthAccessToken() {
 
@@ -411,24 +416,20 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@Override
-	public String uploadAndCreateAgreement(FileSystemResource file) {
+	public String uploadAndCreateAgreement(InputStream inputStream, String fileName) {
 
 		try {
 
-			String fileName = file.getFilename();
 			ResponseEntity<JsonNode> result = null;
 			LinkedMultiValueMap<String, Object> body = null;
 
 			String accessToken = getOauthAccessToken();
-			String baseUrl = getOauthAccessToken();
+			String transientDocUrl = getBaseURIForRestAPI(accessToken) + TRANSIENT_DOCUMENTS_ENDPOINT;
 
-			String transientDocUrl = baseUrl + TRANSIENT_DOCUMENTS_ENDPOINT;
-			log.info("TransientDocUrl={} fileName={}", transientDocUrl, fileName);
-
-			Resource resource = new InputStreamResource(file.getInputStream());
+			log.info("transientDocUrl={} fileName={}", transientDocUrl, fileName);
 
 			body = new LinkedMultiValueMap<>();
-			body.add(AdobeUtils.HttpHeaderField.FILE.toString(), resource);
+			body.add(AdobeUtils.HttpHeaderField.FILE.toString(), new InputStreamResource(inputStream));
 			body.add(AdobeUtils.HttpHeaderField.FILE_NAME.toString(), fileName);
 			body.add(AdobeUtils.HttpHeaderField.MIME_TYPE.toString(), MediaType.APPLICATION_PDF_VALUE);
 
@@ -440,65 +441,48 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			result = restTemplate.exchange(transientDocUrl, HttpMethod.POST, entity, JsonNode.class);
 
-			String transientDocumentId = result.getBody().path("transientDocumentId").asText();
-			log.info("File uplaod through transient Doc API transientDocumentId:: {}", transientDocumentId);
-
-			String sendAgreement = sendAgreement(transientDocumentId);
-			log.info("Agreement Id= {}  Body={}", sendAgreement, result.getBody());
+			String transientDocumentId = result.getBody().path(TRANSIENT_DOCUMENT_ID).asText();
+			log.info("transientDocumentId:: {}", transientDocumentId);
 
 			return transientDocumentId;
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.info("Exception inside Upload Agreement");
 		}
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private String sendAgreement(String transientDocId) {
+	@Override
+	public String sendAgreement(String transientDocId) {
 
 		try {
 
-			String accessToken = getOauthAccessToken();
-			String baseUrl = getBaseURIForRestAPI(accessToken);
-
-			log.info("AccessToken::: {} ", accessToken);
-
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(new FileReader("SendAgreement.json"));
-
-			JSONObject jsonBody = (JSONObject) obj;
-
-			ArrayList<JSONObject> fileInfos = new ArrayList<>();
-			JSONObject fileInfo = new JSONObject();
-			fileInfo.put("transientDocumentId", transientDocId);
-			fileInfos.add(fileInfo);
-			jsonBody.put("fileInfos", fileInfos);
-			log.info("body::: {}" + jsonBody.toString());
-
-			String agreementsUrl = baseUrl + AGREEMENTS_ENDPOINT;
-
 			ResponseEntity<JsonNode> response = null;
-			HttpHeaders header = new HttpHeaders();
+			HttpHeaders header = null;
+			String accessToken = getOauthAccessToken();
+			String agreementsApiUrl = getBaseURIForRestAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			String requestBody = createAgrrementRequestBody(transientDocId);
+
+			header = new HttpHeaders();
 			header.setContentType(MediaType.APPLICATION_JSON);
 			header.add(HttpHeaders.AUTHORIZATION, accessToken);
 
-			HttpEntity<?> httpentity = new HttpEntity<>(jsonBody.toString(), header);
-			response = restTemplate.exchange(agreementsUrl, HttpMethod.POST, httpentity, JsonNode.class);
+			HttpEntity<?> httpentity = new HttpEntity<>(requestBody, header);
+			response = restTemplate.exchange(agreementsApiUrl, HttpMethod.POST, httpentity, JsonNode.class);
 
-			log.info("After File Upload Agreements send to User:::: {}" + response.getBody());
+			log.info("Agreements Id:: {}", response.getBody());
 
-			return response.getBody().path("id").asText();
+			return response.getBody().path(ID).asText();
 
-		} catch (IOException | ParseException exception) {
+		} catch (IOException exception) {
 
 			throw new CBSApplicationException(exception.getLocalizedMessage());
 		}
 	}
-	
+
 	@Override
 	public boolean saveOrUpdateAuthCode(String authcode) {
-		Config c4 = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
+		Config config = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
 			c.setKeyValue(authcode);
 			return configRepository.save(c);
 		}).orElseGet(() -> {
@@ -508,6 +492,41 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 			return configRepository.save(con);
 		});
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private String createAgrrementRequestBody(String transientDocId) throws JsonProcessingException {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		JSONObject agrrement = new JSONObject();
+		agrrement.put(NAME, "Ramesh Suryaneni");
+		agrrement.put(SIGNATURETYPE, SIGNATURE_ESIGN);
+		agrrement.put(STATE, STATE_IN_PROCESS);
+
+		JSONArray fileInfosArray = new JSONArray();
+		JSONObject fileInfos = new JSONObject();
+		fileInfos.put(TRANSIENT_DOCUMENT_ID, transientDocId);
+		fileInfosArray.add(fileInfos);
+
+		JSONArray participantSetsInfoArray = new JSONArray();
+		JSONObject participant = new JSONObject();
+		participant.put(ORDER, 1);
+		participant.put(ROLE, "SIGNER");
+
+		JSONArray memberInfosArray = new JSONArray();
+		JSONObject memberInfos = new JSONObject();
+		memberInfos.put(EMAIL, "ramesh.suryaneni@imagination.com");
+		memberInfosArray.add(memberInfos);
+
+		participant.put(MEMBERINFOS, memberInfosArray);
+		participantSetsInfoArray.add(participant);
+
+		agrrement.put(FILEINFOS, fileInfosArray);
+		agrrement.put(PARTICIPANTSETSINFO, participantSetsInfoArray);
+
+		return mapper.writeValueAsString(agrrement);
+
 	}
 
 }

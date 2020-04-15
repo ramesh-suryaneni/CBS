@@ -2,7 +2,7 @@ package com.imagination.cbs.service;
 
 import org.springframework.data.domain.Page;
 
-import com.imagination.cbs.dto.BookingDashBoardDto;
+import com.imagination.cbs.dto.DashBoardBookingDto;
 
 /**
  * @author Pappu Rout
@@ -11,6 +11,6 @@ import com.imagination.cbs.dto.BookingDashBoardDto;
 
 public interface DashBoardService {
 	
-	 Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(String status, int pageNo, int pageSize);
+	 Page<DashBoardBookingDto> getDashBoardBookingsStatusDetails(String status, int pageNo, int pageSize);
 
 }

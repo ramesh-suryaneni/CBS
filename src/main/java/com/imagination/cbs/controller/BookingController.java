@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.imagination.cbs.dto.ApproveRequest;
-import com.imagination.cbs.dto.BookingDashBoardDto;
+import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.service.BookingService;
@@ -74,7 +74,7 @@ public class BookingController {
 	}
 
 	@GetMapping()
-	public Page<BookingDashBoardDto> getDashBoardBookingsStatusDetails(@RequestParam String status,
+	public Page<DashBoardBookingDto> getDashBoardBookingsStatusDetails(@RequestParam String status,
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "1000") Integer pageSize) {
 		return dashBoardService.getDashBoardBookingsStatusDetails(status, pageNo, pageSize);
 	}
@@ -99,4 +99,5 @@ public class BookingController {
 		return bookingServiceImpl.cancelBooking(bookingId);
 		
 	}
+	
 }

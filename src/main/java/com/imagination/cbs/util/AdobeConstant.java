@@ -12,6 +12,21 @@ public class AdobeConstant {
 	public static final String ADOBE_TOKEN_TYPE = "ADOBE_TOKEN_TYPE";
 	public static final String ADOBE_ACCESS_TOKEN_EXP_TIME = "ADOBE_ACCESS_TOKEN_EXP_TIME";
 	
+	public static final String ROLE = "role";
+	public static final String ORDER = "order";
+	public static final String TRANSIENT_DOCUMENT_ID = "transientDocumentId";
+	public static final String SIGNATURETYPE = "signatureType";
+	public static final String STATE = "state";
+	public static final String NAME = "name";
+	public static final String EMAIL = "email";
+	public static final String FILEINFOS = "fileInfos";
+	public static final String PARTICIPANTSETSINFO = "participantSetsInfo";
+	public static final String MEMBERINFOS = "memberInfos";
+	
+	public static final String SIGNATURE_ESIGN = "ESIGN";
+	public static final String ID = "id";
+	public static final String STATE_IN_PROCESS = "IN_PROCESS";
+	
 	public static final String ADOBE_AUTH_CODE = "ADOBE_AUTH_CODE";
 	public static final String ADOBE_SIGN_BASE_URL = "ADOBE_SIGN_BASE_URL";
 	public static final String ADOBE_REDIRECT_URL = "ADOBE_REDIRECT_URL";
@@ -19,7 +34,6 @@ public class AdobeConstant {
 	public static final String OAUTH_ACCESS_TOKEN_ENDPOINT = "/token";
 	public static final String OAUTH_REFRESH_TOKEN_ENDPOINT = "/refresh";
 	public static final String BEARER = "Bearer ";
-	//public static final String ADOBE_API_ACCESSPOINT = "adobe.apiAccessPoint";
 	public static final String OAUTH_BASE_URL = "https://secure.echosign.com/oauth";
 	public static final String ACCESS_TOKEN = "access_token";
 	public static final String REFRESH_TOKEN = "refresh_token";

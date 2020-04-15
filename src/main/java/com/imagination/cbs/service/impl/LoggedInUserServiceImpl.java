@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.LoggedInUserService;
-import com.imagination.cbs.util.SecurityConstants;
+import com.imagination.cbs.constant.SecurityConstants;
 
 /**
  * @author Ramesh.Suryaneni
@@ -35,7 +35,7 @@ public class LoggedInUserServiceImpl implements LoggedInUserService {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
             .map(authentication -> authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equalsIgnoreCase(SecurityConstants.ROLE_CONTRACT_MGT)))
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equalsIgnoreCase(SecurityConstants.ROLE_CONTRACT_MGT.getSecurityConstants())))
             .orElse(false);
     }
 

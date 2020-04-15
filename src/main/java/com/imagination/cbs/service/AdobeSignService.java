@@ -2,8 +2,6 @@ package com.imagination.cbs.service;
 
 import java.io.InputStream;
 
-import org.springframework.core.io.FileSystemResource;
-
 public interface AdobeSignService {
 
 	/*
@@ -12,9 +10,11 @@ public interface AdobeSignService {
 	 * String getBaseURIForRestAPI(String accessToken);
 	 */
 
-	String uploadAndCreateAgreement(FileSystemResource file);
+	String uploadAndCreateAgreement(InputStream inputStream, String fileName);
 
 	InputStream downloadAgreement(String agreementId);
-	
+
+	String sendAgreement(String transientDocId);
+
 	public boolean saveOrUpdateAuthCode(String authcode);
 }

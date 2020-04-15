@@ -1,12 +1,12 @@
 /**
  * 
- */
+ *//*
 package com.imagination.cbs.util;
 
-/**
+*//**
  * @author Ramesh.Suryaneni
  *
- */
+ *//*
 public class SecurityConstants {
 
 	private SecurityConstants() {
@@ -16,7 +16,7 @@ public class SecurityConstants {
 	public static final String TOKEN_PREFIX = "Bearer ";
 	public static final String HEADER_STRING = "Authorization";
 
-	/** SECURITY ROLES ***/
+	*//** SECURITY ROLES ***//*
 	public static final String ROLE_ = "ROLE_";
 
 	public static final String ROLE_APPROVER = "Approver";
@@ -36,3 +36,4 @@ public class SecurityConstants {
 	public static final Long ROLE_ADMIN_ID = 7L;
 
 }
+*/

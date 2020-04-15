@@ -1,7 +1,7 @@
 package com.imagination.cbs.service;
 
 import com.imagination.cbs.domain.BookingRevision;
-import com.imagination.cbs.dto.InternalResourceEmail;
+import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
 
 public interface EmailService {
@@ -10,6 +10,6 @@ public interface EmailService {
 
 	void sendContractReceipt(MailRequest request);
 
-	void sendInternalResourceEmail(MailRequest request, InternalResourceEmail internalResourceEmail);
+	void sendInternalResourceEmail(InternalResourceEmailDto internalResourceEmail);
 
 }
