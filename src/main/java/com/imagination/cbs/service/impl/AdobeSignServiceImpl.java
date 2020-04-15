@@ -43,10 +43,12 @@ import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENT_ID;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -54,6 +56,7 @@ import javax.transaction.Transactional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -70,6 +73,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.dto.AdobeOAuthDto;
 import com.imagination.cbs.exception.CBSApplicationException;
@@ -89,6 +93,9 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private Environment env;
 
 	private String getOauthAccessToken() {
 
@@ -453,7 +460,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@Override
-	public String sendAgreement(String transientDocId) {
+	public String sendAgreement(String transientDocId, BookingRevision bookingRevision) {
 
 		try {
 
@@ -461,7 +468,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 			HttpHeaders header = null;
 			String accessToken = getOauthAccessToken();
 			String agreementsApiUrl = getBaseURIForRestAPI(accessToken) + AGREEMENTS_ENDPOINT;
-			String requestBody = createAgrrementRequestBody(transientDocId);
+			String requestBody = createAgrrementRequestBody(transientDocId, bookingRevision);
 
 			header = new HttpHeaders();
 			header.setContentType(MediaType.APPLICATION_JSON);
@@ -495,12 +502,17 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String createAgrrementRequestBody(String transientDocId) throws JsonProcessingException {
+	private String createAgrrementRequestBody(String transientDocId,BookingRevision bookingRevision) throws JsonProcessingException {
 
 		ObjectMapper mapper = new ObjectMapper();
+		StringJoiner nameJoiner = new StringJoiner("-");
+
+		nameJoiner.add(String.valueOf(bookingRevision.getBooking().getBookingId()));
+		nameJoiner.add(bookingRevision.getJobNumber());
+		nameJoiner.add(bookingRevision.getJobname());
 
 		JSONObject agrrement = new JSONObject();
-		agrrement.put(NAME, "Ramesh Suryaneni");
+		agrrement.put(NAME, nameJoiner);
 		agrrement.put(SIGNATURETYPE, SIGNATURE_ESIGN);
 		agrrement.put(STATE, STATE_IN_PROCESS);
 
@@ -516,7 +528,17 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 		JSONArray memberInfosArray = new JSONArray();
 		JSONObject memberInfos = new JSONObject();
-		memberInfos.put(EMAIL, "ramesh.suryaneni@imagination.com");
+		
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(env -> (env.equalsIgnoreCase("dev")
+				|| env.equalsIgnoreCase("local") || env.equalsIgnoreCase("qual")))) {
+
+			memberInfos.put(EMAIL, "ramesh.suryaneni@imagination.com");
+
+		} else {
+
+			memberInfos.put(EMAIL, bookingRevision.getContractor().getEmail());
+		}
+		
 		memberInfosArray.add(memberInfos);
 
 		participant.put(MEMBERINFOS, memberInfosArray);
