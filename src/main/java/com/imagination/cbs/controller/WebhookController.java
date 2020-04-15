@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imagination.cbs.dto.AdobeSignResponse;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.ConfigService;
-import com.imagination.cbs.util.AdobeConstant;
 
 /**
  * @author Ramesh.Suryaneni
@@ -63,7 +59,7 @@ public class WebhookController {
 	public ResponseEntity<String> webhookVerification(@RequestHeader HttpHeaders headers) {
 		
 	    headers.forEach((key, value) -> 
-	    	logger.info(String.format("Header '%s' = %s", key, value))
+	    	LOGGER.info(String.format("Header '%s' = %s", key, value))
 	    );
 	    //respond with request headers     
 	    return ResponseEntity.ok()
