@@ -2,7 +2,6 @@ package com.imagination.cbs.service.impl;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,15 +42,12 @@ public class DashBoardServiceImpl implements DashBoardService{
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Long employeeId = loggedInUserService.getLoggedInUserDetails().getEmpId();
 		
-		List<DashBoardBookingDto> bookingDashboradDtos = new ArrayList<>();
-
-		//Pageable pageable = createPageable(pageNo, pageSize, "br.changed_date", "DESC");
 		List<Tuple> bookingRevisions = null;
 
 		if (status.equalsIgnoreCase("Submitted")) {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForSubmitted(loggedInUser, PageRequest.of(pageNo, pageSize));
 		} else if(status.equalsIgnoreCase("waiting")){
-			return retrieveBookingRevisionForWaitingForApproval(employeeId, PageRequest.of(pageNo, pageSize), bookingDashboradDtos);
+			return retrieveBookingRevisionForWaitingForApproval(employeeId, PageRequest.of(pageNo, pageSize));
 		} else {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, PageRequest.of(pageNo, pageSize));
 		}
@@ -60,19 +56,8 @@ public class DashBoardServiceImpl implements DashBoardService{
 		return new PageImpl<>(bookingDashBoardDtos, PageRequest.of(pageNo, pageSize), bookingDashBoardDtos.size());
 	}
 	
-	/*private Pageable createPageable(int pageNo, int pageSize, String sortingField, String sortingOrder) {
-		Sort sort = null;
-		if (sortingOrder.equals("ASC")) {
-			sort = Sort.by(Direction.ASC, sortingField);
-		}
-		if (sortingOrder.equals("DESC")) {
-			sort = Sort.by(Direction.DESC, sortingField);
-		}
-
-		return PageRequest.of(pageNo, pageSize, sort);
-	}*/
 	
-	private Page<DashBoardBookingDto> retrieveBookingRevisionForWaitingForApproval(Long employeeId,  Pageable pageable, List<DashBoardBookingDto> bookingDashboradDtos){
+	private Page<DashBoardBookingDto> retrieveBookingRevisionForWaitingForApproval(Long employeeId,  Pageable pageable){
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByJobName = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByJobNumber(employeeId, pageable);
 		
@@ -88,7 +73,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 	
 	private List<DashBoardBookingDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
         
-        return bookingRevisions.stream().filter((bookingRevision)-> Objects.nonNull((bookingRevision.get("bookingId",BigInteger.class))))
+        return bookingRevisions.stream().filter(bookingRevision-> Objects.nonNull((bookingRevision.get("bookingId",BigInteger.class))))
             .map(bookingRevision -> {
             
             	DashBoardBookingDto bookingDashBoardDto = new DashBoardBookingDto();

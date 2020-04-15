@@ -21,7 +21,7 @@ import com.imagination.cbs.service.ConfigService;
 @Component(value = "googleIDTokenValidationUtility")
 public class GoogleIDTokenValidationUtility {
 
-	private final String GOOGLE_CLIENTID_KEY = "GOOGLE_ID";
+	private static final String GOOGLE_CLIENTID_KEY = "GOOGLE_ID";
 	
 	@Autowired
 	private ConfigService configService;
@@ -48,7 +48,7 @@ public class GoogleIDTokenValidationUtility {
     			
     		if (emailVerified && payload.getAudience().toString().equalsIgnoreCase(clientId)) {
     			
-    			int index = payload.getEmail().indexOf("@");
+    			int index = payload.getEmail().indexOf('@');
     			String truncatedEmailId = payload.getEmail().substring(0, index);
     			
     			CBSUser user = (CBSUser) userDetailsService.loadUserByUsername(truncatedEmailId);

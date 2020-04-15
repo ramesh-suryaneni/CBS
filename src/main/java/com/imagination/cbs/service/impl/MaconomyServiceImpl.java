@@ -4,11 +4,12 @@
 package com.imagination.cbs.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,8 @@ public class MaconomyServiceImpl implements MaconomyService {
 
 	@Autowired
 	private ConfigRepository configRepository;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(MaconomyServiceImpl.class);
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -87,24 +90,22 @@ public class MaconomyServiceImpl implements MaconomyService {
 	@SuppressWarnings("unchecked")
 	private <T> T extractResponse(ResponseEntity<JsonNode> responseEntity, T approverTeamDto, String isJobNumberOrDepartmentName,String departmentName) {
 
-		List<ApproverTeamDto> approverTeamDtoList = new ArrayList<>();
-		List<JobDataDto> jobDataDtoList = new ArrayList<>();
-		
-
 		if (responseEntity.getBody() == null) {
+
+		if (null == responseEntity.getBody()) {
 
 			throw new CBSApplicationException("Please Provide Valid Department Name ");
 		}
 		
-		
+		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			if(isJobNumberOrDepartmentName.equalsIgnoreCase("Department")){
 			JsonNode departmentRecords = responseEntity.getBody().get("panes").get("filter").get("records");
-			approverTeamDtoList = (List<ApproverTeamDto>) objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
+			List<ApproverTeamDto> approverTeamDtoList = (List<ApproverTeamDto>) objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
 					}).readValue(departmentRecords);
 
-			approverTeamDtoList = approverTeamDtoList.stream().filter((approverTeam) -> approverTeam.getData().getName().equals(departmentName))
+			approverTeamDtoList = approverTeamDtoList.stream().filter(approverTeam -> approverTeam.getData().getName().equals(departmentName))
 					.collect(Collectors.toList());
 
 			return (T) approverTeamDtoList.get(0);
@@ -112,7 +113,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 			}else if(isJobNumberOrDepartmentName.equalsIgnoreCase("jobNumber")){
 				
 				JsonNode jobNumberRecord = responseEntity.getBody().get("panes").get("card").get("records");
-				jobDataDtoList = (List<JobDataDto>) objectMapper.readerFor(new TypeReference<List<JobDataDto>>() {
+				List<JobDataDto> jobDataDtoList = (List<JobDataDto>) objectMapper.readerFor(new TypeReference<List<JobDataDto>>() {
 				}).readValue(jobNumberRecord);
 				
 				return (T) jobDataDtoList.get(0);
@@ -121,10 +122,10 @@ public class MaconomyServiceImpl implements MaconomyService {
 			}
 		} catch (IOException ioException) {
 
-			ioException.printStackTrace();
+			LOGGER.error("Exception occured during extracting a response for MaconomyJobNumber and Department details", ioException);
 		}
 		return approverTeamDto;
-
+		
 	}
 
 

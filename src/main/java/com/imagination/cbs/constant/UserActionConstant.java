@@ -29,7 +29,7 @@ public enum UserActionConstant {
 	/**
 	 * @param action the action to set
 	 */
-	public void setAction(String action) {
+	private void setAction(String action) {
 		this.action = action;
 	}
 	
