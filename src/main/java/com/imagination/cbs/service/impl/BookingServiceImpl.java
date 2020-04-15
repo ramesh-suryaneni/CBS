@@ -582,7 +582,7 @@ public class BookingServiceImpl implements BookingService {
 
 					// integrate Adobe - upload, create agreement
 					String agreementDocumentId = adobeSignService.uploadAndCreateAgreement(inputStream, FILE_NAME);
-					String agreementId = adobeSignService.sendAgreement(agreementDocumentId);
+					String agreementId = adobeSignService.sendAgreement(agreementDocumentId,latestRevision );
 
 					// populate document id and agreement id to revision
 					latestRevision.setAgreementDocumentId(agreementDocumentId);
