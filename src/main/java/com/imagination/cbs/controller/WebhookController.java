@@ -63,7 +63,7 @@ public class WebhookController {
 	public ResponseEntity<String> webhookVerification(@RequestHeader HttpHeaders headers) {
 		
 	    headers.forEach((key, value) -> 
-	    	logger.info(String.format("Header '%s' = %s", key, value));
+	    	logger.info(String.format("Header '%s' = %s", key, value))
 	    );
 	    //respond with request headers     
 	    return ResponseEntity.ok()
