@@ -46,7 +46,7 @@ public enum EmailConstants {
 	
 	private String emailConstantsString;
 	
-	EmailConstants(String emailConstantsString) {
+	private EmailConstants(String emailConstantsString) {
 		this.emailConstantsString = emailConstantsString;
 	}
 

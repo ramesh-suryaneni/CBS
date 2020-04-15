@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.constant.MaconomyConstant;
+import com.imagination.cbs.constant.SecurityConstants;
 import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Approver;
@@ -76,7 +77,6 @@ import com.imagination.cbs.service.Html2PdfService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
-import com.imagination.cbs.util.SecurityConstants;
 
 /**
  * @author Ramesh.Suryaneni
@@ -536,7 +536,7 @@ public class BookingServiceImpl implements BookingService {
 
 	private void prepareMailAndSendToHR(BookingRevision latestRevision) {
 		Permission permission = new Permission();
-		permission.setPermissionId(SecurityConstants.ROLE_CONTRACT_MGT_ID);
+		permission.setPermissionId(SecurityConstants.ROLE_CONTRACT_MGT_ID.getRoleDetails());
 		List<EmployeePermissions> employeePermissions = employeePermissionsRepository.findAllByPermission(permission);
 		List<String> emails = new ArrayList<>();
 

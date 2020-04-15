@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.imagination.cbs.util.SecurityConstants;
+import com.imagination.cbs.constant.SecurityConstants;
 
 
 @Component(value="googleIDTokenValidationFilter")
@@ -35,12 +35,12 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 			throws IOException, ServletException {
 		logger.info("inside filter");
 		
-		String header = request.getHeader(SecurityConstants.HEADER_STRING);
+		String header = request.getHeader(SecurityConstants.HEADER_STRING.getSecurityConstants());
         String username = null;
         String authToken = null;
         try {
-        	if (header != null && header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
-                authToken = header.replace(SecurityConstants.TOKEN_PREFIX,"");
+        	if (header != null && header.startsWith(SecurityConstants.TOKEN_PREFIX.getSecurityConstants())) {
+                authToken = header.replace(SecurityConstants.TOKEN_PREFIX.getSecurityConstants(),"");
                 UsernamePasswordAuthenticationToken authentication = googleIDTokenValidationUtility.validateTokenAndLoadUser(authToken);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 logger.info("authenticated user " + username + ", setting security context");

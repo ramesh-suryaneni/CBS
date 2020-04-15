@@ -19,7 +19,7 @@ public enum ApprovalStatusConstant {
 	
 	private Long approvalStatusId;
 
-	ApprovalStatusConstant(Long approvalStatusId) {
+	private ApprovalStatusConstant(Long approvalStatusId) {
 		this.approvalStatusId = approvalStatusId;
 	}
 

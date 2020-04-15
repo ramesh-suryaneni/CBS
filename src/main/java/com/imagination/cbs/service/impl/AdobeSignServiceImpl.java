@@ -54,7 +54,6 @@ import javax.transaction.Transactional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -90,9 +89,6 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-
-	@Autowired
-	Environment env;
 
 	private String getOauthAccessToken() {
 

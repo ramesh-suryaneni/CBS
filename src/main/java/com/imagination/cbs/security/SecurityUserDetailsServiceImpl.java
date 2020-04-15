@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.EmployeeMapping;
 import com.imagination.cbs.service.EmployeeMappingService;
-import com.imagination.cbs.util.SecurityConstants;
+import com.imagination.cbs.constant.SecurityConstants;
 
 @Service("securityUserDetailsService")
 public class SecurityUserDetailsServiceImpl implements UserDetailsService {
@@ -38,7 +38,7 @@ public UserDetails loadUserByUsername(String email) throws UsernameNotFoundExcep
 	        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 	        
 	        employeeMapping.getEmployeePermissions().forEach(employeePermissions ->{
-	        	String role = SecurityConstants.ROLE_+String.valueOf(employeePermissions.getPermission().getPermissionId());
+	        	String role = SecurityConstants.ROLE_.getSecurityConstants()+String.valueOf(employeePermissions.getPermission().getPermissionId());
 	        	authorities.add(new SimpleGrantedAuthority(role));
 	        });
 			
