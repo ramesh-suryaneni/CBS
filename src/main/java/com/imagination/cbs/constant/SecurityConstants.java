@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.imagination.cbs.constant;
 
 /**
@@ -11,10 +8,7 @@ public enum SecurityConstants {
 	
 	 TOKEN_PREFIX("Bearer "),
 	 HEADER_STRING("Authorization"),
-
-	/** SECURITY ROLES ***/
-	 ROLE_("ROLE_"),
-
+	 ROLE("ROLE_"),
 	 ROLE_APPROVER("Approver"),
 	 ROLE_BOOKING_CREATOR("Booking Creator"),
 	 ROLE_BOOKING_VIEWER("Booking Viewer"),
@@ -22,7 +16,6 @@ public enum SecurityConstants {
 	 ROLE_CONTRACT_MGT("Contract Management"),
 	 ROLE_PO_MGT("PO Management"),
 	 ROLE_ADMIN("Admin"),
-
 	 ROLE_APPROVER_ID(1L),
 	 ROLE_BOOKING_CREATOR_ID(2L),
 	 ROLE_BOOKING_VIEWER_ID(3L),
@@ -31,14 +24,14 @@ public enum SecurityConstants {
 	 ROLE_PO_MGT_ID(6L),
 	 ROLE_ADMIN_ID(7L);
 	
-	private String securityConstants;
+	private String securityConstant;
 
 	private SecurityConstants(String securityConstants) {
-		this.securityConstants = securityConstants;
+		this.securityConstant = securityConstants;
 	}
 
-	public String getSecurityConstants() {
-		return securityConstants;
+	public String getSecurityConstant() {
+		return securityConstant;
 	}
 	
 	private Long roleDetails;
@@ -50,10 +43,5 @@ public enum SecurityConstants {
 	private SecurityConstants(Long roleDetails) {
 		this.roleDetails = roleDetails;
 	}
-	
-	
-	
-	
-	
 
 }

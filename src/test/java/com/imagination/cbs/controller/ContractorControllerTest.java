@@ -30,7 +30,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.ContractorDto;

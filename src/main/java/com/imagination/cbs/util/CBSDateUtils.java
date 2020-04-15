@@ -3,6 +3,8 @@ package com.imagination.cbs.util;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author pravin.budage
@@ -11,7 +13,10 @@ import java.util.Date;
 public class CBSDateUtils {
 
 	private static final String DATE_FORMAT = "dd/MM/yyyy";
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(CBSDateUtils.class);
+	
+	private CBSDateUtils() {}
+	
 	public static Timestamp convertDateToTimeStamp(String date) {
 		Timestamp timeStamp = null;
 		SimpleDateFormat parseDate = new SimpleDateFormat(DATE_FORMAT);
@@ -19,7 +24,7 @@ public class CBSDateUtils {
 			Date parsedDate = parseDate.parse(date);
 			timeStamp = new java.sql.Timestamp(parsedDate.getTime());
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Not able to Parse the Date",e);
 		}
 		return timeStamp;
 	}
@@ -33,12 +38,12 @@ public class CBSDateUtils {
 	}
 
 	public static java.sql.Date convertStringToDate(String date) {
-		Date parsedDate = null;
+		Date parsedDate = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 		try {
 			parsedDate = formatter.parse(date);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Not able to Parse the Date",e);
 		}
 		return new java.sql.Date(parsedDate.getTime());
 	}

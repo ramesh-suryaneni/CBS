@@ -78,7 +78,11 @@ public class MaconomyServiceImpl implements MaconomyService {
 					throw new ResourceNotFoundException("Plase provide valid JobNumber or DepartmentName ");
 				}
 			}
+			if(responseEntity == null) {
+				throw new NullPointerException("Response Entity is null");
+			}else {
 			return extractResponse(responseEntity, (T) maconomyDto, isJobNumberOrDepartmentName, departname);
+			}
 		}
 		return maconomyDto;
 	}
@@ -86,12 +90,14 @@ public class MaconomyServiceImpl implements MaconomyService {
 	@SuppressWarnings("unchecked")
 	private <T> T extractResponse(ResponseEntity<JsonNode> responseEntity, T approverTeamDto, String isJobNumberOrDepartmentName,String departmentName) {
 
+		if (responseEntity.getBody() == null) {
+
 		if (null == responseEntity.getBody()) {
 
 			throw new CBSApplicationException("Please Provide Valid Department Name ");
 		}
 		
-		
+		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			if(isJobNumberOrDepartmentName.equalsIgnoreCase("Department")){
@@ -119,7 +125,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 			LOGGER.error("Exception occured during extracting a response for MaconomyJobNumber and Department details", ioException);
 		}
 		return approverTeamDto;
-
+		
 	}
 
 

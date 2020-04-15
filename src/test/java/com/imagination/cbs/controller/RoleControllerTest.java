@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
@@ -35,13 +33,13 @@ public class RoleControllerTest {
 	
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
-	
+
 	@MockBean
 	private GoogleAuthenticationEntryPoint googleAuthenticationEntryPoint;
 	
 	@MockBean
 	private RestTemplateBuilder restTemplateBuilder;
-	
+
 	@Autowired
 	private MockMvc mockMvc;
 	

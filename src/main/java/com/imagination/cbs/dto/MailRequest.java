@@ -11,5 +11,7 @@ public class MailRequest {
 	
     private String subject;
 	
-    
+
+    private String mailRequest;
+
 }

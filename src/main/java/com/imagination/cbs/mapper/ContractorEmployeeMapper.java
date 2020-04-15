@@ -9,8 +9,8 @@ import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 @Mapper(componentModel = "spring")
 public interface ContractorEmployeeMapper {
 
-	public ContractorEmployeeSearchDto toContractorEmployeeSearchDtoFromContractorEmployee(ContractorEmployee ContractorEmployee);
+	public ContractorEmployeeSearchDto toContractorEmployeeSearchDtoFromContractorEmployee(ContractorEmployee contractorEmployee);
 
-	public ContractorEmployeeDto toContractorEmployeeDtoFromContractorEmployee(ContractorEmployee ContractorEmployee);
+	public ContractorEmployeeDto toContractorEmployeeDtoFromContractorEmployee(ContractorEmployee contractorEmployee);
 
 }
