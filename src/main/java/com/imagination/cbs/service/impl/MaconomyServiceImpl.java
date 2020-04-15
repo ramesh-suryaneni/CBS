@@ -75,7 +75,11 @@ public class MaconomyServiceImpl implements MaconomyService {
 					throw new ResourceNotFoundException("Plase provide valid JobNumber or DepartmentName ");
 				}
 			}
+			if(responseEntity == null) {
+				throw new NullPointerException("Response Entity is null");
+			}else {
 			return extractResponse(responseEntity, (T) maconomyDto, isJobNumberOrDepartmentName, departname);
+			}
 		}
 		return maconomyDto;
 	}
@@ -87,7 +91,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 		List<JobDataDto> jobDataDtoList = new ArrayList<>();
 		
 
-		if (null == responseEntity.getBody()) {
+		if (responseEntity.getBody() == null) {
 
 			throw new CBSApplicationException("Please Provide Valid Department Name ");
 		}

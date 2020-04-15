@@ -15,6 +15,7 @@ import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
+import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
@@ -53,8 +54,7 @@ public class EmailServiceImpl implements EmailService {
 			emailUtility.sendEmail(request, body);
 
 		} catch (Exception e) {
-			LOGGER.error("Not able to send Booking approval email");
-			e.printStackTrace();
+			LOGGER.error("Not able to send Booking approval email",e);
 		}
 	}
 
@@ -70,8 +70,7 @@ public class EmailServiceImpl implements EmailService {
 		
 		} catch (Exception e) {
 			
-			LOGGER.error("Not able to send Contract Receipt email");
-			e.printStackTrace();
+			LOGGER.error("Not able to send Contract Receipt email",e);
 		} 		
 	}
 
@@ -91,8 +90,9 @@ public class EmailServiceImpl implements EmailService {
 			emailUtility.sendEmail(emailrequestDetails, body);
 			
 			LOGGER.info("Email send Successfully :: {}",emailrequestDetails);
-		} catch (Exception exception) {
-			exception.printStackTrace();
+		} catch (Exception e) {
+			LOGGER.error("Not able to send email",e);
+			
 		}
 
 	}

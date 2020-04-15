@@ -35,12 +35,12 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
 			throws IOException, ServletException {
 		logger.info("inside filter");
 		
-		String header = request.getHeader(SecurityConstants.HEADER_STRING.getSecurityConstants());
+		String header = request.getHeader(SecurityConstants.HEADER_STRING.getSecurityConstant());
         String username = null;
         String authToken = null;
         try {
-        	if (header != null && header.startsWith(SecurityConstants.TOKEN_PREFIX.getSecurityConstants())) {
-                authToken = header.replace(SecurityConstants.TOKEN_PREFIX.getSecurityConstants(),"");
+        	if (header != null && header.startsWith(SecurityConstants.TOKEN_PREFIX.getSecurityConstant())) {
+                authToken = header.replace(SecurityConstants.TOKEN_PREFIX.getSecurityConstant(),"");
                 UsernamePasswordAuthenticationToken authentication = googleIDTokenValidationUtility.validateTokenAndLoadUser(authToken);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 logger.info("authenticated user " + username + ", setting security context");

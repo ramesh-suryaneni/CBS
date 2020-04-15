@@ -38,8 +38,8 @@ public class ContractorEmployeeSearchController {
 	
 		if(!name.equals("")){
 			return contractorService.geContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingBy, sortingOrder);
-		}if(role!=0) {
-			System.out.println("Role Id");
+		}
+		if(role!=0) {
 			return contractorService.geContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingBy, sortingOrder);			
 		}
 		return contractorService.geContractorEmployeeDetails(pageNo, pageSize, sortingBy, sortingOrder);

@@ -38,7 +38,7 @@ public UserDetails loadUserByUsername(String email) throws UsernameNotFoundExcep
 	        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 	        
 	        employeeMapping.getEmployeePermissions().forEach(employeePermissions ->{
-	        	String role = SecurityConstants.ROLE_.getSecurityConstants()+String.valueOf(employeePermissions.getPermission().getPermissionId());
+	        	String role = SecurityConstants.ROLE.getSecurityConstant()+String.valueOf(employeePermissions.getPermission().getPermissionId());
 	        	authorities.add(new SimpleGrantedAuthority(role));
 	        });
 			

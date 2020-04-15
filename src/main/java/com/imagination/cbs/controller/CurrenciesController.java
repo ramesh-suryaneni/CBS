@@ -27,7 +27,7 @@ public class CurrenciesController {
 	private CurrencyService currencyService;
 	
 	@GetMapping
-	public List<CurrencyDto> getAllCurrencies() throws Exception {
+	public List<CurrencyDto> getAllCurrencies(){
 		
 		return currencyService.getAllCurrencies();
 		

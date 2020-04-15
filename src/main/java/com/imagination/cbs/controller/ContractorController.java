@@ -80,7 +80,7 @@ public class ContractorController {
 	public ResponseEntity<ContractorDto> addNewContractor(@RequestBody ContractorRequest request){
 		
 		ContractorDto createdContractorMap = contractorService.addContractorDetails(request);
-		return new ResponseEntity<ContractorDto>(createdContractorMap, HttpStatus.CREATED);
+		return new ResponseEntity<>(createdContractorMap, HttpStatus.CREATED);
 	
 	}
 	
@@ -89,7 +89,7 @@ public class ContractorController {
 			@RequestBody ContractorEmployeeRequest request){
 		
 		ContractorEmployeeDto createdContractorEmployee = contractorService.addContractorEmployee(contractorId, request);
-		return new ResponseEntity<ContractorEmployeeDto>(createdContractorEmployee, HttpStatus.CREATED);
+		return new ResponseEntity<>(createdContractorEmployee, HttpStatus.CREATED);
 		
 	}
 	
