@@ -5,8 +5,7 @@
         text-align: justify;
   text-justify: inter-word;
 
-  margin-top: 80px;
-  margin-bottom: 100px;
+  margin-bottom: 1%;
   margin-right: 10%;
   margin-left: 4%;
 
@@ -23,7 +22,7 @@ table, th, td {
 </head>
 <body>
 <div>
-<img src="./imagination_logo.png" width="18%" height="7%">
+<img src="${logo}" width="18%" height="7%">
 <br></br><br></br><br></br>
 <center><b>CONFIRMATION OF SERVICE</b></center>
    <b><p><font size="4">Private and Confidential</font></p></b>
@@ -124,12 +123,11 @@ table, th, td {
         <p><b>SIGNED by Claire Dykes</b></p>
        <p class="b"><b>For       and       on       behalf       of</b></p>
        <p><b>The Imagination Group Limited</b></p>
-       <br>
-	   <img src="signature.png" width="70%" height="18%"><br>
+	   <img src="${signature}" width="70%" height="5%"><br>
        <b>Date:</b>[e-
        signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}</b></p>
      </div>
-     <div style="width: 30%; display: inline-block;float:right;">
+     <div style="width: 30%;display: inline-block;float:right;">
    
            <p><b>SIGNED by ${signedBy}</b></p>
            <p><b>For and on behalf of</b></p>
