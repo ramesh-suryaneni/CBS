@@ -5,13 +5,17 @@ package com.imagination.cbs.service.impl;
 
 import static java.util.stream.Collectors.toList;
 
-import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +75,7 @@ import com.imagination.cbs.repository.SiteOptionsRepository;
 import com.imagination.cbs.repository.SupplierTypeRepository;
 import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.security.CBSUser;
+import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.Html2PdfService;
@@ -150,7 +155,12 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private EmailService emailService;
 
+	@Autowired
+	private AdobeSignService adobeSignService;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 	
+	private static final String FILE_NAME = "service.pdf";
 
 	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
 
@@ -565,11 +575,24 @@ public class BookingServiceImpl implements BookingService {
 			if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
 				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 				BookingRevision latestRevision = getLatestRevision(booking);
-				// TODO:Generate PDF.
+				
+				try {
+					// Generate PDF.
+					ByteArrayOutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
+					InputStream inputStream = new ByteArrayInputStream(pdfStream.toByteArray());
 
-				OutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
-				// TODO:integrate Adobe - upload, create agreement
-				// TODO:populate document id and agreement id to revision
+					// integrate Adobe - upload, create agreement
+					String agreementDocumentId = adobeSignService.uploadAndCreateAgreement(inputStream, FILE_NAME);
+					String agreementId = adobeSignService.sendAgreement(agreementDocumentId);
+
+					// populate document id and agreement id to revision
+					latestRevision.setAgreementDocumentId(agreementDocumentId);
+					latestRevision.setAgreementId(agreementId);
+
+				} catch (Exception e) {
+					LOGGER.info("Exception inside sendAgreement.");
+				}
+				
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 				// send Email to creator - need to confirm
 				prepareMailAndSendToHR(latestRevision);

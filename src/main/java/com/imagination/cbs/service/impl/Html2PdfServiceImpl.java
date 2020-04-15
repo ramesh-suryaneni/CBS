@@ -1,7 +1,6 @@
 package com.imagination.cbs.service.impl;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,16 +39,22 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 	private static final String FILE_NAME = "service.pdf";
 
 	@Override
-	public OutputStream generateAgreementPdf(BookingRevision revision) {
+	public ByteArrayOutputStream generateAgreementPdf(BookingRevision revision) {
 		Map<String, Object> data = prepareInputToPdf(revision);
-		try {
-			Template template = config.getTemplate(TEMPLATE_NAME);
-			OutputStream out = new FileOutputStream(FILE_NAME);
-			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
-			HtmlConverter.convertToPdf(html, out);
-			return out;
 
-		} catch (Exception e1) {
+		try {
+
+			Template template = config.getTemplate(TEMPLATE_NAME);
+
+			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
+
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+			HtmlConverter.convertToPdf(html, stream);
+
+			return stream;
+
+		} catch (Exception e) {
 			LOGGER.error("Failed to generate PDF");
 		}
 		return null;
@@ -57,7 +62,9 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 	}
 
 	private Map<String, Object> prepareInputToPdf(BookingRevision latestRevision) {
+
 		Map<String, Object> dataModel = new HashMap<>();
+
 		String address1 = latestRevision.getContractor().getAddressLine1();
 		String address2 = latestRevision.getContractor().getAddresLine2();
 		String address3 = latestRevision.getContractor().getAddresLine3();
@@ -65,8 +72,11 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		String postalDistrict = latestRevision.getContractor().getPostalDistrict();
 		String country = latestRevision.getContractor().getCountry();
 		RoleDm role = latestRevision.getRole();
+
 		List<BookingWorkTask> bookingWorkTasks = latestRevision.getBookingWorkTasks();
+
 		StringBuilder builder = new StringBuilder();
+
 		if (bookingWorkTasks != null) {
 			for (BookingWorkTask bookingWorkTask : bookingWorkTasks) {
 				builder.append(bookingWorkTask.getTaskId() + "\n");
@@ -77,13 +87,13 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 				builder.append(bookingWorkTask.getTaskTotalDays() + "\n");
 			}
 		}
+
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		String dateString = dateFormat.format(new Date());
 
 		dataModel.put("consultancyCompanyName", latestRevision.getContractor().getContractorName());
 		dataModel.put("consultancyCompanyNumber", latestRevision.getContractor().getMaconomyVendorNumber());
-		dataModel.put("consultancyCompanyAddress", address1 + ", " + address2 + ", " + address3 + ", " + postalCode
-				+ ", " + postalDistrict + ", " + country);
+		dataModel.put("consultancyCompanyAddress", address1 + ", " + address2 + ", " + address3 + ", " + postalCode	+ ", " + postalDistrict + ", " + country);
 		dataModel.put("commencementDate", latestRevision.getContractedFromDate());
 		dataModel.put("endDate", latestRevision.getContractedToDate());
 		dataModel.put("services", role.getRoleName() + ", " + role.getDiscipline().getDisciplineName());
@@ -103,6 +113,7 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("m2", dateString.charAt(3));
 		dataModel.put("y1", dateString.charAt(4));
 		dataModel.put("y2", dateString.charAt(5));
+
 		return dataModel;
 	}
 }

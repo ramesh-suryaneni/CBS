@@ -1,6 +1,6 @@
 package com.imagination.cbs.service;
 
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 import com.imagination.cbs.domain.BookingRevision;
 
@@ -10,6 +10,5 @@ import com.imagination.cbs.domain.BookingRevision;
  */
 public interface Html2PdfService {
 
-	OutputStream generateAgreementPdf(BookingRevision revision);
-
+	ByteArrayOutputStream generateAgreementPdf(BookingRevision revision);
 }
