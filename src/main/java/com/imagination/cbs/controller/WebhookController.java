@@ -31,7 +31,7 @@ import com.imagination.cbs.util.AdobeConstant;
 @RequestMapping(value = "/webhooks")
 public class WebhookController {
 	
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookController.class);
 	
 	@Autowired
 	ConfigService configService;
@@ -44,9 +44,8 @@ public class WebhookController {
 	
 	@PostMapping("/adobesign-callback")
 	public String adobeSignCallback(@RequestHeader Map<String, String> headers) {
-	    headers.forEach((key, value) -> {
-	        System.out.println(String.format("Header '%s' = %s", key, value));
-	    });
+	    headers.forEach((key, value) -> LOGGER.info(String.format("Header '%s' = %s", key, value))
+	    );
 	    //TODO:implement contractor signed event to update in database for booking
 	    bookingService.updateContract("contractor", "date");
 	    return String.format("Listed %d headers", headers.size());
@@ -57,9 +56,9 @@ public class WebhookController {
 	public AdobeSignResponse webhookVerification(@RequestHeader Map<String, String> headers) {
 		AdobeSignResponse response = new AdobeSignResponse();
 		
-	    headers.forEach((key, value) -> {
-	    	logger.info(String.format("Header '%s' = %s", key, value));
-	    });
+	    headers.forEach((key, value) -> 
+	    	LOGGER.info(String.format("Header '%s' = %s", key, value))
+	    );
 	    
 	    // Fetch client id
 	    String reqClientId = headers.getOrDefault("X-ADOBESIGN-CLIENTID", "");

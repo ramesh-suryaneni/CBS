@@ -1,7 +1,9 @@
 package com.imagination.cbs.service.impl;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +40,28 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 	private Configuration config;
 
 	private static final String TEMPLATE_NAME = "pdf.agreement.ftl";
-	private static final String FILE_NAME = "service.pdf";
+
+	private static final String SIGN_IMG = "templates/signature.png";
+
+	private static final String IMAGINATION_LOGO_IMG = "templates/imagination_logo.png";
 
 	@Override
-	public OutputStream generateAgreementPdf(BookingRevision revision) {
+	public ByteArrayOutputStream generateAgreementPdf(BookingRevision revision) {
 		Map<String, Object> data = prepareInputToPdf(revision);
-		try {
-			Template template = config.getTemplate(TEMPLATE_NAME);
-			OutputStream out = new FileOutputStream(FILE_NAME);
-			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
-			HtmlConverter.convertToPdf(html, out);
-			return out;
 
-		} catch (Exception e1) {
+		try {
+
+			Template template = config.getTemplate(TEMPLATE_NAME);
+
+			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, data);
+
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+			HtmlConverter.convertToPdf(html, stream);
+
+			return stream;
+
+		} catch (Exception e) {
 			LOGGER.error("Failed to generate PDF");
 		}
 		return null;
@@ -57,7 +69,9 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 	}
 
 	private Map<String, Object> prepareInputToPdf(BookingRevision latestRevision) {
+
 		Map<String, Object> dataModel = new HashMap<>();
+
 		String address1 = latestRevision.getContractor().getAddressLine1();
 		String address2 = latestRevision.getContractor().getAddresLine2();
 		String address3 = latestRevision.getContractor().getAddresLine3();
@@ -65,8 +79,29 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		String postalDistrict = latestRevision.getContractor().getPostalDistrict();
 		String country = latestRevision.getContractor().getCountry();
 		RoleDm role = latestRevision.getRole();
+
 		List<BookingWorkTask> bookingWorkTasks = latestRevision.getBookingWorkTasks();
+
+		ClassLoader loader = this.getClass().getClassLoader();
+		File imaginationLogoFile = new File(loader.getResource(IMAGINATION_LOGO_IMG).getFile());
+		byte[] imgBytesAsBase64Logo = null;
+
+		File signatureFile = new File(loader.getResource(SIGN_IMG).getFile());
+		byte[] imgBytesAsBase64Sign = null;
+		try {
+			imgBytesAsBase64Logo = Base64.encodeBase64(Files.readAllBytes(imaginationLogoFile.toPath()));
+			imgBytesAsBase64Sign = Base64.encodeBase64(Files.readAllBytes(signatureFile.toPath()));
+		} catch (IOException e) {
+			LOGGER.error("Failed to read bytes of Image");
+		}
+		String imgDataAsBase64Logo = new String(imgBytesAsBase64Logo);
+		String imgAsBase64Logo = "data:image/png;base64," + imgDataAsBase64Logo;
+
+		String imgDataAsBase64Sign = new String(imgBytesAsBase64Sign);
+		String imgAsBase64Sign = "data:image/png;base64," + imgDataAsBase64Sign;
+
 		StringBuilder builder = new StringBuilder();
+
 		if (bookingWorkTasks != null) {
 			for (BookingWorkTask bookingWorkTask : bookingWorkTasks) {
 				builder.append(bookingWorkTask.getTaskId() + "\n");
@@ -77,6 +112,7 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 				builder.append(bookingWorkTask.getTaskTotalDays() + "\n");
 			}
 		}
+
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		String dateString = dateFormat.format(new Date());
 
@@ -103,6 +139,9 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("m2", dateString.charAt(3));
 		dataModel.put("y1", dateString.charAt(4));
 		dataModel.put("y2", dateString.charAt(5));
+		dataModel.put("logo", imgAsBase64Logo);
+		dataModel.put("signature", imgAsBase64Sign);
+
 		return dataModel;
 	}
 }

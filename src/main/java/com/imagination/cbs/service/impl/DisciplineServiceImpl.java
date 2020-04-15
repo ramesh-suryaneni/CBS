@@ -8,8 +8,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.imagination.cbs.domain.Discipline;
-import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.dto.DisciplineDto;
+import com.imagination.cbs.dto.RoleDto;
+import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.RoleMapper;
 import com.imagination.cbs.repository.DisciplineRepository;
@@ -41,6 +42,10 @@ public class DisciplineServiceImpl implements DisciplineService {
 
 		Optional<Discipline> discpline = disciplineRepository.findById(disciplineId);
 
+		if (!discpline.isPresent()) {
+			throw new ResourceNotFoundException("Discpline Not Found with Id:- " + disciplineId);
+		}
+		
 		Discipline discipline = discpline.get();
 
 		return roleMapper.toListContractorRoleDto(discipline.getRoles());
