@@ -753,8 +753,11 @@ public class BookingServiceImpl implements BookingService {
 
 		// update contract signed details to booking
 		BookingRevision bookingRevision = bookingRevisionRepository.findByagreementId(agreementId).map(booking -> {
+		
 			booking.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
+			
 			return bookingRevisionRepository.save(booking);
+		
 		}).orElseThrow(() -> new ResourceNotFoundException("agreement id not found: " + agreementId));
 
 		// download agreement from adobe
