@@ -90,6 +90,8 @@ import com.imagination.cbs.util.CBSDateUtils;
 
 @Service("bookingService")
 public class BookingServiceImpl implements BookingService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -156,8 +158,6 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private AdobeSignService adobeSignService;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	private static final String FILE_NAME = "service.pdf";
 
@@ -491,9 +491,13 @@ public class BookingServiceImpl implements BookingService {
 
 		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
+		
+		LOGGER.info("BOOKING ID :: {} CURRENT STATUS :: {} TEAM :: {}", booking.getBookingId(), currentApprovalStatus, approverTeam.getTeamId());
+		
 		if (isInApprovalStatus) {
 			// find next approval status based on current status and approval
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
+			LOGGER.info(" NEXT STATUS :: {} ", nextStatus);
 
 			// check if booking can be override.
 			ApproverOverrides approverOverride = approverOverridesRepository
@@ -505,7 +509,7 @@ public class BookingServiceImpl implements BookingService {
 				saveBooking(booking, latestRevision, ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(),
 						user);
 
-				// TODO:send mail to HR approver
+				// send mail to HR approver
 				prepareMailAndSendToHR(latestRevision);
 
 			} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
@@ -513,7 +517,6 @@ public class BookingServiceImpl implements BookingService {
 				// save new revision with next status
 				saveBooking(booking, latestRevision, nextStatus, user);
 
-				// TODO:send mail to next approver based on status
 				Long order = null;
 				switch (nextStatus.intValue()) {
 				case 1002:
@@ -530,6 +533,7 @@ public class BookingServiceImpl implements BookingService {
 					break;
 				}
 				if (5L != order) {
+					// send mail to next approver based on status
 					prepareMailAndSend(booking, latestRevision);
 				} else {
 					prepareMailAndSendToHR(latestRevision);
@@ -574,17 +578,21 @@ public class BookingServiceImpl implements BookingService {
 
 		if (loggedInUserService.isCurrentUserInHRRole()) {
 			Long currentStatus = booking.getApprovalStatus().getApprovalStatusId();
+			LOGGER.info("BOOKING ID :: {} CURRENT STATUS :: {} ", booking.getBookingId(), currentStatus);
 			if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
 				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 				BookingRevision latestRevision = getLatestRevision(booking);
 
 				try {
 					// Generate PDF.
+					LOGGER.info("PDF Generation :::::::::::::: ");
 					ByteArrayOutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
 					InputStream inputStream = new ByteArrayInputStream(pdfStream.toByteArray());
 
 					// integrate Adobe - upload, create agreement
+					LOGGER.info("Uploading Document To Adobe :::::::::::::: ");
 					String agreementDocumentId = adobeSignService.uploadAndCreateAgreement(inputStream, FILE_NAME);
+					LOGGER.info("Creating Agreement :::::::::::::: ");
 					String agreementId = adobeSignService.sendAgreement(agreementDocumentId, latestRevision);
 
 					// populate document id and agreement id to revision
@@ -596,8 +604,8 @@ public class BookingServiceImpl implements BookingService {
 				}
 
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
-				// send Email to creator - need to confirm
-				prepareMailAndSendToHR(latestRevision);
+				// send Email to creator - need to confirm with business
+				//prepareMailAndSendToHR(latestRevision);
 			} else {
 				throw new CBSApplicationException("Booking already approved or not in approval status");
 			}
@@ -613,7 +621,6 @@ public class BookingServiceImpl implements BookingService {
 
 		BookingRevision latestRevision = getLatestRevision(booking);
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
-		// TODO:send mail to creator
 		MailRequest request = new MailRequest();
 		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
@@ -626,7 +633,6 @@ public class BookingServiceImpl implements BookingService {
 
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
 		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
-		// revision.setBookingRevisionId(null);
 		BookingRevision newObject = new BookingRevision(revision);
 		newObject.setApprovalStatus(nextApprovalStatus);
 		newObject.setRevisionNumber(revision.getRevisionNumber() + 1);
@@ -686,7 +692,9 @@ public class BookingServiceImpl implements BookingService {
 		List<Approver> approvers = approverRepository.findAllByTeam(approverTeam);
 		Long maxApproverOrder = approvers.stream().max(Comparator.comparing(Approver::getApproverOrder)).get()
 				.getApproverOrder();
-
+		
+		LOGGER.info("TEAM :: {} MAX APPROVER ORDER :: {} ", approverTeam.getTeamId(), maxApproverOrder);
+		
 		Long nextStatus = null;
 
 		switch (currentStatus.intValue()) {
@@ -694,14 +702,12 @@ public class BookingServiceImpl implements BookingService {
 		case 1002: // current status - waiting for approval 1
 
 			switch (maxApproverOrder.intValue()) {
-			case 1:
+			case 1: //approver order 1
 				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
-			case 2:
+			case 2: //approver order 2
+			case 3: //approver order 3
 				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval #2
-				break;
-			case 3:
-				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval #3
 				break;
 			}
 			break;
