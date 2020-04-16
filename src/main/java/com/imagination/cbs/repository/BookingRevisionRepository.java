@@ -1,6 +1,7 @@
 package com.imagination.cbs.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Tuple;
 
@@ -104,6 +105,5 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByEmployeeId(@Param("employeeId") Long employeeId, Pageable pageable);
 	
-	
-	
+		Optional<BookingRevision> findByagreementId(String agreementId);
 }
