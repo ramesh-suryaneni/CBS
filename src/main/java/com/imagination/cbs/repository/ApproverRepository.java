@@ -23,6 +23,6 @@ public interface ApproverRepository extends JpaRepository<Approver, Long> {
 
 	Approver findByTeamAndEmployeeAndApproverOrder(Team team, EmployeeMapping employee, Long order);
 
-	Approver findByTeamAndApproverOrder(Team team, Long order);
+	List<Approver> findAllByTeamAndApproverOrder(Team team, Long order);
 
 }

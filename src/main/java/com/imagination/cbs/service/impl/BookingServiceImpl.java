@@ -207,16 +207,20 @@ public class BookingServiceImpl implements BookingService {
 		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
 		BookingRevision latestRevision = getLatestRevision(newBookingDomain);
-		prepareMailAndSend(newBookingDomain, latestRevision);
+		prepareMailAndSend(newBookingDomain, latestRevision, 1L); //send mail to approver order #1
 		return retrieveBookingDetails(bookingId);
 	}
 
-	private void prepareMailAndSend(Booking booking, BookingRevision latestRevision) {
-		Approver approver = approverRepository.findByTeamAndApproverOrder(booking.getTeam(), 1L);
-		EmployeeMapping employee = approver.getEmployee();
+	private void prepareMailAndSend(Booking booking, BookingRevision latestRevision, Long nextApproverOrder) {
+		List<Approver> approvers = approverRepository.findAllByTeamAndApproverOrder(booking.getTeam(), nextApproverOrder);
+		List<String> emails = new ArrayList<>();
+		for(Approver approver : approvers) {
+			EmployeeMapping employee = approver.getEmployee();
+			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString() );
+		}
+		String[] toEmail = emails.stream().toArray(n -> new String[n]);
+		
 		MailRequest request = new MailRequest();
-		String[] toEmail = new String[] {
-				employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString() };
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
@@ -534,7 +538,7 @@ public class BookingServiceImpl implements BookingService {
 				}
 				if (5L != order) {
 					// send mail to next approver based on status
-					prepareMailAndSend(booking, latestRevision);
+					prepareMailAndSend(booking, latestRevision, order);
 				} else {
 					prepareMailAndSendToHR(latestRevision);
 				}
