@@ -83,7 +83,6 @@ import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
 
-
 /**
  * @author Ramesh.Suryaneni
  *
@@ -91,6 +90,8 @@ import com.imagination.cbs.util.CBSDateUtils;
 
 @Service("bookingService")
 public class BookingServiceImpl implements BookingService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	@Autowired
 	private BookingRepository bookingRepository;
@@ -158,8 +159,6 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private AdobeSignService adobeSignService;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
-	
 	private static final String FILE_NAME = "service.pdf";
 
 	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
@@ -208,20 +207,26 @@ public class BookingServiceImpl implements BookingService {
 		newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRepository.save(newBookingDomain);
 		BookingRevision latestRevision = getLatestRevision(newBookingDomain);
-		prepareMailAndSend(newBookingDomain, latestRevision);
+		prepareMailAndSend(newBookingDomain, latestRevision, 1L); //send mail to approver order #1
 		return retrieveBookingDetails(bookingId);
 	}
 
-	private void prepareMailAndSend(Booking booking, BookingRevision latestRevision) {
-		Approver approver = approverRepository.findByTeamAndApproverOrder(booking.getTeam(), 1L);
-		EmployeeMapping employee = approver.getEmployee();
+	private void prepareMailAndSend(Booking booking, BookingRevision latestRevision, Long nextApproverOrder) {
+		List<Approver> approvers = approverRepository.findAllByTeamAndApproverOrder(booking.getTeam(), nextApproverOrder);
+		List<String> emails = new ArrayList<>();
+		for(Approver approver : approvers) {
+			EmployeeMapping employee = approver.getEmployee();
+			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString() );
+		}
+		String[] toEmail = emails.stream().toArray(n -> new String[n]);
+		
 		MailRequest request = new MailRequest();
-		String[] toEmail = new String[] { employee.getGoogleAccount() + EmailConstants.DOMAIN.getEmailConstantsString() };
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
@@ -490,9 +495,13 @@ public class BookingServiceImpl implements BookingService {
 
 		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
+		
+		LOGGER.info("BOOKING ID :: {} CURRENT STATUS :: {} TEAM :: {}", booking.getBookingId(), currentApprovalStatus, approverTeam.getTeamId());
+		
 		if (isInApprovalStatus) {
 			// find next approval status based on current status and approval
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
+			LOGGER.info(" NEXT STATUS :: {} ", nextStatus);
 
 			// check if booking can be override.
 			ApproverOverrides approverOverride = approverOverridesRepository
@@ -504,7 +513,7 @@ public class BookingServiceImpl implements BookingService {
 				saveBooking(booking, latestRevision, ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(),
 						user);
 
-				// TODO:send mail to HR approver
+				// send mail to HR approver
 				prepareMailAndSendToHR(latestRevision);
 
 			} else if (isUserCanApprove(approverTeam.getTeamId(), user.getEmpId(), currentApprovalStatus)) {
@@ -512,7 +521,6 @@ public class BookingServiceImpl implements BookingService {
 				// save new revision with next status
 				saveBooking(booking, latestRevision, nextStatus, user);
 
-				// TODO:send mail to next approver based on status
 				Long order = null;
 				switch (nextStatus.intValue()) {
 				case 1002:
@@ -529,7 +537,8 @@ public class BookingServiceImpl implements BookingService {
 					break;
 				}
 				if (5L != order) {
-					prepareMailAndSend(booking, latestRevision);
+					// send mail to next approver based on status
+					prepareMailAndSend(booking, latestRevision, order);
 				} else {
 					prepareMailAndSendToHR(latestRevision);
 				}
@@ -563,8 +572,9 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
 				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 
 	}
 
@@ -572,18 +582,22 @@ public class BookingServiceImpl implements BookingService {
 
 		if (loggedInUserService.isCurrentUserInHRRole()) {
 			Long currentStatus = booking.getApprovalStatus().getApprovalStatusId();
+			LOGGER.info("BOOKING ID :: {} CURRENT STATUS :: {} ", booking.getBookingId(), currentStatus);
 			if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
 				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 				BookingRevision latestRevision = getLatestRevision(booking);
-				
+
 				try {
 					// Generate PDF.
+					LOGGER.info("PDF Generation :::::::::::::: ");
 					ByteArrayOutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
 					InputStream inputStream = new ByteArrayInputStream(pdfStream.toByteArray());
 
 					// integrate Adobe - upload, create agreement
+					LOGGER.info("Uploading Document To Adobe :::::::::::::: ");
 					String agreementDocumentId = adobeSignService.uploadAndCreateAgreement(inputStream, FILE_NAME);
-					String agreementId = adobeSignService.sendAgreement(agreementDocumentId,latestRevision );
+					LOGGER.info("Creating Agreement :::::::::::::: ");
+					String agreementId = adobeSignService.sendAgreement(agreementDocumentId, latestRevision);
 
 					// populate document id and agreement id to revision
 					latestRevision.setAgreementDocumentId(agreementDocumentId);
@@ -592,10 +606,10 @@ public class BookingServiceImpl implements BookingService {
 				} catch (Exception e) {
 					LOGGER.info("Exception inside sendAgreement.");
 				}
-				
+
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
-				// send Email to creator - need to confirm
-				prepareMailAndSendToHR(latestRevision);
+				// send Email to creator - need to confirm with business
+				//prepareMailAndSendToHR(latestRevision);
 			} else {
 				throw new CBSApplicationException("Booking already approved or not in approval status");
 			}
@@ -611,19 +625,18 @@ public class BookingServiceImpl implements BookingService {
 
 		BookingRevision latestRevision = getLatestRevision(booking);
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
-		// TODO:send mail to creator
 		MailRequest request = new MailRequest();
 		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 
 	}
 
 	private Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
 		ApprovalStatusDm nextApprovalStatus = approvalStatusDmRepository.findById(nextStatus).get();
-		// revision.setBookingRevisionId(null);
 		BookingRevision newObject = new BookingRevision(revision);
 		newObject.setApprovalStatus(nextApprovalStatus);
 		newObject.setRevisionNumber(revision.getRevisionNumber() + 1);
@@ -683,7 +696,9 @@ public class BookingServiceImpl implements BookingService {
 		List<Approver> approvers = approverRepository.findAllByTeam(approverTeam);
 		Long maxApproverOrder = approvers.stream().max(Comparator.comparing(Approver::getApproverOrder)).get()
 				.getApproverOrder();
-
+		
+		LOGGER.info("TEAM :: {} MAX APPROVER ORDER :: {} ", approverTeam.getTeamId(), maxApproverOrder);
+		
 		Long nextStatus = null;
 
 		switch (currentStatus.intValue()) {
@@ -691,22 +706,12 @@ public class BookingServiceImpl implements BookingService {
 		case 1002: // current status - waiting for approval 1
 
 			switch (maxApproverOrder.intValue()) {
-			case 1:
-				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																								// to
-																								// HR
+			case 1: //approver order 1
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
-			case 2:
-				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 2
-				break;
-			case 3:
-				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 3
+			case 2: //approver order 2
+			case 3: //approver order 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval #2
 				break;
 			}
 			break;
@@ -715,23 +720,16 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 2:
-				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																								// to
-																								// HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 3:
-				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval#3
 				break;
 			}
 			break;
 
 		case 1004: // current status - waiting for approval 3
-			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																							// to
-																							// HR
+			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 			break;
 
 		}
@@ -745,6 +743,5 @@ public class BookingServiceImpl implements BookingService {
 		// TODO:upload agreement to azure
 		// TODO:send email to creator/HR/?
 	}
-	
 
 }
