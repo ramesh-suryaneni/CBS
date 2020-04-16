@@ -34,24 +34,25 @@ public enum EmailConstants {
 	CONTRACTOR_PDF_LINK("contractorPdf"),
 	SCOPE_OF_WORK_LINK("scopeOfWorkPdf"),
 
-	BOOKING_REQUEST_TEMPLATE("Request"),
-	BOOKING_REQUEST_FOR_APPROVAL_TEMPLATE("RequestForApproval"),
-	CONTRACT_TO_CONTRACTOR_TEMPLATE("ContractToContractor"),
-	CONTRACT_RECEIPT_TEMPLATE("ContractReceipt"),
-
+	BOOKING_REQUEST_TEMPLATE("approval_request"),
+	CONTRACT_RECEIPT_TEMPLATE("contractreceipt"),
+	INTERNAL_SOURCE("internalsource"),
+	PREFIX("email."),
+	EXT(".ftl"),
+	
 	FROM_EMAIL("CBS@imagination.com"),
 	TO_EMAIL("internal_sourcing.email_to"),
 	INTERNAL_NOTIFICATION_SUBJECT_LINE("Internal Email Notification : Contractor Booking request #  ");
 	
 	
-	private String emailConstantsString;
+	private String constantString;
 	
-	private EmailConstants(String emailConstantsString) {
-		this.emailConstantsString = emailConstantsString;
+	private EmailConstants(String constantString) {
+		this.constantString = constantString;
 	}
 
-	public String getEmailConstantsString() {
-		return emailConstantsString;
+	public String getConstantString() {
+		return constantString;
 	}
 	
 	

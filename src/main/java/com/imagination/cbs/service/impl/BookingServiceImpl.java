@@ -83,7 +83,6 @@ import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
 import com.imagination.cbs.util.CBSDateUtils;
 
-
 /**
  * @author Ramesh.Suryaneni
  *
@@ -159,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
 	private AdobeSignService adobeSignService;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
-	
+
 	private static final String FILE_NAME = "service.pdf";
 
 	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
@@ -216,12 +215,14 @@ public class BookingServiceImpl implements BookingService {
 		Approver approver = approverRepository.findByTeamAndApproverOrder(booking.getTeam(), 1L);
 		EmployeeMapping employee = approver.getEmployee();
 		MailRequest request = new MailRequest();
-		String[] toEmail = new String[] { employee.getGoogleAccount() + EmailConstants.DOMAIN.getEmailConstantsString() };
+		String[] toEmail = new String[] {
+				employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString() };
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 	}
 
 	private Booking populateBooking(BookingRequest bookingRequest, Long revisionNumber, boolean isSubmit) {
@@ -563,8 +564,9 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
 				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 
 	}
 
@@ -575,7 +577,7 @@ public class BookingServiceImpl implements BookingService {
 			if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(currentStatus)) {
 				Long nextStatus = ApprovalStatusConstant.APPROVAL_SENT_FOR_CONTRACTOR.getApprovalStatusId();
 				BookingRevision latestRevision = getLatestRevision(booking);
-				
+
 				try {
 					// Generate PDF.
 					ByteArrayOutputStream pdfStream = html2PdfService.generateAgreementPdf(latestRevision);
@@ -583,7 +585,7 @@ public class BookingServiceImpl implements BookingService {
 
 					// integrate Adobe - upload, create agreement
 					String agreementDocumentId = adobeSignService.uploadAndCreateAgreement(inputStream, FILE_NAME);
-					String agreementId = adobeSignService.sendAgreement(agreementDocumentId,latestRevision );
+					String agreementId = adobeSignService.sendAgreement(agreementDocumentId, latestRevision);
 
 					// populate document id and agreement id to revision
 					latestRevision.setAgreementDocumentId(agreementDocumentId);
@@ -592,7 +594,7 @@ public class BookingServiceImpl implements BookingService {
 				} catch (Exception e) {
 					LOGGER.info("Exception inside sendAgreement.");
 				}
-				
+
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 				// send Email to creator - need to confirm
 				prepareMailAndSendToHR(latestRevision);
@@ -616,8 +618,9 @@ public class BookingServiceImpl implements BookingService {
 		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
-		request.setMailFrom(EmailConstants.FROM_EMAIL.getEmailConstantsString());
-		emailService.sendEmailForBookingApproval(request, latestRevision, EmailConstants.BOOKING_REQUEST_TEMPLATE.getEmailConstantsString());
+		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+		emailService.sendEmailForBookingApproval(request, latestRevision,
+				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
 
 	}
 
@@ -745,6 +748,5 @@ public class BookingServiceImpl implements BookingService {
 		// TODO:upload agreement to azure
 		// TODO:send email to creator/HR/?
 	}
-	
 
 }
