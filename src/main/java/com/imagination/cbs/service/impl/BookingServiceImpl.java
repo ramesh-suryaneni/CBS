@@ -695,21 +695,13 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 1:
-				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																								// to
-																								// HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 2:
-				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 2
+				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval #2
 				break;
 			case 3:
-				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId(); // waiting for approval #3
 				break;
 			}
 			break;
@@ -718,23 +710,16 @@ public class BookingServiceImpl implements BookingService {
 
 			switch (maxApproverOrder.intValue()) {
 			case 2:
-				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																								// to
-																								// HR
+				nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 				break;
 			case 3:
-				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting
-																						// for
-																						// approval
-																						// 3
+				nextStatus = ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId(); // waiting for approval#3
 				break;
 			}
 			break;
 
 		case 1004: // current status - waiting for approval 3
-			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent
-																							// to
-																							// HR
+			nextStatus = ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId(); // Sent to HR
 			break;
 
 		}
