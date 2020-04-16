@@ -575,7 +575,7 @@ public class BookingServiceImpl implements BookingService {
 		for (EmployeePermissions employeePermission : employeePermissions) {
 			EmployeeMapping employee = employeeMappingRepository
 					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
-			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN);
+			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString());
 
 		}
 
@@ -638,7 +638,7 @@ public class BookingServiceImpl implements BookingService {
 		BookingRevision latestRevision = getLatestRevision(booking);
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 		MailRequest request = new MailRequest();
-		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
+		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN.getConstantString() });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());

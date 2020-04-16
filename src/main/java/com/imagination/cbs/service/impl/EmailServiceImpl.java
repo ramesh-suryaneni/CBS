@@ -43,6 +43,8 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
+		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", 
+				request.toString(), bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
 
 		try {
 
@@ -172,7 +174,7 @@ public class EmailServiceImpl implements EmailService {
 
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
-				user.getEmail() + EmailConstants.DOMAIN);
+				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
 		mapOfTemplateValues.put(EmailConstants.CONTRACTOR_PDF_LINK.getConstantString(), contractorPdfLink);
 		mapOfTemplateValues.put(EmailConstants.SCOPE_OF_WORK_LINK.getConstantString(), scopeOfWorkLink);
 
