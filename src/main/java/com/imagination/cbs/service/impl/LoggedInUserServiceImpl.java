@@ -24,9 +24,7 @@ public class LoggedInUserServiceImpl implements LoggedInUserService {
 	@Override
 	public CBSUser getLoggedInUserDetails() {
 		
-		CBSUser user = (CBSUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		return user;
+		return (CBSUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
 	@Override

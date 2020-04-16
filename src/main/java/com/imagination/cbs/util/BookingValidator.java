@@ -14,27 +14,29 @@ import com.imagination.cbs.dto.WorkTasksDto;
 @Component
 public class BookingValidator implements Validator {
 
-	private static String BAD_ERROR_CODE = HttpStatus.BAD_REQUEST.toString();
+	private static final String BAD_ERROR_CODE = HttpStatus.BAD_REQUEST.toString();
+	
+	private static final String WORK_TASKS = "workTasks";
 
 	private void validateWorkTasks(List<WorkTasksDto> workTasks, Errors errors) {
 		for (WorkTasksDto work : workTasks) {
 			if (work.getTaskId() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Id cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Id cannot be null");
 			}
 			if (work.getTaskName() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Name cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Name cannot be null");
 			}
 			if (work.getTaskDeliveryDate() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Delivery Date cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Delivery Date cannot be null");
 			}
 			if (work.getTaskDateRate() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Date Rate cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Date Rate cannot be null");
 			}
 			if (work.getTaskTotalDays() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Total Days cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Total Days cannot be null");
 			}
 			if (work.getTaskTotalAmount() == null) {
-				errors.rejectValue("workTasks", BAD_ERROR_CODE, "Task Total Amount cannot be null");
+				errors.rejectValue(WORK_TASKS, BAD_ERROR_CODE, "Task Total Amount cannot be null");
 			}
 		}
 	}
