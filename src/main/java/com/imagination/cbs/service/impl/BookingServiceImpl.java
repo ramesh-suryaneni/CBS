@@ -653,6 +653,7 @@ public class BookingServiceImpl implements BookingService {
 		newObject.setApprovalStatus(nextApprovalStatus);
 		newObject.setRevisionNumber(revision.getRevisionNumber() + 1);
 		newObject.setChangedBy(user.getDisplayName());
+		newObject.setChangedDate(new Timestamp(System.currentTimeMillis()));
 
 		booking.setApprovalStatus(nextApprovalStatus);
 		booking.addBookingRevision(newObject);
