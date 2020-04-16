@@ -9,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
-import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;

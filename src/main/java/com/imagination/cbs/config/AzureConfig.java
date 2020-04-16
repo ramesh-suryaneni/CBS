@@ -21,7 +21,7 @@ public class AzureConfig {
 	@Bean
 	public CloudBlobClient cloudBlobClient() throws URISyntaxException, InvalidKeyException {
 
-		CloudStorageAccount storageAccount = CloudStorageAccount.parse(environment.getProperty(AzureTemplateConstant.AZURE_STORAGE_CONNECTIONSTRING.getAzureTemplateConstant()));
+		CloudStorageAccount storageAccount = CloudStorageAccount.parse(environment.getProperty(AzureTemplateConstant.AZURE_STORAGE_CONNECTIONSTRING.getAzureTemplateConst()));
 
 		return storageAccount.createCloudBlobClient();
 	}
@@ -29,7 +29,7 @@ public class AzureConfig {
 	@Bean
 	public CloudBlobContainer blobContainer() throws URISyntaxException, StorageException, InvalidKeyException {
 
-		return cloudBlobClient().getContainerReference(environment.getProperty(AzureTemplateConstant.AZURE_STORAGE_CONTAINER_NAME.getAzureTemplateConstant()));
+		return cloudBlobClient().getContainerReference(environment.getProperty(AzureTemplateConstant.AZURE_STORAGE_CONTAINER_NAME.getAzureTemplateConst()));
 
 	}
 

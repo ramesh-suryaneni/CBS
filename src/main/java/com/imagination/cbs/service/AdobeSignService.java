@@ -6,12 +6,6 @@ import com.imagination.cbs.domain.BookingRevision;
 
 public interface AdobeSignService {
 
-	/*
-	 * String getOauthAccessToken();
-	 * 
-	 * String getBaseURIForRestAPI(String accessToken);
-	 */
-
 	String uploadAndCreateAgreement(InputStream inputStream, String fileName);
 
 	InputStream downloadAgreement(String agreementId);

@@ -33,7 +33,6 @@ public class RegionOfficeServiceImpl implements RegionOfficeService {
 
 	@Override
 	public List<OfficeDto> getAllOfficesInRegion(Long regionId) {
-		//return officeMapper.toListOfficeDTO(officeRepository.findByOfficeId(regionId));
 		return officeMapper.toListOfficeDTO(officeRepository.findAll());
 	}
 }
