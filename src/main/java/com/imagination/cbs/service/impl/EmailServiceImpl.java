@@ -1,5 +1,6 @@
 package com.imagination.cbs.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,7 @@ public class EmailServiceImpl implements EmailService {
 		String name = bookingRevision.getSupplierType().getName();
 		String officeName = bookingRevision.getContractWorkLocation().getOfficeName();
 		String reasonName = bookingRevision.getReasonForRecruiting().getReasonName();
+		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
 
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
@@ -136,11 +138,12 @@ public class EmailServiceImpl implements EmailService {
 				StringUtils.isEmpty(officeName) ? "" : officeName);
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
 				StringUtils.isEmpty(reasonName) ? "" : reasonName);
+		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(),
+				contractAmountAftertax == null ? "" : contractAmountAftertax);
 
 		List<BookingWorkTask> bookingWorkTasks = bookingRevision.getBookingWorkTasks();
 		if (CollectionUtils.isEmpty(bookingWorkTasks)) {
 			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), "");
 		} else {
 			StringBuilder row = new StringBuilder();
 			row.append("<table style=\"border: 1px solid black;width: 75%;  margin-left: 16%; font-size: 10px;\">");
@@ -151,7 +154,6 @@ public class EmailServiceImpl implements EmailService {
 			row.append("<th bgcolor=\"#A9A9A9\">Day rate</th>");
 			row.append("<th bgcolor=\"#A9A9A9\">Total days</th>");
 			row.append("<th bgcolor=\"#A9A9A9\">Total(£)</tr>");
-			Double taskTotalAmount = 0.0;
 			int i = 0;
 			for (BookingWorkTask task : bookingWorkTasks) {
 				row.append("<tr style=\"border: 1px solid black;\"background-color: #dddddd;\">");
@@ -161,16 +163,13 @@ public class EmailServiceImpl implements EmailService {
 				row.append("<td>" + task.getTaskDateRate() + "</td>");
 				row.append("<td>" + task.getTaskTotalDays() + "</td>");
 				row.append("<td>" + task.getTaskTotalAmount() + "</td>");
-				taskTotalAmount += task.getTaskTotalAmount();
 				row.append("</tr>");
 			}
 			row.append("</table>");
 			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), row.toString());
-			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), taskTotalAmount);
 		}
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
