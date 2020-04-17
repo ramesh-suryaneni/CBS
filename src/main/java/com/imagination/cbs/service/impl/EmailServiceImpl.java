@@ -1,6 +1,7 @@
 package com.imagination.cbs.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -43,8 +44,8 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
-		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", 
-				request.toString(), bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
+		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request.toString(),
+				bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
 
 		try {
 
@@ -111,7 +112,7 @@ public class EmailServiceImpl implements EmailService {
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
-				bookingRevision.getRole().getDiscipline());
+				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
 				bookingRevision.getContractEmployee().getContractorEmployeeName());
@@ -128,14 +129,23 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
 				bookingRevision.getReasonForRecruiting().getReasonName());
 
-		BookingWorkTask task = bookingRevision.getBookingWorkTasks().get(0);
-
-		mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), task.getTaskName());
-		mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), task.getTaskDeliveryDate());
-		mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), task.getTaskDateRate());
-		mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), task.getTaskTotalDays());
-		mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), task.getTaskTotalAmount());
-		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), task.getTaskTotalAmount());
+		List<BookingWorkTask> bookingWorkTasks = bookingRevision.getBookingWorkTasks();
+		if (bookingWorkTasks != null) {
+			BookingWorkTask task = bookingWorkTasks.get(0);
+			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), task.getTaskName());
+			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), task.getTaskDeliveryDate());
+			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), task.getTaskDateRate());
+			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), task.getTaskTotalDays());
+			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), task.getTaskTotalAmount());
+			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), task.getTaskTotalAmount());
+		} else {
+			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), "");
+			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), "");
+			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), "");
+			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), "");
+			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), "");
+			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), "");
+		}
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
 
