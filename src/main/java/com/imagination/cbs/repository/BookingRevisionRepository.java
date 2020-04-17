@@ -64,7 +64,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " where temp.rownum=1 and bo.changed_by =:loggedInUser order by temp.changed_date DESC", nativeQuery = true)
 	public List<Tuple> retrieveBookingRevisionForSubmitted(@Param("loggedInUser") String loggedInUser, Pageable pageable);
 	
-	@Query(value ="with temp as (select *, (select Max(approver_order) from cbs.approver where employee_id=:employeeId) as approverOrder, row_number() over(partition by booking_id order by booking_revision_id desc) rownum from "
+	@Query(value ="with temp as (select *, row_number() over(partition by booking_id order by booking_revision_id desc) rownum from "
 			+ " cbs.booking_revision br where br.approval_status_id in (select approval_status_id from cbs.approval_status_dm "
 			+ " where approval_name in ('Waiting on Approval 1','Waiting on Approval 2','Waiting on Approval 3'))) "
 			+ " select asd.approval_name as status, temp.booking_id as bookingId, temp.job_name as jobName, rd.role_name as roleName,"
@@ -76,34 +76,22 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " join cbs.approval_status_dm asd on asd.approval_status_id=temp.approval_status_id"
 			+ " join cbs.approver_override_jobs aoj on  temp.job_number = aoj.job_number"
 			+ " left join cbs.contractor con on temp.contractor_id=con.contractor_id"
-			+ " where temp.rownum=1 and aoj.employee_Id = :employeeId"
-			+ " and (CASE WHEN asd.approval_name = 'Waiting on Approval 1'  THEN 1"
-			+ " WHEN asd.approval_name = 'Waiting on Approval 2'  THEN 2"
-			+ " WHEN asd.approval_name = 'Waiting on Approval 3'  THEN 3"
-			+ " end) <=temp.approverOrder"
 			+ " order by temp.changed_date DESC", nativeQuery = true)
 	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByJobNumber(@Param("employeeId") Long employeeId, Pageable pageable);
 	
 	
-	@Query(value ="with temp as (select *, (select Max(approver_order) from cbs.approver where employee_id=:employeeId) as approverOrder, row_number() over(partition by booking_id order by booking_revision_id desc) rownum from "
-			+ " cbs.booking_revision br where br.approval_status_id in (select approval_status_id from cbs.approval_status_dm "
-			+ " where approval_name in ('Waiting on Approval 1','Waiting on Approval 2','Waiting on Approval 3'))) "
-			+ " select asd.approval_name as status, temp.booking_id as bookingId, temp.job_name as jobName, rd.role_name as roleName,"
-			+ " temp.contracted_from_date as contractedFromDate, temp.contracted_to_date as contractedToDate, temp.changed_by as changedBy,"
-			+ " temp.changed_date as changedDate, con.contractor_name as contractorName,temp.booking_revision_id as bookingRevisionId"
-			+ " from temp join cbs.booking bo on temp.booking_id=bo.booking_id "
-			+ " and bo.status_id=temp.approval_status_id"
-			+ " join cbs.role_dm rd on rd.role_id = temp.role_id"
-			+ " join cbs.approval_status_dm asd on asd.approval_status_id=temp.approval_status_id"
-			+ " left join cbs.contractor con on temp.contractor_id=con.contractor_id"
-			+ " where temp.rownum=1 and temp.team_id in(select team_id from cbs.approver where employee_id=:employeeId and approver_order in (1,2,3))"
-			+ " and (CASE WHEN asd.approval_name = 'Waiting on Approval 1'  THEN 1"
-			+ " WHEN asd.approval_name = 'Waiting on Approval 2'  THEN 2"
-			+ " WHEN asd.approval_name = 'Waiting on Approval 3'  THEN 3"
-			+ " end) <=temp.approverOrder"
-			+ " order by temp.changed_date DESC", nativeQuery = true)
+	@Query(value = "with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName, rd.role_name as roleName,"
+			+ " br.contracted_from_date as contractedFromDate, br.contracted_to_date as contractedToDate, br.changed_by as changedBy,"
+			+ " br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status"
+			+ " from cbs.booking_revision br, cbs.approver app, cbs.role_dm rd, cbs.approval_status_dm asd where"
+			+ " case when br.approval_status_id = 1002 then 1 when br.approval_status_id = 1003 then 2"
+			+ " when br.approval_status_id = 1004 then 3 when br.approval_status_id = 1005 then 4"
+			+ " end = app.approver_order and br.team_id = app.team_id and rd.role_id=br.role_id and br.approval_status_id=asd.approval_status_id"
+			+ " and employee_id=:employeeId) select bookingRevesionTemp.*, con.contractor_name contractorName from bookingRevesionTemp"
+			+ " left join cbs.contractor con on con.contractor_id = bookingRevesionTemp.contractorId order "
+			+ " by bookingRevesionTemp.changedDate desc", nativeQuery = true)
+	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByEmployeeId(@Param("employeeId") Long employeeId);
 	
-	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByEmployeeId(@Param("employeeId") Long employeeId, Pageable pageable);
+    Optional<BookingRevision> findByagreementId(String agreementId);
 	
-		Optional<BookingRevision> findByagreementId(String agreementId);
 }
