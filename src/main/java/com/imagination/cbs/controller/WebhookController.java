@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.ConfigService;
@@ -45,14 +47,22 @@ public class WebhookController {
 	
 	@PostMapping("/adobesign-callback")
 	public ResponseEntity<String> adobeSignCallback(@RequestBody Map<String, Object> payload) {
-	   
-	    //TODO:fetch agreement id and update booking with signed date
-		//TODO:implement contractor signed event to update in database for booking
-	    bookingService.updateContract("contractor", "date");
-	    
-	    return ResponseEntity.ok()
-	    	      .body("adobe sign event handled successfully");
+
+		JsonNode payloadNode = new ObjectMapper().valueToTree(payload);
+
+		JsonNode agreement = payloadNode.get("agreement");
+		String agreementId = agreement.get("id").asText();
+		String eventDate = payloadNode.get("eventDate").asText();
+
+		LOGGER.info("payload requestBody:::{}", payloadNode);
+
+		// fetch agreement id and update booking with signed date
+		// implement contractor signed event to update in database for booking
 		
+		bookingService.updateContract(agreementId, eventDate);
+
+		return ResponseEntity.ok().body("adobe sign event handled successfully");
+
 	}
 	
 	@GetMapping("/adobesign-callback")
@@ -70,8 +80,10 @@ public class WebhookController {
 	
 	@GetMapping("/code-callback")
 	public String callbackAdobeSignInCode(@RequestParam(required = false, name = "code") String code,
-			@RequestParam(required = false, name = "client_id") String adobeSignClientId) {
-		
+			@RequestParam(required = false, name = "client_id") String adobeSignClientId,
+			@RequestParam(required = false, name = "api_access_point") String apiAccessPoint,
+			@RequestParam(required = false, name = "web_access_point") String webAccessPoint) {
+
 		adobeSignService.saveOrUpdateAuthCode(code);
 				
 		return "sucess";

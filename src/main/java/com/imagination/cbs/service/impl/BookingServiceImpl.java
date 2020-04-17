@@ -3,16 +3,19 @@
  */
 package com.imagination.cbs.service.impl;
 
+import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import static java.util.stream.Collectors.toList;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +58,7 @@ import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.exception.CBSUnAuthorizedException;
+import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
@@ -62,6 +66,7 @@ import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.repository.ApproverOverridesRepository;
 import com.imagination.cbs.repository.ApproverRepository;
 import com.imagination.cbs.repository.BookingRepository;
+import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
 import com.imagination.cbs.repository.CurrencyRepository;
@@ -81,6 +86,7 @@ import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.Html2PdfService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
+import com.imagination.cbs.util.AzureStorageUtility;
 import com.imagination.cbs.util.CBSDateUtils;
 
 /**
@@ -155,6 +161,12 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private BookingRevisionRepository bookingRevisionRepository;
+	
+	@Autowired
+	private AzureStorageUtility azureStorageUtility;
 
 	@Autowired
 	private AdobeSignService adobeSignService;
@@ -563,7 +575,7 @@ public class BookingServiceImpl implements BookingService {
 		for (EmployeePermissions employeePermission : employeePermissions) {
 			EmployeeMapping employee = employeeMappingRepository
 					.findById(employeePermission.getEmployeeMapping().getEmployeeId()).get();
-			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN);
+			emails.add(employee.getGoogleAccount() + EmailConstants.DOMAIN.getConstantString());
 
 		}
 
@@ -626,7 +638,7 @@ public class BookingServiceImpl implements BookingService {
 		BookingRevision latestRevision = getLatestRevision(booking);
 		saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 		MailRequest request = new MailRequest();
-		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN });
+		request.setMailTo(new String[] { booking.getChangedBy() + EmailConstants.DOMAIN.getConstantString() });
 		request.setSubject(DECLINE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
 				+ "-" + latestRevision.getChangedBy());
 		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
@@ -641,6 +653,7 @@ public class BookingServiceImpl implements BookingService {
 		newObject.setApprovalStatus(nextApprovalStatus);
 		newObject.setRevisionNumber(revision.getRevisionNumber() + 1);
 		newObject.setChangedBy(user.getDisplayName());
+		newObject.setChangedDate(new Timestamp(System.currentTimeMillis()));
 
 		booking.setApprovalStatus(nextApprovalStatus);
 		booking.addBookingRevision(newObject);
@@ -737,10 +750,30 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public void updateContract(String contractor, String date) {
-		// TODO:update contract signed details to booking
-		// TODO:download agreement from adobe
-		// TODO:upload agreement to azure
+	public void updateContract(String agreementId, String date) {
+
+		// update contract signed details to booking
+		BookingRevision bookingRevision = bookingRevisionRepository.findByagreementId(agreementId).map(booking -> {
+		
+			booking.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
+			
+			return bookingRevisionRepository.save(booking);
+		
+		}).orElseThrow(() -> new ResourceNotFoundException("agreement id not found: " + agreementId));
+
+		// download agreement from adobe
+		InputStream pdfInputStream = adobeSignService.downloadAgreement(agreementId);
+
+		// upload agreement to azure
+		StringJoiner agreementName = new StringJoiner("-");
+		agreementName.add(String.valueOf(bookingRevision.getBooking().getBookingId()));
+		agreementName.add(bookingRevision.getJobNumber());
+		agreementName.add(bookingRevision.getJobname());
+
+		URI url = azureStorageUtility.uploadFile(pdfInputStream, agreementName + FILE_EXTENSION);
+
+		LOGGER.info("Azure storage uri ::: {}", url);
+
 		// TODO:send email to creator/HR/?
 	}
 

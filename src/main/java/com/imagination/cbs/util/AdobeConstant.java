@@ -6,12 +6,13 @@ public class AdobeConstant {
 		//default constructor ignored
 	}
 	
+	public static final String FILE_EXTENSION = ".pdf";
 	public static final String ADOBE = "ADOBE";
 	public static final String ADOBE_ACCESS_TOKEN = "ADOBE_ACCESS_TOKEN";
 	public static final String ADOBE_REFRESH_TOKEN = "ADOBE_REFRESH_TOKEN";
 	public static final String ADOBE_TOKEN_TYPE = "ADOBE_TOKEN_TYPE";
 	public static final String ADOBE_ACCESS_TOKEN_EXP_TIME = "ADOBE_ACCESS_TOKEN_EXP_TIME";
-	
+	public static final String ACCESS_POINT = "api/rest/v6";
 	public static final String ROLE = "role";
 	public static final String ORDER = "order";
 	public static final String TRANSIENT_DOCUMENT_ID = "transientDocumentId";
