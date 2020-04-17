@@ -19,12 +19,10 @@ public enum EmailConstants {
 	END_DATE("endDate"),
 	WORK_LOCATIONS("workLocations"),
 	REASON_FOR_RECRUITING("reasonForRecruiting"),
-	TASK("task"),
-	DELIVERY_DATE("deliveryDate"),
-	DAY_RATE("dayRate"),
-	TOTAL_DAYS("totalDays"),
-	TOTAL("total"),
+	
 	TOTAL_COST("totalCost"),
+	WORK_TASKS("workTasks"),
+	
 	REQUESTED_BY("requestedBy"),
 	DOMAIN("@imagination.com"),
 	EMAIL_ADDRESS("mailAddress"),

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
@@ -111,40 +113,60 @@ public class EmailServiceImpl implements EmailService {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
+		String contractorEmployeeName = bookingRevision.getContractEmployee().getContractorEmployeeName();
+		String contractorName = bookingRevision.getContractor().getContractorName();
+		String name = bookingRevision.getSupplierType().getName();
+		String officeName = bookingRevision.getContractWorkLocation().getOfficeName();
+		String reasonName = bookingRevision.getReasonForRecruiting().getReasonName();
+
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				bookingRevision.getContractEmployee().getContractorEmployeeName());
+				StringUtils.isEmpty(contractorEmployeeName) ? "" : contractorEmployeeName);
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				bookingRevision.getContractor().getContractorName());
+				StringUtils.isEmpty(contractorName) ? "" : contractorName);
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
-				bookingRevision.getSupplierType().getName());
+				StringUtils.isEmpty(name) ? "" : name);
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedFromDate()));
 		mapOfTemplateValues.put(EmailConstants.END_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedToDate()));
 		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS.getConstantString(),
-				bookingRevision.getContractWorkLocation().getOfficeName());
+				StringUtils.isEmpty(officeName) ? "" : officeName);
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
-				bookingRevision.getReasonForRecruiting().getReasonName());
+				StringUtils.isEmpty(reasonName) ? "" : reasonName);
 
 		List<BookingWorkTask> bookingWorkTasks = bookingRevision.getBookingWorkTasks();
-		if (bookingWorkTasks != null) {
-			BookingWorkTask task = bookingWorkTasks.get(0);
-			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), task.getTaskName());
-			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), task.getTaskDeliveryDate());
-			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), task.getTaskDateRate());
-			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), task.getTaskTotalDays());
-			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), task.getTaskTotalAmount());
-			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), task.getTaskTotalAmount());
-		} else {
-			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), "");
+		if (CollectionUtils.isEmpty(bookingWorkTasks)) {
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), "");
 			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), "");
+		} else {
+			StringBuilder row = new StringBuilder();
+			row.append("<table style=\"border: 1px solid black;width: 75%;  margin-left: 16%; font-size: 10px;\">");
+			row.append("<tr style=\"border: 1px solid black;text-align: left;padding: 8px;\">");
+			row.append("<th bgcolor=\"#A9A9A9\">#</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Task</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Delivery date</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Day rate</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total days</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total(£)</tr>");
+			Double taskTotalAmount = 0.0;
+			int i = 0;
+			for (BookingWorkTask task : bookingWorkTasks) {
+				row.append("<tr style=\"border: 1px solid black;\"background-color: #dddddd;\">");
+				row.append("<td>" + ++i + "</td>");
+				row.append("<td>" + task.getTaskName() + "</td>");
+				row.append("<td>" + CBSDateUtils.convertDateToString(task.getTaskDeliveryDate()) + "</td>");
+				row.append("<td>" + task.getTaskDateRate() + "</td>");
+				row.append("<td>" + task.getTaskTotalDays() + "</td>");
+				row.append("<td>" + task.getTaskTotalAmount() + "</td>");
+				taskTotalAmount += task.getTaskTotalAmount();
+				row.append("</tr>");
+			}
+			row.append("</table>");
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), row.toString());
+			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), taskTotalAmount);
 		}
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
