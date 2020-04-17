@@ -35,7 +35,7 @@ public class LoggedInUserServiceImpl implements LoggedInUserService {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
             .map(authentication -> authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> SecurityConstants.ROLE_CONTRACT_MGT_ID.getSecurityConstant().equalsIgnoreCase(grantedAuthority.getAuthority())))
+                .anyMatch(grantedAuthority -> String.valueOf(SecurityConstants.ROLE.getSecurityConstant() + SecurityConstants.ROLE_CONTRACT_MGT_ID.getRoleDetails()).equalsIgnoreCase(grantedAuthority.getAuthority())))
             .orElse(false);
     }
 
