@@ -12,14 +12,14 @@ public enum AzureTemplateConstant {
 	AZURE_STORAGE_CONNECTIONSTRING("azure.storage.connectionString"),
 	AZURE_STORAGE_CONTAINER_NAME("azure.storage.container.name");
 	
-	private String azureTemplateConstant;
+	private String azureTemplateConst;
 
-	AzureTemplateConstant(String azureTemplateConstant) {
-		this.azureTemplateConstant = azureTemplateConstant;
+	AzureTemplateConstant(String azureTemplateConst) {
+		this.azureTemplateConst = azureTemplateConst;
 	}
 
-	public String getAzureTemplateConstant() {
-		return azureTemplateConstant;
+	public String getAzureTemplateConst() {
+		return azureTemplateConst;
 	}
 	
 	

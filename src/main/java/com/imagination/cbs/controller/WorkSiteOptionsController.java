@@ -28,6 +28,6 @@ public class WorkSiteOptionsController {
 	@GetMapping
 	public ResponseEntity<List<SiteOptionsDto>> fetchWorkSiteOptions() {
 		List<SiteOptionsDto> siteOptions = workSiteOptionsService.fetchWorkSites();
-		return new ResponseEntity<List<SiteOptionsDto>>(siteOptions, HttpStatus.OK);
+		return new ResponseEntity(siteOptions, HttpStatus.OK);
 	}
 }

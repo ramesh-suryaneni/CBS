@@ -2,6 +2,7 @@ package com.imagination.cbs.util;
 
 import java.nio.charset.StandardCharsets;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,7 @@ public class EmailUtility {
 	private JavaMailSender sender;
 
 
-	public MailResponse sendEmail(MailRequest request,String body)
-			throws Exception {
+	public MailResponse sendEmail(MailRequest request,String body) throws MessagingException{
 		
 		MailResponse response = new MailResponse();
 		

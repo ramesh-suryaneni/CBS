@@ -142,7 +142,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 		log.debug("oAuthToken::Refresh:: {}", oAuthRefreshToken);
 		JsonNode response = null;
-		AdobeOAuthDto adobeOAuthDto = null;
+		AdobeOAuthDto adobeOAuthDto = new AdobeOAuthDto();
 
 		String uri = OAUTH_BASE_URL + OAUTH_REFRESH_TOKEN_ENDPOINT;
 		HttpHeaders headers = new HttpHeaders();
@@ -198,11 +198,9 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	private AdobeOAuthDto convertJsonToObj(JsonNode res) {
 
-		AdobeOAuthDto adobeOAuthDto = null;
+		AdobeOAuthDto adobeOAuthDto =  new AdobeOAuthDto();
 
 		try {
-
-			adobeOAuthDto = new AdobeOAuthDto();
 			adobeOAuthDto.setAccessToken(res.path(ACCESS_TOKEN).asText());
 			adobeOAuthDto.setRefreshToken(res.path(REFRESH_TOKEN).asText());
 			adobeOAuthDto.setTokenType(res.path(TOKEN_TYPE).asText());
@@ -489,7 +487,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Override
 	public boolean saveOrUpdateAuthCode(String authcode) {
-		Config config = configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
+		configRepository.findByKeyName(ADOBE_AUTH_CODE).map(c -> {
 			c.setKeyValue(authcode);
 			return configRepository.save(c);
 		}).orElseGet(() -> {
@@ -529,8 +527,8 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		JSONArray memberInfosArray = new JSONArray();
 		JSONObject memberInfos = new JSONObject();
 		
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(env -> (env.equalsIgnoreCase("dev")
-				|| env.equalsIgnoreCase("local") || env.equalsIgnoreCase("qual")))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(envi -> (envi.equalsIgnoreCase("dev")
+				|| envi.equalsIgnoreCase("local") || envi.equalsIgnoreCase("qual")))) {
 
 			memberInfos.put(EMAIL, "ramesh.suryaneni@imagination.com");
 

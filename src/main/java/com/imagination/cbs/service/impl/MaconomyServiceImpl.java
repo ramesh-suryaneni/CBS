@@ -73,7 +73,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 				
 				String maconomyUrl = isJobNumberOrDepartmentName.equalsIgnoreCase("jobNumber") ? maconomyJobUrl : maconomyDepartmentUrl;
 				try{
-					responseEntity = (ResponseEntity<JsonNode>) maconomyRestClient.callRestServiceForGet(maconomyUrl, username, password);
+					responseEntity = maconomyRestClient.callRestServiceForGet(maconomyUrl, username, password);
 				}catch(RuntimeException runtimeException){
 					throw new ResourceNotFoundException("Plase provide valid JobNumber or DepartmentName ");
 				}
@@ -92,17 +92,14 @@ public class MaconomyServiceImpl implements MaconomyService {
 
 		if (responseEntity.getBody() == null) {
 
-		if (null == responseEntity.getBody()) {
-
 			throw new CBSApplicationException("Please Provide Valid Department Name ");
 		}
 		
-		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			if(isJobNumberOrDepartmentName.equalsIgnoreCase("Department")){
 			JsonNode departmentRecords = responseEntity.getBody().get("panes").get("filter").get("records");
-			List<ApproverTeamDto> approverTeamDtoList = (List<ApproverTeamDto>) objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
+			List<ApproverTeamDto> approverTeamDtoList = objectMapper.readerFor(new TypeReference<List<ApproverTeamDto>>() {
 					}).readValue(departmentRecords);
 
 			approverTeamDtoList = approverTeamDtoList.stream().filter(approverTeam -> approverTeam.getData().getName().equals(departmentName))
@@ -113,7 +110,7 @@ public class MaconomyServiceImpl implements MaconomyService {
 			}else if(isJobNumberOrDepartmentName.equalsIgnoreCase("jobNumber")){
 				
 				JsonNode jobNumberRecord = responseEntity.getBody().get("panes").get("card").get("records");
-				List<JobDataDto> jobDataDtoList = (List<JobDataDto>) objectMapper.readerFor(new TypeReference<List<JobDataDto>>() {
+				List<JobDataDto> jobDataDtoList = objectMapper.readerFor(new TypeReference<List<JobDataDto>>() {
 				}).readValue(jobNumberRecord);
 				
 				return (T) jobDataDtoList.get(0);
