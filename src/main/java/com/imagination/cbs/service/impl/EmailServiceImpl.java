@@ -1,6 +1,8 @@
 package com.imagination.cbs.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
@@ -42,8 +46,8 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
-		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", 
-				request.toString(), bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
+		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request.toString(),
+				bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
 
 		try {
 
@@ -109,35 +113,62 @@ public class EmailServiceImpl implements EmailService {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
+		String contractorEmployeeName = bookingRevision.getContractEmployee().getContractorEmployeeName();
+		String contractorName = bookingRevision.getContractor().getContractorName();
+		String name = bookingRevision.getSupplierType().getName();
+		String officeName = bookingRevision.getContractWorkLocation().getOfficeName();
+		String reasonName = bookingRevision.getReasonForRecruiting().getReasonName();
+		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
+
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
-				bookingRevision.getRole().getDiscipline());
+				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				bookingRevision.getContractEmployee().getContractorEmployeeName());
+				StringUtils.isEmpty(contractorEmployeeName) ? "" : contractorEmployeeName);
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				bookingRevision.getContractor().getContractorName());
+				StringUtils.isEmpty(contractorName) ? "" : contractorName);
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
-				bookingRevision.getSupplierType().getName());
+				StringUtils.isEmpty(name) ? "" : name);
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedFromDate()));
 		mapOfTemplateValues.put(EmailConstants.END_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedToDate()));
 		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS.getConstantString(),
-				bookingRevision.getContractWorkLocation().getOfficeName());
+				StringUtils.isEmpty(officeName) ? "" : officeName);
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
-				bookingRevision.getReasonForRecruiting().getReasonName());
+				StringUtils.isEmpty(reasonName) ? "" : reasonName);
+		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(),
+				contractAmountAftertax == null ? "" : contractAmountAftertax);
 
-		BookingWorkTask task = bookingRevision.getBookingWorkTasks().get(0);
-
-		mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), task.getTaskName());
-		mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), task.getTaskDeliveryDate());
-		mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), task.getTaskDateRate());
-		mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), task.getTaskTotalDays());
-		mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), task.getTaskTotalAmount());
-		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), task.getTaskTotalAmount());
+		List<BookingWorkTask> bookingWorkTasks = bookingRevision.getBookingWorkTasks();
+		if (CollectionUtils.isEmpty(bookingWorkTasks)) {
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), "");
+		} else {
+			StringBuilder row = new StringBuilder();
+			row.append("<table style=\"border: 1px solid black;width: 75%;  margin-left: 16%; font-size: 10px;\">");
+			row.append("<tr style=\"border: 1px solid black;text-align: left;padding: 8px;\">");
+			row.append("<th bgcolor=\"#A9A9A9\">#</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Task</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Delivery date</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Day rate</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total days</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total(£)</tr>");
+			int i = 0;
+			for (BookingWorkTask task : bookingWorkTasks) {
+				row.append("<tr style=\"border: 1px solid black;\"background-color: #dddddd;\">");
+				row.append("<td>" + ++i + "</td>");
+				row.append("<td>" + task.getTaskName() + "</td>");
+				row.append("<td>" + CBSDateUtils.convertDateToString(task.getTaskDeliveryDate()) + "</td>");
+				row.append("<td>" + task.getTaskDateRate() + "</td>");
+				row.append("<td>" + task.getTaskTotalDays() + "</td>");
+				row.append("<td>" + task.getTaskTotalAmount() + "</td>");
+				row.append("</tr>");
+			}
+			row.append("</table>");
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), row.toString());
+		}
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
