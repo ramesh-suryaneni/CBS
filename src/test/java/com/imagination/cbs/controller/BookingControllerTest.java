@@ -41,6 +41,7 @@ import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.ContractorDto;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.dto.CurrencyDto;
+import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.dto.OfficeDto;
 import com.imagination.cbs.dto.SupplierTypeDto;
@@ -295,12 +296,12 @@ public class BookingControllerTest {
 		return bookingRequest;
 	}
 		
-	private Page<BookingDashBoardDto> createPageDashBoardDto()
+	private Page<DashBoardBookingDto> createPageDashBoardDto()
 	{
-		List<BookingDashBoardDto> bookingDashBoardDtoList = new ArrayList<>();
+		List<DashBoardBookingDto> bookingDashBoardDtoList = new ArrayList<>();
 		
-		BookingDashBoardDto dashBoardDto1 = new BookingDashBoardDto();
-		BookingDashBoardDto dashBoardDto2 = new BookingDashBoardDto();
+		DashBoardBookingDto dashBoardDto1 = new DashBoardBookingDto();
+		DashBoardBookingDto dashBoardDto2 = new DashBoardBookingDto();
 		dashBoardDto1.setBookingId(new BigInteger("2020"));
 		dashBoardDto1.setChangedBy("ramesh.suryaneni");
 		dashBoardDto1.setContractorName("Yash");

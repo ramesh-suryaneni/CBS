@@ -1,4 +1,4 @@
-/*package com.imagination.cbs.service.impl;
+package com.imagination.cbs.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -25,13 +25,13 @@ import com.imagination.cbs.repository.OfficeRepository;
 public class RegionOfficeServiceImplTest {
 
 	@InjectMocks
-	private RegionOfficeServiceImpl RegionOfficeServiceImpl;
+	private RegionOfficeServiceImpl regionOfficeServiceImpl;
 
 	@Mock
-	private RegionRepository RegionRepository;
+	private RegionRepository regionRepository;
 
 	@Mock
-	private RegionMapper RegionMapper;
+	private RegionMapper regionMapper;
 
 	@Mock
 	private OfficeRepository officeRepository;
@@ -44,10 +44,10 @@ public class RegionOfficeServiceImplTest {
 
 		List<Region> listOfRegionDms = createRegionDmList();
 
-		when(RegionRepository.findAll()).thenReturn(listOfRegionDms);
-		when(RegionMapper.toListOfRegionDTO(listOfRegionDms)).thenReturn(createRegionDtoList());
+		when(regionRepository.findAll()).thenReturn(listOfRegionDms);
+		when(regionMapper.toListOfRegionDTO(listOfRegionDms)).thenReturn(createRegionDtoList());
 
-		List<RegionDto> actualListOfRegionDto = RegionOfficeServiceImpl.getAllRegions();
+		List<RegionDto> actualListOfRegionDto = regionOfficeServiceImpl.getAllRegions();
 
 		assertEquals(7000, actualListOfRegionDto.get(0).getRegionId());
 		assertEquals("Australia", actualListOfRegionDto.get(0).getRegionName());
@@ -58,14 +58,12 @@ public class RegionOfficeServiceImplTest {
 	@Test
 	public void shouldReturnListOfOfficesFromRegionId() {
 
-		Long RegionId = 7000l;
-
 		List<OfficeDm> listOfOffices = createOfficeDmList();
 
-		when(officeRepository.findByOfficeId(RegionId)).thenReturn(listOfOffices);
+		when(officeRepository.findAll()).thenReturn(listOfOffices);
 		when(officeMapper.toListOfficeDTO(listOfOffices)).thenReturn(createOfficeDtoList());
 
-		List<OfficeDto> actualListOfOfficeDto = RegionOfficeServiceImpl.getAllOfficesInRegion(RegionId);
+		List<OfficeDto> actualListOfOfficeDto = regionOfficeServiceImpl.getAllOfficesInRegion(7000L);
 
 		assertEquals(8000l, actualListOfOfficeDto.get(0).getOfficeId());
 		assertEquals("Melbourne", actualListOfOfficeDto.get(0).getOfficeName());
@@ -135,4 +133,3 @@ public class RegionOfficeServiceImplTest {
 	}
 
 }
-*/
