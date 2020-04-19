@@ -189,7 +189,7 @@ public class ContractorServiceImpl implements ContractorService {
 
 	private Page<ContractorEmployeeSearchDto> toContractorEmployeeDtoPage(
 			Page<ContractorEmployeeSearch> contractorEmployeePage) {
-		return contractorEmployeePage.map((contractorEmployeeSearched) -> {
+		return contractorEmployeePage.map(contractorEmployeeSearched -> {
 			ContractorEmployeeSearchDto contractorEmployeeDto = new ContractorEmployeeSearchDto();
 			contractorEmployeeDto.setContractorEmployeeId(contractorEmployeeSearched.getContractorEmployeeId());
 			contractorEmployeeDto.setContractorEmployeeName(contractorEmployeeSearched.getContractorEmployeeName());
@@ -205,7 +205,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	private Page<ContractorDto> toContractorDtoPage(Page<Contractor> contractorPage) {
-		return contractorPage.map((contractor) -> {
+		return contractorPage.map(contractor -> {
 			ContractorDto contractorDto = new ContractorDto();
 
 			contractorDto.setContractorId(contractor.getContractorId());

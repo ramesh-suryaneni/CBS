@@ -1,6 +1,5 @@
 package com.imagination.cbs.util;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.imagination.cbs.exception.CBSApplicationException;
-import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
@@ -86,21 +84,16 @@ public class AzureStorageUtility {
 		try {
 
 			cloudBlockBlob = cloudBlobContainer.getBlockBlobReference(fileName);
-			//TODO : check if file already exits
+			// check if file already exits
 			cloudBlockBlob.upload(inputStream, -1);
 			uri = cloudBlockBlob.getUri();
 
 			logger.info("file uri::{}", uri);
 
-		} catch (URISyntaxException e) {
-			throw new CBSApplicationException(e.getMessage());
+		} catch (Exception exception) {
+			throw new CBSApplicationException(exception.getMessage());
 
-		} catch (StorageException e) {
-			throw new CBSApplicationException(e.getMessage());
-
-		} catch (IOException e) {
-			throw new ResourceNotFoundException(e.getMessage());
-		}
+		} 
 
 		return uri;
 	}

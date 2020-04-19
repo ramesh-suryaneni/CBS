@@ -21,7 +21,7 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
 	private EmployeeMappingService employeeMappingService;
 
 	@Override
-public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+public UserDetails loadUserByUsername(String email) {
 
 		EmployeeMapping employeeMapping = employeeMappingService.getEmployeeMappingByGoogleAccount(email);
 		 if (employeeMapping == null) {

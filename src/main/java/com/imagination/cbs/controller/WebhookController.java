@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
-import com.imagination.cbs.service.ConfigService;
 
 /**
  * @author Ramesh.Suryaneni
@@ -37,13 +36,10 @@ public class WebhookController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookController.class);
 	
 	@Autowired
-	ConfigService configService;
+	private BookingService bookingService; 
 	
 	@Autowired
-	BookingService bookingService; 
-	
-	@Autowired
-	AdobeSignService adobeSignService;
+	private AdobeSignService adobeSignService;
 	
 	@PostMapping("/adobesign-callback")
 	public ResponseEntity<String> adobeSignCallback(@RequestBody Map<String, Object> payload) {

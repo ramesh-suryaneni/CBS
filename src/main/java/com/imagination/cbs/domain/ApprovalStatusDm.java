@@ -36,14 +36,6 @@ public class ApprovalStatusDm implements Serializable {
 	@Column(name = "changed_date")
 	private Timestamp changedDate;
 
-	// //bi-directional one-to-one association to Booking
-	// @OneToOne(mappedBy="approvalStatusDm")
-	// private Booking booking;
-
-	// //bi-directional one-to-one association to BookingRevision
-	// @OneToOne(mappedBy="approvalStatusDm")
-	// private BookingRevision bookingRevision;
-
 	public ApprovalStatusDm() {
 	}
 
@@ -86,21 +78,5 @@ public class ApprovalStatusDm implements Serializable {
 	public void setChangedDate(Timestamp changedDate) {
 		this.changedDate = changedDate;
 	}
-	//
-	// public Booking getBooking() {
-	// return this.booking;
-	// }
-	//
-	// public void setBooking(Booking booking) {
-	// this.booking = booking;
-	// }
-	//
-	// public BookingRevision getBookingRevision() {
-	// return this.bookingRevision;
-	// }
-	//
-	// public void setBookingRevision(BookingRevision bookingRevision) {
-	// this.bookingRevision = bookingRevision;
-	// }
 
 }

@@ -44,20 +44,19 @@ public class RoleServiceImpl implements RoleService {
 	public RoleDto getCESToutcome(Long roleId) {
 		Optional<RoleDm> optionalRole = roleRepository.findById(roleId);
 		if (optionalRole.isPresent()) {
-			RoleDto dto = roleMapper.toRoleDTO(optionalRole.get());
-			String link = (Boolean.valueOf(dto.getInsideIr35())) ? insideIR35CestPDF : outsideIR35CestPDF;
-			dto.setCestDownloadLink(link);
-
+			RoleDto roleDto = roleMapper.toRoleDTO(optionalRole.get());
+			String link = Boolean.valueOf(roleDto.getInsideIr35()) ? "insideIR35CestPDF" : "outsideIR35CestPDF";
+			roleDto.setCestDownloadLink(link);
 
 			// Fetch role default rate; UI will use if as default day rate if no
 			// contractor employee selected.
-			List<RoleDefaultRate> rates = roleDefaultRateRepository.findAllByRoleId(roleId);
-			if (!rates.isEmpty()) {
-				dto.setRoleDefaultRate(String.valueOf(rates.get(0).getRate()));
-				dto.setRoleCurrencyId(String.valueOf(rates.get(0).getCurrencyId()));
+			List<RoleDefaultRate> roleDetaultRateList = roleDefaultRateRepository.findAllByRoleId(roleId);
+			if (!roleDetaultRateList.isEmpty()) {
+				roleDto.setRoleDefaultRate(String.valueOf(roleDetaultRateList.get(0).getRate()));
+				roleDto.setRoleCurrencyId(String.valueOf(roleDetaultRateList.get(0).getCurrencyId()));
 			}
 
-			return dto;
+			return roleDto;
 		}
 		return null;
 	}

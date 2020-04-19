@@ -23,7 +23,7 @@ public interface BookingService {
 	
 	public BookingDto cancelBooking(Long bookingId);
 	
-	public BookingDto approveBooking(ApproveRequest request) throws Exception;
+	public BookingDto approveBooking(ApproveRequest request);
 	
 	public void updateContract(String contractor, String date);
 

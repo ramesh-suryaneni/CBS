@@ -177,8 +177,6 @@ public class BookingServiceImpl implements BookingService {
 
 	private static final String DECLINE_SUBJECT_LINE = "Declined : Contractor Booking request # from ";
 
-	private static final String CANCELED_SUBJECT_LINE = "Cancelled: Contractor Booking request # from ";
-
 	@Autowired
 	private EmployeeMappingRepository employeeMappingRepository;
 
@@ -268,8 +266,6 @@ public class BookingServiceImpl implements BookingService {
 		// This is for booking job number
 		if (bookingRequest.getJobNumber() != null) {
 			try {
-				// JobDataDto jobDetails =
-				// maconomyService.getJobDetails(bookingRequest.getJobNumber());
 				JobDataDto jobDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails(
 						bookingRequest.getJobNumber(), new JobDataDto(),
 						MaconomyConstant.MACANOMY_JOB_NUMBER.getMacanomy(), "");
@@ -277,8 +273,7 @@ public class BookingServiceImpl implements BookingService {
 				bookingRevision.setJobDeptName(deptName);
 				bookingRevision.setJobname(jobDetails.getData().getJobName());
 				bookingRevision.setJobNumber(jobDetails.getData().getJobNumber());
-				// ApproverTeamDto approverTeamDetails =
-				// maconomyApproverTeamService.getApproverTeamDetails(deptName);
+				
 				ApproverTeamDto approverTeamDetails = maconomyService.getMaconomyJobNumberAndDepartmentsDetails("",
 						new ApproverTeamDto(), MaconomyConstant.MACANOMY_DEPARTMENT_NAME.getMacanomy(), deptName);
 
@@ -397,7 +392,7 @@ public class BookingServiceImpl implements BookingService {
 
 	private void populateSiteOptions(BookingRequest bookingRequest, BookingRevision savedBookingRevision) {
 		if (bookingRequest.getSiteOptions() != null) {
-			List<ContractorWorkSite> list = new ArrayList<ContractorWorkSite>();
+			List<ContractorWorkSite> list = new ArrayList<>();
 			bookingRequest.getSiteOptions().forEach(siteId -> {
 				SiteOptions siteOptions = siteOptionsRepository.findById(Long.valueOf(siteId)).get();
 				ContractorWorkSite contractorWorkSite = new ContractorWorkSite();
@@ -469,14 +464,14 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto approveBooking(ApproveRequest request) throws Exception {
+	public BookingDto approveBooking(ApproveRequest request) {
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
 		Booking booking = null;
 		try {
 			booking = bookingRepository.findById(Long.valueOf(request.getBookingId())).get();
 
-		} catch (Exception ex) {
+		} catch (CBSApplicationException ex) {
 			throw new CBSApplicationException("No Booking Available with this number :" + request.getBookingId());
 		}
 

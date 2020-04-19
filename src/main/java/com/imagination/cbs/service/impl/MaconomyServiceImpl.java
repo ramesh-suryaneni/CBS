@@ -45,7 +45,6 @@ public class MaconomyServiceImpl implements MaconomyService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MaconomyServiceImpl.class);
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getMaconomyJobNumberAndDepartmentsDetails(String jobNumber, T maconomyDto, String isJobNumberOrDepartmentName, String departname){
 		

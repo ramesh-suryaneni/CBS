@@ -64,6 +64,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -292,14 +293,10 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 		keysList = configRepository.findBykeyNameStartingWith(keyName);
 
-		if (keysList == null || keysList.isEmpty())
+		if (CollectionUtils.isEmpty(keysList))
 			return null;
 
-		map = keysList.stream().filter(key -> key.getKeyValue() != null || !key.getKeyValue().isEmpty())
-				.collect(Collectors.toMap(Config::getKeyName, config -> config));
-
-		if (isNullOrEmptyMap(map))
-			return null;
+		map = keysList.stream().collect(Collectors.toMap(Config::getKeyName, config -> config));
 
 		return map;
 	}

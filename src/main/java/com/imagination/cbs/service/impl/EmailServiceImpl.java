@@ -30,6 +30,7 @@ import freemarker.template.Template;
 @Service("emailService")
 public class EmailServiceImpl implements EmailService {
 
+
 	@Autowired
 	private EmailUtility emailUtility;
 
@@ -42,12 +43,15 @@ public class EmailServiceImpl implements EmailService {
 	@Autowired
 	private Environment env;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+	
+	private static final String TD = "</td>";
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
-		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request.toString(),
-				bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
+		
+		logger.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request,
+				bookingRevision.getApprovalStatus().getApprovalName(), bookingRevision.getBooking().getBookingId());
 
 		try {
 
@@ -60,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
 			emailUtility.sendEmail(request, body);
 
 		} catch (Exception e) {
-			LOGGER.error("Not able to send Booking approval email", e);
+			logger.error("Not able to send Booking approval email", e);
 		}
 	}
 
@@ -79,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
 
 		} catch (Exception e) {
 
-			LOGGER.error("Not able to send Contract Receipt email", e);
+			logger.error("Not able to send Contract Receipt email", e);
 		}
 	}
 
@@ -101,9 +105,9 @@ public class EmailServiceImpl implements EmailService {
 					getInternalResourceEmailDataModel(internalResourceEmail));
 			emailUtility.sendEmail(emailrequestDetails, body);
 
-			LOGGER.info("Email send Successfully :: {}", emailrequestDetails);
+			logger.info("Email send Successfully :: {}", emailrequestDetails);
 		} catch (Exception e) {
-			LOGGER.error("Not able to send email", e);
+			logger.error("Not able to send email", e);
 
 		}
 
@@ -156,12 +160,12 @@ public class EmailServiceImpl implements EmailService {
 			int i = 0;
 			for (BookingWorkTask task : bookingWorkTasks) {
 				row.append("<tr style=\"border: 1px solid black;\"background-color: #dddddd;\">");
-				row.append("<td>" + ++i + "</td>");
-				row.append("<td>" + task.getTaskName() + "</td>");
-				row.append("<td>" + CBSDateUtils.convertDateToString(task.getTaskDeliveryDate()) + "</td>");
-				row.append("<td>" + task.getTaskDateRate() + "</td>");
-				row.append("<td>" + task.getTaskTotalDays() + "</td>");
-				row.append("<td>" + task.getTaskTotalAmount() + "</td>");
+				row.append("<td>" + ++i + TD);
+				row.append("<td>" + task.getTaskName() + TD);
+				row.append("<td>" + CBSDateUtils.convertDateToString(task.getTaskDeliveryDate()) + TD);
+				row.append("<td>" + task.getTaskDateRate() + TD);
+				row.append("<td>" + task.getTaskTotalDays() + TD);
+				row.append("<td>" + task.getTaskTotalAmount() + TD);
 				row.append("</tr>");
 			}
 			row.append("</table>");
@@ -194,7 +198,6 @@ public class EmailServiceImpl implements EmailService {
 
 	private Map<String, Object> getContractReceiptDataModel() {
 
-		// TODO Need to replace below variables
 		String contractorPdfLink = "dummyLink";
 		String scopeOfWorkLink = "dummyLink";
 
