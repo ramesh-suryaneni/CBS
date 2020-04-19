@@ -94,7 +94,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	
+
 	@Autowired
 	private Environment env;
 
@@ -199,7 +199,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 	private AdobeOAuthDto convertJsonToObj(JsonNode res) {
 
-		AdobeOAuthDto adobeOAuthDto =  new AdobeOAuthDto();
+		AdobeOAuthDto adobeOAuthDto = new AdobeOAuthDto();
 
 		try {
 			adobeOAuthDto.setAccessToken(res.path(ACCESS_TOKEN).asText());
@@ -497,7 +497,8 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String createAgrrementRequestBody(String transientDocId,BookingRevision bookingRevision) throws JsonProcessingException {
+	private String createAgrrementRequestBody(String transientDocId, BookingRevision bookingRevision)
+			throws JsonProcessingException {
 
 		ObjectMapper mapper = new ObjectMapper();
 		StringJoiner nameJoiner = new StringJoiner("-");
@@ -506,10 +507,10 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		nameJoiner.add(bookingRevision.getJobNumber());
 		nameJoiner.add(bookingRevision.getJobname());
 
-		JSONObject agrrement = new JSONObject();
-		agrrement.put(NAME, nameJoiner);
-		agrrement.put(SIGNATURETYPE, SIGNATURE_ESIGN);
-		agrrement.put(STATE, STATE_IN_PROCESS);
+		JSONObject agreement = new JSONObject();
+		agreement.put(NAME, nameJoiner.toString());
+		agreement.put(SIGNATURETYPE, SIGNATURE_ESIGN);
+		agreement.put(STATE, STATE_IN_PROCESS);
 
 		JSONArray fileInfosArray = new JSONArray();
 		JSONObject fileInfos = new JSONObject();
@@ -523,7 +524,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 		JSONArray memberInfosArray = new JSONArray();
 		JSONObject memberInfos = new JSONObject();
-		
+
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(envi -> (envi.equalsIgnoreCase("dev")
 				|| envi.equalsIgnoreCase("local") || envi.equalsIgnoreCase("qual")))) {
 
@@ -533,16 +534,16 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			memberInfos.put(EMAIL, bookingRevision.getContractor().getEmail());
 		}
-		
+
 		memberInfosArray.add(memberInfos);
 
 		participant.put(MEMBERINFOS, memberInfosArray);
 		participantSetsInfoArray.add(participant);
 
-		agrrement.put(FILEINFOS, fileInfosArray);
-		agrrement.put(PARTICIPANTSETSINFO, participantSetsInfoArray);
+		agreement.put(FILEINFOS, fileInfosArray);
+		agreement.put(PARTICIPANTSETSINFO, participantSetsInfoArray);
 
-		return mapper.writeValueAsString(agrrement);
+		return mapper.writeValueAsString(agreement);
 
 	}
 
