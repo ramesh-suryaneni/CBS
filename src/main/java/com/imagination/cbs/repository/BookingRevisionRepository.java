@@ -88,6 +88,6 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			public List<Tuple> retrieveBookingRevisionForWaitingForHRApproval(@Param("employeeId") Long employeeId, Pageable pageable);
 	
 	
-    Optional<BookingRevision> findByagreementId(String agreementId);
+    Optional<BookingRevision> findByAgreementId(String agreementId);
 	
 }

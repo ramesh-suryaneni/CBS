@@ -1,5 +1,9 @@
 package com.imagination.cbs.exception;
 
-public class CBSGlobalExceptionHandlerTest {
+import org.junit.Test;
 
+public class CBSGlobalExceptionHandlerTest {
+	@Test
+	public void verifyException() {
+	}
 }
