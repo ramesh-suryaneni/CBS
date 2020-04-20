@@ -132,6 +132,10 @@ table, th, td {
            <p><b>SIGNED by ${signedBy}</b></p>
            <p><b>For and on behalf of</b></p>
            <p><b>${consultancyCompanyName}</b></p>
+           
+           {{Sig_es_:signer1:signature}}
+           {{$Sig_es_:signer1:email}} 
+           
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
        signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}</b></p>

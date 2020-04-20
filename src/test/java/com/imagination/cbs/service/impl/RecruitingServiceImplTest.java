@@ -22,6 +22,7 @@ public class RecruitingServiceImplTest {
 
 	@InjectMocks
 	private RecruitingServiceImpl recruitingServiceImpl;
+	
 	@Mock
 	private RecruitingRepository recruitingRepository;
 

@@ -1,5 +1,6 @@
 package com.imagination.cbs.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
@@ -27,6 +30,7 @@ import freemarker.template.Template;
 @Service("emailService")
 public class EmailServiceImpl implements EmailService {
 
+
 	@Autowired
 	private EmailUtility emailUtility;
 
@@ -39,12 +43,15 @@ public class EmailServiceImpl implements EmailService {
 	@Autowired
 	private Environment env;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+	
+	private static final String TD = "</td>";
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
-		LOGGER.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request.toString(),
-				bookingRevision.getApprovalStatus().toString(), bookingRevision.getBooking().getBookingId());
+		
+		logger.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request,
+				bookingRevision.getApprovalStatus().getApprovalName(), bookingRevision.getBooking().getBookingId());
 
 		try {
 
@@ -57,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
 			emailUtility.sendEmail(request, body);
 
 		} catch (Exception e) {
-			LOGGER.error("Not able to send Booking approval email", e);
+			logger.error("Not able to send Booking approval email", e);
 		}
 	}
 
@@ -76,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
 
 		} catch (Exception e) {
 
-			LOGGER.error("Not able to send Contract Receipt email", e);
+			logger.error("Not able to send Contract Receipt email", e);
 		}
 	}
 
@@ -98,9 +105,9 @@ public class EmailServiceImpl implements EmailService {
 					getInternalResourceEmailDataModel(internalResourceEmail));
 			emailUtility.sendEmail(emailrequestDetails, body);
 
-			LOGGER.info("Email send Successfully :: {}", emailrequestDetails);
+			logger.info("Email send Successfully :: {}", emailrequestDetails);
 		} catch (Exception e) {
-			LOGGER.error("Not able to send email", e);
+			logger.error("Not able to send email", e);
 
 		}
 
@@ -110,44 +117,62 @@ public class EmailServiceImpl implements EmailService {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
+		String contractorEmployeeName = bookingRevision.getContractEmployee().getContractorEmployeeName();
+		String contractorName = bookingRevision.getContractor().getContractorName();
+		String name = bookingRevision.getSupplierType().getName();
+		String officeName = bookingRevision.getContractWorkLocation().getOfficeName();
+		String reasonName = bookingRevision.getReasonForRecruiting().getReasonName();
+		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
+
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				bookingRevision.getContractEmployee().getContractorEmployeeName());
+				StringUtils.isEmpty(contractorEmployeeName) ? "" : contractorEmployeeName);
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				bookingRevision.getContractor().getContractorName());
+				StringUtils.isEmpty(contractorName) ? "" : contractorName);
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
-				bookingRevision.getSupplierType().getName());
+				StringUtils.isEmpty(name) ? "" : name);
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedFromDate()));
 		mapOfTemplateValues.put(EmailConstants.END_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedToDate()));
 		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS.getConstantString(),
-				bookingRevision.getContractWorkLocation().getOfficeName());
+				StringUtils.isEmpty(officeName) ? "" : officeName);
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
-				bookingRevision.getReasonForRecruiting().getReasonName());
+				StringUtils.isEmpty(reasonName) ? "" : reasonName);
+		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(),
+				contractAmountAftertax == null ? "" : contractAmountAftertax);
 
 		List<BookingWorkTask> bookingWorkTasks = bookingRevision.getBookingWorkTasks();
-		if (bookingWorkTasks != null) {
-			BookingWorkTask task = bookingWorkTasks.get(0);
-			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), task.getTaskName());
-			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), task.getTaskDeliveryDate());
-			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), task.getTaskDateRate());
-			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), task.getTaskTotalDays());
-			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), task.getTaskTotalAmount());
-			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), task.getTaskTotalAmount());
+		if (CollectionUtils.isEmpty(bookingWorkTasks)) {
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), "");
 		} else {
-			mapOfTemplateValues.put(EmailConstants.TASK.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.DELIVERY_DATE.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.DAY_RATE.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL_DAYS.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL.getConstantString(), "");
-			mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(), "");
+			StringBuilder row = new StringBuilder();
+			row.append("<table style=\"border: 1px solid black;width: 75%;  margin-left: 16%; font-size: 10px;\">");
+			row.append("<tr style=\"border: 1px solid black;text-align: left;padding: 8px;\">");
+			row.append("<th bgcolor=\"#A9A9A9\">#</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Task</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Delivery date</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Day rate</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total days</th>");
+			row.append("<th bgcolor=\"#A9A9A9\">Total(£)</tr>");
+			int i = 0;
+			for (BookingWorkTask task : bookingWorkTasks) {
+				row.append("<tr style=\"border: 1px solid black;\"background-color: #dddddd;\">");
+				row.append("<td>" + ++i + TD);
+				row.append("<td>" + task.getTaskName() + TD);
+				row.append("<td>" + CBSDateUtils.convertDateToString(task.getTaskDeliveryDate()) + TD);
+				row.append("<td>" + task.getTaskDateRate() + TD);
+				row.append("<td>" + task.getTaskTotalDays() + TD);
+				row.append("<td>" + task.getTaskTotalAmount() + TD);
+				row.append("</tr>");
+			}
+			row.append("</table>");
+			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), row.toString());
 		}
 
 		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
@@ -173,7 +198,6 @@ public class EmailServiceImpl implements EmailService {
 
 	private Map<String, Object> getContractReceiptDataModel() {
 
-		// TODO Need to replace below variables
 		String contractorPdfLink = "dummyLink";
 		String scopeOfWorkLink = "dummyLink";
 

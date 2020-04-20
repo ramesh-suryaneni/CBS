@@ -43,7 +43,7 @@ public class MaconomyRestClient {
 
 	 	public  HttpHeaders getHttpHeaders(String mediaType, String username, String password) {
 	 		
-	        List<MediaType> acceptHeaders = new ArrayList<MediaType>();
+	        List<MediaType> acceptHeaders = new ArrayList<>();
 	        acceptHeaders.add(org.springframework.http.MediaType.valueOf(mediaType));
 	        HttpHeaders headers = createHeaders(username, password);
 	        headers.setAccept(acceptHeaders);

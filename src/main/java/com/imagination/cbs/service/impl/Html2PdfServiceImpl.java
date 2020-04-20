@@ -3,6 +3,7 @@ package com.imagination.cbs.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
@@ -102,7 +105,7 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 
 		StringBuilder builder = new StringBuilder();
 
-		if (bookingWorkTasks != null) {
+		if (!CollectionUtils.isEmpty(bookingWorkTasks)) {
 			for (BookingWorkTask bookingWorkTask : bookingWorkTasks) {
 				builder.append(bookingWorkTask.getTaskId() + "\n");
 				builder.append(bookingWorkTask.getTaskName() + "\n");
@@ -116,22 +119,31 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		String dateString = dateFormat.format(new Date());
 
-		dataModel.put("consultancyCompanyName", latestRevision.getContractor().getContractorName());
-		dataModel.put("consultancyCompanyNumber", latestRevision.getContractor().getMaconomyVendorNumber());
+		String contractorName = latestRevision.getContractor().getContractorName();
+		String maconomyVendorNumber = latestRevision.getContractor().getMaconomyVendorNumber();
+		String jobname = latestRevision.getJobname();
+		String jobNumber = latestRevision.getJobNumber();
+		String attention = latestRevision.getContractor().getAttention();
+		String email = latestRevision.getContractor().getEmail();
+		BigDecimal contractAmountAftertax = latestRevision.getContractAmountAftertax();
+
+		dataModel.put("consultancyCompanyName", StringUtils.isEmpty(contractorName) ? "" : contractorName);
+		dataModel.put("consultancyCompanyNumber",
+				StringUtils.isEmpty(maconomyVendorNumber) ? "" : maconomyVendorNumber);
 		dataModel.put("consultancyCompanyAddress", address1 + ", " + address2 + ", " + address3 + ", " + postalCode
 				+ ", " + postalDistrict + ", " + country);
 		dataModel.put("commencementDate", latestRevision.getContractedFromDate());
 		dataModel.put("endDate", latestRevision.getContractedToDate());
 		dataModel.put("services", role.getRoleName() + ", " + role.getDiscipline().getDisciplineName());
-		dataModel.put("companyProject", latestRevision.getJobname());
-		dataModel.put("confirmationOfServiceNumber", latestRevision.getJobNumber());
-		dataModel.put("representative", latestRevision.getContractor().getAttention());
-		dataModel.put("consultancyEmailAddress", latestRevision.getContractor().getEmail());
+		dataModel.put("companyProject", StringUtils.isEmpty(jobname) ? "" : jobname);
+		dataModel.put("confirmationOfServiceNumber", StringUtils.isEmpty(jobNumber) ? "" : jobNumber);
+		dataModel.put("representative", StringUtils.isEmpty(attention) ? "" : attention);
+		dataModel.put("consultancyEmailAddress", StringUtils.isEmpty(email) ? "" : email);
 		dataModel.put("engagingManager", latestRevision.getChangedBy());
-		dataModel.put("fee", latestRevision.getContractAmountAftertax());
+		dataModel.put("fee", contractAmountAftertax == null ? "" : contractAmountAftertax);
 		dataModel.put("invoiceMilestones", builder.toString());
 		dataModel.put("cestTestOutput", Boolean.valueOf(role.getInsideIr35()) ? "INSIDE" : "OUTSIDE");
-		dataModel.put("signedBy", latestRevision.getContractor().getAttention());
+		dataModel.put("signedBy", StringUtils.isEmpty(attention) ? "" : attention);
 		dataModel.put("signedDate", " ");
 		dataModel.put("d1", dateString.charAt(0));
 		dataModel.put("d2", dateString.charAt(1));
@@ -141,7 +153,6 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("y2", dateString.charAt(5));
 		dataModel.put("logo", imgAsBase64Logo);
 		dataModel.put("signature", imgAsBase64Sign);
-
 		return dataModel;
 	}
 }

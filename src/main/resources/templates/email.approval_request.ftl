@@ -52,63 +52,45 @@ margin-right:25%;
 <table style="    font-size: 10px;   margin-left: 15%;">
 
 <tr><th>
-<td >Discipline and Role</td></th></tr>
+<td><b>Discipline and Role</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${discipline}, ${role}</td>
 </th></tr>
 
 <tr><th>
-<td>Contractor</td></th></tr>
+<td><b>Contractor</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${contractorEmployee}-'${contractor}'</td>
 </th></tr>
 
 <tr><th>
-<td>Supplier Type</td></th></tr>
+<td><b>Supplier Type</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${supplierType}</td>
 </th></tr>
 
 <tr><th>
-<td>Start and End Date</td></th></tr>
+<td><b>Start and End Date</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${startDate} - ${endDate}</td>
 </th></tr>
 
 <tr><th>
-<td>Assignment Work Locations</td></th></tr>
+<td><b>Assignment Work Locations</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${workLocations}</td>
 </th></tr>
 
 <tr><th>
-<td>Reason for recruiting</td></th></tr>
+<td><b>Reason for recruiting</b></td></th></tr>
 <tr><th>
 <td><img style="height:15px;width:15px"src="https://img.icons8.com/wired/64/000000/edit-property.png"/> ${reasonForRecruiting}</td>
 </th></tr>
-
+<tr><th><td><b>Milestones</b></td></th></tr>
 </table>
 
-<table style=" border: 1px solid black;width: 75%;  margin-left: 16%; font-size: 10px;">
-  <tr style="border: 1px solid black;
-  text-align: left;
-  padding: 8px;">
-   <th bgcolor="#A9A9A9">#</th>
-    <th bgcolor="#A9A9A9">Task</th>
-    <th bgcolor="#A9A9A9">Delivery date</th>
-    <th bgcolor="#A9A9A9">Day rate</th>
-	<th bgcolor="#A9A9A9">Total days</th>
-	<th bgcolor="#A9A9A9"> Total(£)
-  </tr>
-  <tr style="border: 1px solid black;"background-color: #dddddd;">
-    <td>1</td>
-    <td>${task}</td>
-    <td>${deliveryDate}</td>
-    <td>${dayRate}</td>
-    <td>${totalDays}</td>
-    <td>${total}<td>
-  </tr>
-</table>
+<div>${workTasks}</div>
+
 <br>
  <div class="flex-container">
  <div >Total Cost            ${totalCost}</div>

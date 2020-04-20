@@ -26,9 +26,4 @@ public class SupplierTypeServiceImpl implements SupplierTypeService {
 
 	}
 
-	/*@Override
-	public List<SupplierDto> getSuppliersBySupplierName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
 }

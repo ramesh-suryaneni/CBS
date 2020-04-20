@@ -27,20 +27,16 @@ import com.imagination.cbs.service.RoleService;
 public class RoleController {
 	
 	@Autowired
-	RoleService roleService;
+	private RoleService roleService;
 	
 	@GetMapping("/{role_id}/cestoutcome")
 	public RoleDto getRoleCESToutcome(@PathVariable("role_id") Long roleId) {
 		
 		if(roleService.getCESToutcome(roleId) == null)
-			throw new ResponseStatusException(
-					HttpStatus.NOT_FOUND, "role not found :"+roleId
-					);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "role not found :"+roleId);
 				
 		return roleService.getCESToutcome(roleId);
 		
 	}
 	
-	
-
 }

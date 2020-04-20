@@ -19,15 +19,6 @@ public class SupplierTypeController {
 	@Autowired
 	private SupplierTypeService supplierService;
 
-	/*
-	 * @GetMapping("/{name}") public List<SupplierDto>
-	 * getSuppliersBySupplierName(@PathVariable("name") String name) {
-	 * 
-	 * return supplierService.getSuppliersBySupplierName(name);
-	 * 
-	 * }
-	 */
-
 	@GetMapping
 	public List<SupplierTypeDto> getAllSupplierTypes() {
 		return supplierService.getAllSupplierTypes();

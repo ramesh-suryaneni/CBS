@@ -11,15 +11,11 @@ public class CBSApplicationException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String errorMessage;
+	private final String errorMessage;
 
 	@Override
 	public String getMessage() {
 		return errorMessage;
-	}
-
-	public CBSApplicationException() {
-		super();
 	}
 
 	public CBSApplicationException(String errorMessage) {

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.imagination.cbs.domain.Config;
+import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,34 +29,56 @@ public class ConfigServiceImplTest {
 
 	@Test
 	public void shouldReturnGoogleConfigDetailsByKeyName() {
-		String keyName = "GOOGLE";
-
+		
 		Optional<Config> googleKeyValue = Optional.ofNullable(getGoogleKeyValue());
 
-		when(configRepository.findByKeyName(keyName)).thenReturn(googleKeyValue);
+		when(configRepository.findByKeyName("GOOGLE")).thenReturn(googleKeyValue);
 
-		Config actualGoogleKeyValue = configServiceImpl.getConfigDetailsByKeyName(keyName);
+		Config actualGoogleKeyValue = configServiceImpl.getConfigDetailsByKeyName("GOOGLE");
 
 		assertEquals("GOOGLE_ID", actualGoogleKeyValue.getKeyName());
 		assertEquals("73478530580-60km8n2mheo2e0e5qmg57617qae6fqij.apps.googleusercontent.com",
 				actualGoogleKeyValue.getKeyValue());
 
 	}
+	
+	@Test(expected = ResourceNotFoundException.class)
+	public void shouldThrowResourceNotFoundExceptionConfigKeyNameIsNotPresentInDB() {
+		
+		when(configRepository.findByKeyName("GOOGLE")).thenReturn(Optional.empty());
+
+		configServiceImpl.getConfigDetailsByKeyName("GOOGLE");
+
+
+	}
 
 	@Test
 	public void shouldReturnListOfAdobeConfigDetailsByKeyName() {
-		String keyName = "ADOBE";
 
 		List<Config> listOfAdobeConfigKeyValue = getAdobeConfigKeyValue();
 
-		when(configRepository.findBykeyNameStartingWith(keyName)).thenReturn(listOfAdobeConfigKeyValue);
+		when(configRepository.findBykeyNameStartingWith("ADOBE")).thenReturn(listOfAdobeConfigKeyValue);
 
-		Map<String, String> actualAdobeKeyValue = configServiceImpl.getAdobeConfigs(keyName);
+		Map<String, String> actualAdobeKeyValue = configServiceImpl.getAdobeConfigs("ADOBE");
 
 		assertEquals("TEST_TOKEN", actualAdobeKeyValue.get("ADOBE_TOKEN"));
 		assertEquals("TEST_CLIENT_ID", actualAdobeKeyValue.get("ADOBE_CLIENT_ID"));
 
 	}
+	
+	
+	@Test
+	public void shouldReturnNullWhenAdobeCofigKeyIsNotPresentInDB() {
+
+
+		when(configRepository.findBykeyNameStartingWith("ADOBE")).thenReturn(null);
+
+		Map<String, String> actual = configServiceImpl.getAdobeConfigs("ADOBE");
+
+		assertEquals(null, actual);
+
+	}
+	
 
 	private List<Config> getAdobeConfigKeyValue() {
 

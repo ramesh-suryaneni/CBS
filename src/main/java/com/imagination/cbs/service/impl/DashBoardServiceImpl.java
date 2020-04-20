@@ -65,7 +65,10 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId);
 		
+		List<Tuple> retrieveBookingRevisionForWaitingByHR = bookingRevisionRepository.retrieveBookingRevisionForWaitingForHRApproval(employeeId, pageable);
+		
 		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId));
+		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByHR));
 		
 		return new PageImpl<>(bookingDashboradDtosList.stream().distinct().collect(Collectors.toList()), pageable, bookingDashboradDtosList.size());
 		

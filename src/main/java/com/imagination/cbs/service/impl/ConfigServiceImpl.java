@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.imagination.cbs.domain.Config;
 import com.imagination.cbs.exception.ResourceNotFoundException;
@@ -43,21 +44,17 @@ public class ConfigServiceImpl implements ConfigService{
 
 		logger.info("keyName:::{}", keyName);
 
-		Map<String, String> map = null;
-		List<Config> keysList = null;
+		Map<String, String> adobeConfigDetails = null;
+		List<Config> adobeConfigKeysList = null;
 
-		keysList = configRepository.findBykeyNameStartingWith(keyName);
+		adobeConfigKeysList = configRepository.findBykeyNameStartingWith(keyName);
 
-		if (keysList == null || keysList.isEmpty())
+		if (CollectionUtils.isEmpty(adobeConfigKeysList))
 			return null;
 
-		map = keysList.stream().filter(key -> key.getKeyValue() != null || !key.getKeyValue().isEmpty())
-				.collect(Collectors.toMap(Config::getKeyName, Config::getKeyValue));
+		adobeConfigDetails = adobeConfigKeysList.stream().collect(Collectors.toMap(Config::getKeyName, Config::getKeyValue));
 
-		if (map == null || map.isEmpty())
-			return null;
-
-		return map;
+		return adobeConfigDetails;
 	}
 
 }
