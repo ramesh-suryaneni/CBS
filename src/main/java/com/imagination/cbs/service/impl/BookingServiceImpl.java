@@ -616,7 +616,7 @@ public class BookingServiceImpl implements BookingService {
 
 				saveBooking(booking, latestRevision, nextStatus, loggedInUserService.getLoggedInUserDetails());
 				// send Email to creator - need to confirm with business
-				//prepareMailAndSendToHR(latestRevision);
+				prepareMailAndSendToHR(latestRevision);
 			} else {
 				throw new CBSApplicationException("Booking already approved or not in approval status");
 			}
