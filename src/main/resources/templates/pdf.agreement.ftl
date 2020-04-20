@@ -127,14 +127,14 @@ table, th, td {
        <b>Date:</b>[e-
        signature date]<p class="b"><b>${d1} ${d2} ${m1} ${m2} ${y1} ${y2}</b></p>
      </div>
-     <div style="width: 30%;display: inline-block;float:right;">
+     <div style="width: 50%;display: inline-block;float:right;">
    
            <p><b>SIGNED by ${signedBy}</b></p>
            <p><b>For and on behalf of</b></p>
            <p><b>${consultancyCompanyName}</b></p>
            
            {{Sig_es_:signer1:signature}}
-           {{$Sig_es_:signer1:email}} 
+           {{Sig_es_:signer1:email:multiline(2)}}
            
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
