@@ -134,7 +134,7 @@ table, th, td {
            <p><b>${consultancyCompanyName}</b></p>
            
            {{Sig_es_:signer1:signature}}
-           {{$Sig_es_:signer1:email}} 
+           {{Sig_es_:signer1:email:multiline(2)}}
            
            <p><b>${signedDate}</b></p>
            <b>Date:</b>[e-
