@@ -130,8 +130,8 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("consultancyCompanyName", StringUtils.isEmpty(contractorName) ? "" : contractorName);
 		dataModel.put("consultancyCompanyNumber",
 				StringUtils.isEmpty(maconomyVendorNumber) ? "" : maconomyVendorNumber);
-		dataModel.put("consultancyCompanyAddress", address1 + ", " + address2 + ", " + address3 + ", " + postalCode
-				+ ", " + postalDistrict + ", " + country);
+		dataModel.put("consultancyCompanyAddress", address1==null?"":address1 + ", " + address2==null?"":address2 + ", " + address3==null?"":address3 + ", " + postalCode==null?"":postalCode
+				+ ", " + postalDistrict==null?"":postalDistrict + ", " + country==null?"":country);
 		dataModel.put("commencementDate", latestRevision.getContractedFromDate());
 		dataModel.put("endDate", latestRevision.getContractedToDate());
 		dataModel.put("services", role.getRoleName() + ", " + role.getDiscipline().getDisciplineName());
