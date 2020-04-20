@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
@@ -53,7 +53,7 @@ import com.imagination.cbs.util.CBSDateUtils;
  * @author pravin.budage
  *
  */
-@Service("createBookingHelper")
+@Component("createBookingHelper")
 public class CreateBookingHelper {
 
 	@Autowired
@@ -151,7 +151,7 @@ public class CreateBookingHelper {
 		}
 		// Currency Details
 		checkCurrency(bookingRequest, bookingRevision);
-		
+
 		// Comoff Regions
 		if (!StringUtils.isEmpty(bookingRequest.getCommOffRegion())) {
 			Optional<Region> commOffRegion = regionRepository.findById(Long.valueOf(bookingRequest.getCommOffRegion()));

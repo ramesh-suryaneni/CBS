@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
@@ -18,7 +18,7 @@ import com.imagination.cbs.security.CBSUser;
  * @author pravin.budage
  *
  */
-@Service("bookingSaveHelper")
+@Component("bookingSaveHelper")
 public class BookingSaveHelper {
 
 	@Autowired

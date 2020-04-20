@@ -7,7 +7,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.Booking;
@@ -22,7 +22,7 @@ import com.imagination.cbs.service.LoggedInUserService;
  * @author pravin.budage
  *
  */
-@Service("bookingHrApproveHelper")
+@Component("bookingHrApproveHelper")
 public class BookingHrApproveHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BookingHrApproveHelper.class);
 

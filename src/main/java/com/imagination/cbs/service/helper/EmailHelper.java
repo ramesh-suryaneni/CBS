@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.constant.SecurityConstants;
@@ -25,7 +25,7 @@ import com.imagination.cbs.service.EmailService;
  * @author pravin.budage
  *
  */
-@Service("emailHelper")
+@Component("emailHelper")
 public class EmailHelper {
 
 	private static final String APPROVE_SUBJECT_LINE = "Please Approve: Contractor Booking request # from ";
