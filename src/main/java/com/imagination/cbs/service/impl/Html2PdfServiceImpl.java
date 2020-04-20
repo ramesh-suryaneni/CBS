@@ -48,6 +48,10 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 
 	private static final String IMAGINATION_LOGO_IMG = "templates/imagination_logo.png";
 
+	private static final String IMG_FORMAT = "data:image/png;base64,";
+
+	private static final String NEXT_LINE = "\n";
+
 	@Override
 	public ByteArrayOutputStream generateAgreementPdf(BookingRevision revision) {
 		Map<String, Object> data = prepareInputToPdf(revision);
@@ -98,38 +102,33 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 			LOGGER.error("Failed to read bytes of Image");
 		}
 		String imgDataAsBase64Logo = new String(imgBytesAsBase64Logo);
-		String imgAsBase64Logo = "data:image/png;base64," + imgDataAsBase64Logo;
+		String imgAsBase64Logo = IMG_FORMAT + imgDataAsBase64Logo;
 
 		String imgDataAsBase64Sign = new String(imgBytesAsBase64Sign);
-		String imgAsBase64Sign = "data:image/png;base64," + imgDataAsBase64Sign;
+		String imgAsBase64Sign = IMG_FORMAT + imgDataAsBase64Sign;
 
 		StringBuilder builder = new StringBuilder();
 
 		if (!CollectionUtils.isEmpty(bookingWorkTasks)) {
 			for (BookingWorkTask bookingWorkTask : bookingWorkTasks) {
-				builder.append(bookingWorkTask.getTaskId() + "\n");
-				builder.append(bookingWorkTask.getTaskName() + "\n");
-				builder.append(bookingWorkTask.getTaskDeliveryDate() + "\n");
-				builder.append(bookingWorkTask.getTaskDateRate() + "\n");
-				builder.append(bookingWorkTask.getTaskTotalAmount() + "\n");
-				builder.append(bookingWorkTask.getTaskTotalDays() + "\n");
+				builder.append(bookingWorkTask.getTaskId() + NEXT_LINE);
+				builder.append(bookingWorkTask.getTaskName() + NEXT_LINE);
+				builder.append(bookingWorkTask.getTaskDeliveryDate() + NEXT_LINE);
+				builder.append(bookingWorkTask.getTaskDateRate() + NEXT_LINE);
+				builder.append(bookingWorkTask.getTaskTotalAmount() + NEXT_LINE);
+				builder.append(bookingWorkTask.getTaskTotalDays() + NEXT_LINE);
 			}
 		}
 
 		DateFormat dateFormat = new SimpleDateFormat("ddMMyy");
 		String dateString = dateFormat.format(new Date());
 
-		String contractorName = latestRevision.getContractor().getContractorName();
-		String maconomyVendorNumber = latestRevision.getContractor().getMaconomyVendorNumber();
-		String jobname = latestRevision.getJobname();
-		String jobNumber = latestRevision.getJobNumber();
-		String attention = latestRevision.getContractor().getAttention();
-		String email = latestRevision.getContractor().getEmail();
+		String attention = validateString(latestRevision.getContractor().getAttention());
 		BigDecimal contractAmountAftertax = latestRevision.getContractAmountAftertax();
 
-		dataModel.put("consultancyCompanyName", StringUtils.isEmpty(contractorName) ? "" : contractorName);
+		dataModel.put("consultancyCompanyName", validateString(latestRevision.getContractor().getContractorName()));
 		dataModel.put("consultancyCompanyNumber",
-				StringUtils.isEmpty(maconomyVendorNumber) ? "" : maconomyVendorNumber);
+				validateString(latestRevision.getContractor().getMaconomyVendorNumber()));
 		dataModel.put("consultancyCompanyAddress",
 				validateString(address1) + ", " + validateString(address2) + ", " + validateString(address3) + ", "
 						+ validateString(postalCode) + ", " + validateString(postalDistrict) + ", "
@@ -138,15 +137,15 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("commencementDate", latestRevision.getContractedFromDate());
 		dataModel.put("endDate", latestRevision.getContractedToDate());
 		dataModel.put("services", role.getRoleName() + ", " + role.getDiscipline().getDisciplineName());
-		dataModel.put("companyProject", StringUtils.isEmpty(jobname) ? "" : jobname);
-		dataModel.put("confirmationOfServiceNumber", StringUtils.isEmpty(jobNumber) ? "" : jobNumber);
-		dataModel.put("representative", StringUtils.isEmpty(attention) ? "" : attention);
-		dataModel.put("consultancyEmailAddress", StringUtils.isEmpty(email) ? "" : email);
+		dataModel.put("companyProject", validateString(latestRevision.getJobname()));
+		dataModel.put("confirmationOfServiceNumber", validateString(latestRevision.getJobNumber()));
+		dataModel.put("representative", attention);
+		dataModel.put("consultancyEmailAddress", validateString(latestRevision.getContractor().getEmail()));
 		dataModel.put("engagingManager", latestRevision.getChangedBy());
 		dataModel.put("fee", contractAmountAftertax == null ? "" : contractAmountAftertax);
 		dataModel.put("invoiceMilestones", builder.toString());
 		dataModel.put("cestTestOutput", Boolean.valueOf(role.getInsideIr35()) ? "INSIDE" : "OUTSIDE");
-		dataModel.put("signedBy", StringUtils.isEmpty(attention) ? "" : attention);
+		dataModel.put("signedBy", attention);
 		dataModel.put("signedDate", " ");
 		dataModel.put("d1", dateString.charAt(0));
 		dataModel.put("d2", dateString.charAt(1));
