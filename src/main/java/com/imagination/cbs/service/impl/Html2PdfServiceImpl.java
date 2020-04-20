@@ -130,8 +130,11 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("consultancyCompanyName", StringUtils.isEmpty(contractorName) ? "" : contractorName);
 		dataModel.put("consultancyCompanyNumber",
 				StringUtils.isEmpty(maconomyVendorNumber) ? "" : maconomyVendorNumber);
-		dataModel.put("consultancyCompanyAddress", address1==null?"":address1 + ", " + address2==null?"":address2 + ", " + address3==null?"":address3 + ", " + postalCode==null?"":postalCode
-				+ ", " + postalDistrict==null?"":postalDistrict + ", " + country==null?"":country);
+		dataModel.put("consultancyCompanyAddress",
+				validateString(address1) + ", " + validateString(address2) + ", " + validateString(address3) + ", "
+						+ validateString(postalCode) + ", " + validateString(postalDistrict) + ", "
+						+ validateString(country));
+
 		dataModel.put("commencementDate", latestRevision.getContractedFromDate());
 		dataModel.put("endDate", latestRevision.getContractedToDate());
 		dataModel.put("services", role.getRoleName() + ", " + role.getDiscipline().getDisciplineName());
@@ -154,5 +157,9 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("logo", imgAsBase64Logo);
 		dataModel.put("signature", imgAsBase64Sign);
 		return dataModel;
+	}
+
+	private String validateString(String str) {
+		return StringUtils.isEmpty(str) ? "" : str;
 	}
 }
