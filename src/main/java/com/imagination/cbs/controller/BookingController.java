@@ -3,6 +3,8 @@
  */
 package com.imagination.cbs.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ public class BookingController {
 
 	@Autowired
 	private BookingValidator bookingValidator;
-	
+
 	@Autowired
 	private DashBoardService dashBoardService;
 
@@ -78,26 +80,27 @@ public class BookingController {
 			@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "1000") Integer pageSize) {
 		return dashBoardService.getDashBoardBookingsStatusDetails(status, pageNo, pageSize);
 	}
-	
+
 	@PostMapping("/process-request")
-	public BookingDto approveBooking(@RequestBody ApproveRequest request){
-		
+	public BookingDto approveBooking(@RequestBody ApproveRequest request) {
+
 		return bookingServiceImpl.approveBooking(request);
-		
+
 	}
-	
+
 	@GetMapping("/{booking_id}")
 	public BookingDto getBookingDetails(@PathVariable("booking_id") Long bookingId) {
-		
 		return bookingServiceImpl.retrieveBookingDetails(bookingId);
-		
+
 	}
-	
+
 	@DeleteMapping("/{booking_id}")
 	public BookingDto canceBooking(@PathVariable("booking_id") Long bookingId) {
-		
 		return bookingServiceImpl.cancelBooking(bookingId);
-		
 	}
-	
+
+	@GetMapping("/{booking_id}/revisions")
+	public List<BookingDto> getBookingRevisions(@PathVariable("booking_id") Long bookingId) {
+		return bookingServiceImpl.retrieveBookingRevisions(bookingId);
+	}
 }

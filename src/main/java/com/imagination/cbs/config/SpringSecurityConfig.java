@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.imagination.cbs.constant.SecurityConstants;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
 import com.imagination.cbs.security.GoogleIDTokenValidationFilter;
 
@@ -68,50 +70,46 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 			http.cors().and().csrf().disable().authorizeRequests()
 
 					/** ALL USER CAN ACCESS **/
-					.antMatchers("/bookings/**", "/contractors/**", "/contractor_employees/**",
-							"/supplier_location_types/**",
+					 .antMatchers("/bookings/**", "/contractors/**", "/contractor-employees/**",
+							"/work-site-options/**","/internal-resource-email/**",
 
-							"/disciplines/**", "/regions/**", "/tax_rates/**",
+							"/disciplines/**", "/regions/**", "/tax-rates/**",
 
-							"/macanomy/**", "/recruiting_reasons/**", "/roles/**", "/supplier_types/**",
+							"/macanomy/**", "/recruiting-reasons/**", "/roles/**", "/supplier-types/**",
 							"/currencies/**")
-					.authenticated()
+					 .authenticated()
+					 
+					 //any authenticated user can access
+					 .antMatchers(HttpMethod.GET, "/bookings/**").authenticated()
+					  
+					 //Bookings can be created either Creator, HR or Admin users
+					 .antMatchers(HttpMethod.POST, "/bookings").hasAnyRole(
+							  SecurityConstants.ROLE_BOOKING_CREATOR_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_CONTRACT_MGT_ID.getSecurityConstant(),
+							  SecurityConstants.ROLE_PO_MGT_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_ADMIN_ID.getSecurityConstant())
+					  
+					 .antMatchers(HttpMethod.PUT, "/bookings/**").hasAnyRole(
+							  SecurityConstants.ROLE_BOOKING_CREATOR_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_CONTRACT_MGT_ID.getSecurityConstant(),
+							  SecurityConstants.ROLE_PO_MGT_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_ADMIN_ID.getSecurityConstant())
+					  
+					 .antMatchers(HttpMethod.PATCH, "/bookings/**").hasAnyRole(
+							  SecurityConstants.ROLE_BOOKING_CREATOR_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_CONTRACT_MGT_ID.getSecurityConstant(),
+							  SecurityConstants.ROLE_PO_MGT_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_ADMIN_ID.getSecurityConstant())
+					  
+					 .antMatchers(HttpMethod.DELETE, "/bookings/**").hasAnyRole(
+							  SecurityConstants.ROLE_BOOKING_CREATOR_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_CONTRACT_MGT_ID.getSecurityConstant(),
+							  SecurityConstants.ROLE_PO_MGT_ID.getSecurityConstant(), 
+							  SecurityConstants.ROLE_ADMIN_ID.getSecurityConstant())
 
-					/** ONLY ADMIN CAN ACCESS **/
-					/*
-					 * .antMatchers(HttpMethod.GET,
-					 * "/bookings/**").authenticated()
-					 * 
-					 * //Bookings can be created either Creator, HR or Admin
-					 * users .antMatchers(HttpMethod.POST,
-					 * "/bookings").hasAnyRole(SecurityConstants.
-					 * ROLE_BOOKING_CREATOR,
-					 * SecurityConstants.ROLE_CONTRACT_MGT,
-					 * SecurityConstants.ROLE_PO_MGT,
-					 * SecurityConstants.ROLE_ADMIN)
-					 * .antMatchers(HttpMethod.PUT,
-					 * "/bookings/**").hasAnyRole(SecurityConstants.
-					 * ROLE_BOOKING_CREATOR,
-					 * SecurityConstants.ROLE_CONTRACT_MGT,
-					 * SecurityConstants.ROLE_PO_MGT,
-					 * SecurityConstants.ROLE_ADMIN)
-					 * .antMatchers(HttpMethod.PATCH,
-					 * "/bookings/**").hasAnyRole(SecurityConstants.
-					 * ROLE_BOOKING_CREATOR,
-					 * SecurityConstants.ROLE_CONTRACT_MGT,
-					 * SecurityConstants.ROLE_PO_MGT,
-					 * SecurityConstants.ROLE_ADMIN)
-					 * .antMatchers(HttpMethod.DELETE,
-					 * "/bookings/**").hasAnyRole(SecurityConstants.
-					 * ROLE_BOOKING_CREATOR,
-					 * SecurityConstants.ROLE_CONTRACT_MGT,
-					 * SecurityConstants.ROLE_PO_MGT,
-					 * SecurityConstants.ROLE_ADMIN)
-					 */
-
-					.anyRequest().authenticated().and().exceptionHandling()
-					.authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
-					.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+					 .anyRequest().authenticated().and().exceptionHandling()
+					 .authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
+					 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 			http.addFilterBefore(googleIDTokenValidationFilter, UsernamePasswordAuthenticationFilter.class);
 

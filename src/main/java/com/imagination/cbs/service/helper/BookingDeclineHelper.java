@@ -1,7 +1,7 @@
 package com.imagination.cbs.service.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.constant.EmailConstants;
@@ -15,7 +15,7 @@ import com.imagination.cbs.service.LoggedInUserService;
  * @author pravin.budage
  *
  */
-@Service("bookingDeclineHelper")
+@Component("bookingDeclineHelper")
 public class BookingDeclineHelper {
 
 	private static final String DECLINE_SUBJECT_LINE = "Declined : Contractor Booking request # from ";

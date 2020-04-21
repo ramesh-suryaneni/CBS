@@ -30,7 +30,6 @@ import freemarker.template.Template;
 @Service("emailService")
 public class EmailServiceImpl implements EmailService {
 
-
 	@Autowired
 	private EmailUtility emailUtility;
 
@@ -44,12 +43,12 @@ public class EmailServiceImpl implements EmailService {
 	private Environment env;
 
 	private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
-	
+
 	private static final String TD = "</td>";
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
-		
+
 		logger.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request,
 				bookingRevision.getApprovalStatus().getApprovalName(), bookingRevision.getBooking().getBookingId());
 
@@ -117,30 +116,25 @@ public class EmailServiceImpl implements EmailService {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
-		String contractorEmployeeName = bookingRevision.getContractEmployee().getContractorEmployeeName();
-		String contractorName = bookingRevision.getContractor().getContractorName();
-		String name = bookingRevision.getSupplierType().getName();
-		String officeName = bookingRevision.getContractWorkLocation().getOfficeName();
-		String reasonName = bookingRevision.getReasonForRecruiting().getReasonName();
 		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
 
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				StringUtils.isEmpty(contractorEmployeeName) ? "" : contractorEmployeeName);
+				validateString(bookingRevision.getContractEmployee().getContractorEmployeeName()));
 		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				StringUtils.isEmpty(contractorName) ? "" : contractorName);
+				validateString(bookingRevision.getContractor().getContractorName()));
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
-				StringUtils.isEmpty(name) ? "" : name);
+				validateString(bookingRevision.getSupplierType().getName()));
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedFromDate()));
 		mapOfTemplateValues.put(EmailConstants.END_DATE.getConstantString(),
 				CBSDateUtils.convertTimeStampToString(bookingRevision.getContractedToDate()));
 		mapOfTemplateValues.put(EmailConstants.WORK_LOCATIONS.getConstantString(),
-				StringUtils.isEmpty(officeName) ? "" : officeName);
+				validateString(bookingRevision.getContractWorkLocation().getOfficeName()));
 		mapOfTemplateValues.put(EmailConstants.REASON_FOR_RECRUITING.getConstantString(),
-				StringUtils.isEmpty(reasonName) ? "" : reasonName);
+				validateString(bookingRevision.getReasonForRecruiting().getReasonName()));
 		mapOfTemplateValues.put(EmailConstants.TOTAL_COST.getConstantString(),
 				contractAmountAftertax == null ? "" : contractAmountAftertax);
 
@@ -212,6 +206,10 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.SCOPE_OF_WORK_LINK.getConstantString(), scopeOfWorkLink);
 
 		return mapOfTemplateValues;
+	}
+
+	private String validateString(String str) {
+		return StringUtils.isEmpty(str) ? "" : str;
 	}
 
 }

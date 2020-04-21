@@ -141,7 +141,7 @@ public class Html2PdfServiceImpl implements Html2PdfService {
 		dataModel.put("confirmationOfServiceNumber", validateString(latestRevision.getJobNumber()));
 		dataModel.put("representative", attention);
 		dataModel.put("consultancyEmailAddress", validateString(latestRevision.getContractor().getEmail()));
-		dataModel.put("engagingManager", latestRevision.getChangedBy());
+		dataModel.put("engagingManager", latestRevision.getBooking().getChangedBy());
 		dataModel.put("fee", contractAmountAftertax == null ? "" : contractAmountAftertax);
 		dataModel.put("invoiceMilestones", builder.toString());
 		dataModel.put("cestTestOutput", Boolean.valueOf(role.getInsideIr35()) ? "INSIDE" : "OUTSIDE");
