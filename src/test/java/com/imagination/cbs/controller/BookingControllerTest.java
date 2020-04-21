@@ -433,7 +433,6 @@ public class BookingControllerTest {
 		bookingRequest.setSupplierTypeId("7658");
 		bookingRequest.setWorkDays(createWorkDaysDtoList());
 		bookingRequest.setWorkTasks(createWorkTaskDtoList());
-		bookingRequest.setSiteOptions(createSiteOptions());
 		
 		return bookingRequest;
 	}
