@@ -24,6 +24,7 @@ import com.imagination.cbs.service.LoggedInUserService;
  */
 @Component("bookingHrApproveHelper")
 public class BookingHrApproveHelper {
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(BookingHrApproveHelper.class);
 
 	private static final String FILE_NAME = "service.pdf";
