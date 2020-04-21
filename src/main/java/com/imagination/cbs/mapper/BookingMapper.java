@@ -1,5 +1,7 @@
 package com.imagination.cbs.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -41,4 +43,6 @@ public interface BookingMapper {
 		taskDto.setChangedDate(String.valueOf(workTask.getChangedDate()));
 		return taskDto;
 	}
+	
+	public List<BookingDto> convertToDtoList(List<BookingRevision> revisions);
 }

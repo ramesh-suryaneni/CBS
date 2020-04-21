@@ -150,15 +150,18 @@ public class BookingRevision implements Serializable {
 
 	@OneToMany(mappedBy = "bookingRevision", cascade = CascadeType.ALL)
 	private List<ContractorWorkSite> contractorWorkSites;
-	
+
+	@Column(name = "completed_agreement_pdf")
+	private String completedAgreementPdf;
+
 	/**
 	 * 
 	 */
 	public BookingRevision() {
 	}
-	
+
 	/**
-	 * clone existing object without id 
+	 * clone existing object without id
 	 */
 	public BookingRevision(BookingRevision revision) {
 		this.agreementDocumentId = revision.agreementDocumentId;
@@ -485,5 +488,13 @@ public class BookingRevision implements Serializable {
 	public void setBooking(Booking booking) {
 		this.booking = booking;
 	}
-	
+
+	public String getCompletedAgreementPdf() {
+		return completedAgreementPdf;
+	}
+
+	public void setCompletedAgreementPdf(String completedAgreementPdf) {
+		this.completedAgreementPdf = completedAgreementPdf;
+	}
+
 }

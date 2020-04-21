@@ -8,6 +8,7 @@ import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import java.io.InputStream;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.constant.UserActionConstant;
@@ -225,19 +227,11 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public void updateContract(String agreementId, String date) {
-
 		// update contract signed details to booking
-		BookingRevision bookingRevision = bookingRevisionRepository.findByAgreementId(agreementId).map(booking -> {
-
-			booking.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
-
-			return bookingRevisionRepository.save(booking);
-
-		}).orElseThrow(() -> new ResourceNotFoundException("agreement id not found: " + agreementId));
-
+		BookingRevision bookingRevision = bookingRevisionRepository.findByAgreementId(agreementId)
+				.orElseThrow(() -> new ResourceNotFoundException("Agreement Id Not Found: " + agreementId));
 		// download agreement from adobe
 		InputStream pdfInputStream = adobeSignService.downloadAgreement(agreementId);
-
 		// upload agreement to azure
 		StringJoiner agreementName = new StringJoiner("-");
 		agreementName.add(String.valueOf(bookingRevision.getBooking().getBookingId()));
@@ -245,7 +239,19 @@ public class BookingServiceImpl implements BookingService {
 		agreementName.add(bookingRevision.getJobname());
 
 		URI url = azureStorageUtility.uploadFile(pdfInputStream, agreementName + FILE_EXTENSION);
-		// send email to creator/HR/?
 		LOGGER.info("Azure storage uri ::: {}", url);
+		bookingRevision.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
+		bookingRevision.setCompletedAgreementPdf(url.toString());
+		bookingRevisionRepository.save(bookingRevision);
+		// send email to creator/HR/?
+	}
+
+	@Override
+	public List<BookingDto> retrieveBookingRevisions(Long bookingId) {
+		List<BookingRevision> bookingRevisions = bookingRevisionRepository.findByBookingId(bookingId);
+		if (CollectionUtils.isEmpty(bookingRevisions)) {
+			throw new CBSApplicationException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
+		}
+		return bookingMapper.convertToDtoList(bookingRevisions);
 	}
 }
