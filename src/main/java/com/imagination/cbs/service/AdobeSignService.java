@@ -3,6 +3,7 @@ package com.imagination.cbs.service;
 import java.io.InputStream;
 
 import com.imagination.cbs.domain.BookingRevision;
+import com.imagination.cbs.dto.AdobeOAuthDto;
 
 public interface AdobeSignService {
 
@@ -12,5 +13,7 @@ public interface AdobeSignService {
 
 	String sendAgreement(String transientDocId, BookingRevision latestRevision);
 
-	public boolean saveOrUpdateAuthCode(String authcode);
+	void saveOrUpdateAdobeKeys(AdobeOAuthDto adobeOAuthDto);
+
+	public void saveOrUpdateAuthCode(String authcode);
 }
