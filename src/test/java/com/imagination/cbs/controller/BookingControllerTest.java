@@ -1,64 +1,93 @@
-/*package com.imagination.cbs.controller;
+package com.imagination.cbs.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpStatus;
-import org.junit.Before;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.xmlunit.input.WhitespaceNormalizedSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.ApprovalStatusDmDto;
-import com.imagination.cbs.dto.BookingDashBoardDto;
+import com.imagination.cbs.dto.ApproveRequest;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.ContractorDto;
-import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
+import com.imagination.cbs.dto.ContractorEmployeeDto;
+import com.imagination.cbs.dto.ContractorWorkSiteDto;
 import com.imagination.cbs.dto.CurrencyDto;
 import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.dto.OfficeDto;
+import com.imagination.cbs.dto.RecruitingDto;
+import com.imagination.cbs.dto.RegionDto;
+import com.imagination.cbs.dto.RoleDto;
+import com.imagination.cbs.dto.SiteOptionsDto;
 import com.imagination.cbs.dto.SupplierTypeDto;
 import com.imagination.cbs.dto.TeamDto;
 import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
+import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
+import com.imagination.cbs.security.GoogleIDTokenValidationUtility;
 import com.imagination.cbs.service.BookingService;
 import com.imagination.cbs.service.DashBoardService;
+import com.imagination.cbs.util.BookingValidator;
 
+@Import(BookingValidator.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@WebMvcTest(BookingController.class)
+@ContextConfiguration(classes = { TestConfig.class })
 public class BookingControllerTest {
 
+	@MockBean
+	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
+
+	@MockBean
+	private GoogleAuthenticationEntryPoint googleAuthenticationEntryPoint;
+
+	@MockBean
+	private RestTemplateBuilder restTemplateBuilder;
+
 	@Autowired
-	private WebApplicationContext context;
-	
 	private MockMvc mockMvc;
+	
+/*	@MockBean
+	private BookingValidator bookingValidator;*/
 	
 	@MockBean
 	private BookingService bookingService;
@@ -69,14 +98,6 @@ public class BookingControllerTest {
 	@Autowired
 	ObjectMapper objectMapper;
 	
-	@Before
-	public void setUp()
-	{
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-										.apply(SecurityMockMvcConfigurers.springSecurity())
-										.build();
-	}
-	
 	@WithMockUser("developer")
 	@Test
 	public void shouldAddBookingDetails() throws Exception{
@@ -84,7 +105,7 @@ public class BookingControllerTest {
 		when(bookingService.addBookingDetails(Mockito.any(BookingRequest.class))).thenReturn(createBookingDto());
 		
 		MvcResult mvcResult = this.mockMvc.perform(post("/bookings")
-										.content(createJsonRequest())
+										.content(createBookingJsonRequest())
 										.contentType(MediaType.APPLICATION_JSON))
 										.andExpect(status().isCreated())
 										.andReturn();
@@ -115,7 +136,7 @@ public class BookingControllerTest {
 		long bookingId = 2020l;
 		when(bookingService.updateBookingDetails(Mockito.anyLong(), Mockito.any(BookingRequest.class))).thenReturn(createBookingDto());
 		this.mockMvc.perform(patch("/bookings/{bookingId}",bookingId)
-				.content(createJsonRequest())
+				.content(createBookingJsonRequest())
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -124,50 +145,165 @@ public class BookingControllerTest {
 		verify(bookingService).updateBookingDetails(bookingId, createBookingRequest());
 	}
 	
-	@WithMockUser("developer")
+/*	@WithMockUser("/developer")
 	@Test
 	public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
 		long bookingId = 2020l;
+
 		when(bookingService.submitBookingDetails(Mockito.anyLong(),Mockito.any(BookingRequest.class))).thenReturn(createBookingDto());
 		this.mockMvc.perform(put("/bookings/{bookingId}",bookingId)
-				.content(createJsonRequest())
+				.content(createBookingJsonRequest())
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobname").value("JLR Experience Center"))
-				.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
-		verify(bookingService).submitBookingDetails(bookingId, createBookingRequest());
+				.andExpect(jsonPath("$.jobname").value("JLR Experience Center"));
+				//.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
+		//verify(bookingService).submitBookingDetails(bookingId, createBookingRequest());
+	}*/
+	
+	@WithMockUser("/developer")
+	@Test
+	public void shouldReturnBookingDetailsBasedOnBookingId() throws Exception{
+		
+		long bookingId = 1035l;
+		when(bookingService.retrieveBookingDetails(bookingId)).thenReturn(createBookingDto());
+		this.mockMvc.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.bookingRevisionId").value("2025"))
+					.andExpect(jsonPath("$.contractor.contractorName").value("Yash"));
+		verify(bookingService).retrieveBookingDetails(bookingId);
+	}			
+	
+	@WithMockUser("/developer")
+	@Test
+	public void shouldCreateApprovedBooking() throws Exception  {
+		String jsonRequest = objectMapper.writeValueAsString(createApproveRequest());
+		
+		when(bookingService.approveBooking(Mockito.any(ApproveRequest.class))).thenReturn(createBookingDto());
+		
+		MvcResult mvcResult = this.mockMvc.perform(post("/bookings/process-request").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+											.andExpect(status().isOk())
+											.andReturn();
+		assertEquals(HttpStatus.SC_OK, mvcResult.getResponse().getStatus());
+		verify(bookingService).approveBooking(createApproveRequest());
 	}
 	
-	private String createJsonRequest() throws JsonProcessingException
+	@WithMockUser("/developer")
+	@Test
+	public void shouldCancleBooking() throws Exception {
+		
+		long bookingId = 1035l;
+		when(bookingService.cancelBooking(bookingId)).thenReturn(createBookingDto());
+		
+		this.mockMvc.perform(delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk());
+		verify(bookingService).cancelBooking(bookingId);		
+				
+	}
+	
+	private String createBookingJsonRequest() throws JsonProcessingException
 	{
 		return objectMapper.writeValueAsString(createBookingRequest());
 	}
+	
 	private BookingDto createBookingDto()
 	{
 		BookingDto bookingDto = new BookingDto();
+		bookingDto.setAgreementDocumentId("");
+		bookingDto.setAgreementId("");
+		bookingDto.setApproverComments("");
 		bookingDto.setApprovalStatus(createApprovalStatusDmDto());
 		bookingDto.setBookingId("1035");
+		bookingDto.setBookingDescription("");
 		bookingDto.setBookingRevisionId("2025");
 		bookingDto.setChangedBy("Pravin");
+		bookingDto.setChangedDate("");
+		bookingDto.setCommOffRegion(createRegionDto());
+		bookingDto.setCommisioningOffice(createCommisioningOffice());
+		bookingDto.setContractAmountAftertax("");
+		bookingDto.setContractAmountBeforetax("");
 		bookingDto.setContractedFromDate("2020-03-11 20:48:05.123");
 		bookingDto.setContractedToDate("2020-04-02 20:48:05.123");
-		bookingDto.setContractEmployee(createContractorEmployeeSerachDto());
+		bookingDto.setContractEmployee(createContractorEmployeeDto());
 		bookingDto.setContractor(createContractorDto());
 		bookingDto.setContractorSignedDate("2020-03-11 20:48:05.123");
+		bookingDto.setContractorTotalAvailableDays("");
+		bookingDto.setContractorTotalWorkingDays("");
+		bookingDto.setContractorWorkRegion(createRegionDto());
+		bookingDto.setContractorWorkSites(createContractorWorkSiteDtoList());
+		bookingDto.setContractWorkLocation(createOfficeDto());
 		bookingDto.setCurrency(createCurrencyDto());
 		bookingDto.setDiscipline(createDisciplineDto());
+		bookingDto.setEmployerTaxPercent("");
+		bookingDto.setInsideIr35("true");
+		bookingDto.setJobDeptName("");
 		bookingDto.setJobname("JLR Experience Center");
 		bookingDto.setJobNumber("0987");
-		bookingDto.setCommisioningOffice(createCommisioningOffice());
+		bookingDto.setMonthlyWorkDays(createWorkDaysDtoList());
+		bookingDto.setRate("");
+		bookingDto.setReasonForRecruiting(createRecruitingDto());
+		bookingDto.setRole(createRoleDto());
 		bookingDto.setSupplierType(createSupplierTypeDto());
 		bookingDto.setTeam(createTeamDto());
-		bookingDto.setMonthlyWorkDays(createWorkDaysDtoList());
-		bookingDto.setBookingWorkTasks(createWorkTaskDtoList());
-		
+
 		return bookingDto;
 	}
 	
+	public OfficeDto createOfficeDto() {
+		OfficeDto officeDto = new OfficeDto();
+		officeDto.setOfficeId(new Long(8000));
+		officeDto.setOfficeName("Melbourne");
+		officeDto.setOfficeDescription("Melbourne");
+
+		return officeDto;
+	}
+	public RecruitingDto createRecruitingDto() {
+		RecruitingDto recruitingDto = new RecruitingDto();
+		recruitingDto.setReasonId(1);
+		recruitingDto.setReasonName("Specific skills required");
+		recruitingDto.setReasonDescription("Internal resource not available");
+		return recruitingDto;
+	}
+	public RoleDto createRoleDto()
+	{
+		RoleDto roleDto = new RoleDto();
+		
+		roleDto.setRoleName("2D");
+		roleDto.setRoleId("3214");
+		roleDto.setRoleDescription("2D");
+		roleDto.setInsideIr35("false");
+		roleDto.setDisciplineId("0");
+		roleDto.setChangedDate("2020-03-30T16:16:55.000+05:30");
+		roleDto.setChangedBy("Akshay");
+		roleDto.setCestDownloadLink("https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf");
+		
+		return roleDto;
+	}
+	
+	private RegionDto createRegionDto() {
+		
+		RegionDto regionDto = new RegionDto();
+		regionDto.setRegionDescription("Europe & Middle East");
+		regionDto.setRegionId(1l);
+		regionDto.setRegionName("EMEA");
+		return regionDto;
+	}
+	
+	private List<ContractorWorkSiteDto> createContractorWorkSiteDtoList(){
+		List<ContractorWorkSiteDto> contractorWorkSiteDtoList = new ArrayList<>();
+		ContractorWorkSiteDto contractorWorkSiteDto1 = new ContractorWorkSiteDto();
+		contractorWorkSiteDto1.setId("296");
+		contractorWorkSiteDto1.setSiteOptions(createSiteOptionsDto());
+		contractorWorkSiteDtoList.add(contractorWorkSiteDto1);
+		return contractorWorkSiteDtoList;
+	}
+	private SiteOptionsDto createSiteOptionsDto() {
+		SiteOptionsDto siteOptionsDto = new SiteOptionsDto();
+		siteOptionsDto.setId("1");
+		siteOptionsDto.setName("Clients premises");
+		return siteOptionsDto;
+	}
 	private ApprovalStatusDmDto createApprovalStatusDmDto()
 	{
 		ApprovalStatusDmDto approvalStatusDmDto  = new ApprovalStatusDmDto();
@@ -177,14 +313,18 @@ public class BookingControllerTest {
 		return approvalStatusDmDto;
 	}
 	
-	private ContractorEmployeeSearchDto createContractorEmployeeSerachDto() {
-		ContractorEmployeeSearchDto contractorEmployeeSearchDto  = new ContractorEmployeeSearchDto();
-		contractorEmployeeSearchDto.setCompany("ImaginationUK");
-		contractorEmployeeSearchDto.setContractorEmployeeName("Alex");
-		contractorEmployeeSearchDto.setContractorId(6000l);
-		contractorEmployeeSearchDto.setRole("2D");
-		contractorEmployeeSearchDto.setRoleId(3214l);
-		return contractorEmployeeSearchDto;
+	private ContractorEmployeeDto createContractorEmployeeDto() {
+		ContractorEmployeeDto contractorEmployeeDto  = new ContractorEmployeeDto();
+		contractorEmployeeDto.setChangedBy("admin");
+		contractorEmployeeDto.setChangedDate("2020-03-09 15:59:09.0");
+		contractorEmployeeDto.setContactDetails("1111-111-11");
+		contractorEmployeeDto.setContractorEmployeeId("6000");
+		contractorEmployeeDto.setContractorEmployeeName("Alex");
+		contractorEmployeeDto.setEmployeeId("5000");
+		contractorEmployeeDto.setKnownAs("Aliase1");
+		contractorEmployeeDto.setStatus("Status1");
+		
+		return contractorEmployeeDto;
 	}
 
 	private ContractorDto createContractorDto()
@@ -289,11 +429,19 @@ public class BookingControllerTest {
 		bookingRequest.setRate("154");
 		bookingRequest.setReasonForRecruiting("Specific Skills Required");
 		bookingRequest.setRoleId("4326");
+		bookingRequest.setSiteOptions(createSiteOptions());
 		bookingRequest.setSupplierTypeId("7658");
 		bookingRequest.setWorkDays(createWorkDaysDtoList());
 		bookingRequest.setWorkTasks(createWorkTaskDtoList());
 		
 		return bookingRequest;
+	}
+	
+	private List<String> createSiteOptions(){
+		List<String> siteOptionsList = new ArrayList<>();
+		siteOptionsList.add("Clients premises");
+		siteOptionsList.add("Home Office");
+		return siteOptionsList;
 	}
 		
 	private Page<DashBoardBookingDto> createPageDashBoardDto()
@@ -320,5 +468,12 @@ public class BookingControllerTest {
 		
 		return new PageImpl<>(bookingDashBoardDtoList,PageRequest.of(0, 100),2);
 	}
+	
+	public ApproveRequest createApproveRequest() {
+		ApproveRequest approveRequest = new ApproveRequest();
+		approveRequest.setAction("Created");
+		approveRequest.setBookingId("1035");
+		approveRequest.setStatus("Draft");
+		return approveRequest;
+	}
 }
-*/
