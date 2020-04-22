@@ -8,6 +8,7 @@ import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import java.io.InputStream;
 import java.net.URI;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.constant.SecurityConstants;
@@ -175,7 +175,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	@Transactional
-	public BookingDto cancelBooking(Long bookingId) {
+	public List<BookingDto> cancelBooking(Long bookingId) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Optional<Booking> bookingDomain = bookingRepository.findById(bookingId);
@@ -193,13 +193,13 @@ public class BookingServiceImpl implements BookingService {
 				bookingSaveHelper.saveBooking(booking, latestBookingRevision,
 						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(),
 						loggedInUserService.getLoggedInUserDetails());
-				return retrieveBookingDetails(bookingId);
+				return retrieveBookingRevisions(bookingId);
 			}
 
 		} else {
 			throw new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
 		}
-		return new BookingDto();
+		return Collections.emptyList();
 	}
 
 	@Transactional
@@ -262,11 +262,19 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public List<BookingDto> retrieveBookingRevisions(Long bookingId) {
-		List<BookingRevision> bookingRevisions = bookingRevisionRepository.findByBookingId(bookingId);
-		if (CollectionUtils.isEmpty(bookingRevisions)) {
-			throw new CBSApplicationException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
-		}
-		return bookingMapper.convertToDtoList(bookingRevisions);
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId));
+		List<BookingDto> convertToDtoList = bookingMapper.convertToDtoList(booking.getBookingRevisions());
+		return mapBookingToBookingDto(convertToDtoList, booking);
+	}
+
+	public List<BookingDto> mapBookingToBookingDto(List<BookingDto> list, Booking booking) {
+		BookingDto bookingDto = list.get(0);
+		bookingDto.setBookingId(booking.getBookingId().toString());
+		bookingDto.setBookingDescription(booking.getBookingDescription());
+		bookingDto.setCreatedBy(booking.getChangedBy());
+		list.set(0, bookingDto);
+		return list;
 	}
 
 	@Override
