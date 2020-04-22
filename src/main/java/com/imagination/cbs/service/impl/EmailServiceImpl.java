@@ -17,6 +17,8 @@ import org.springframework.util.StringUtils;
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
+import com.imagination.cbs.domain.Contractor;
+import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.security.CBSUser;
@@ -131,14 +133,18 @@ public class EmailServiceImpl implements EmailService {
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
 		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
+		ContractorEmployee contractEmployee = bookingRevision.getContractEmployee();
+		String contractEmployeeName = contractEmployee != null
+				? validateString(contractEmployee.getContractorEmployeeName()) : "";
+
+		Contractor contractor = bookingRevision.getContractor();
+		String contractorName = contractor != null ? validateString(contractor.getContractorName()) : "";
 
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
-		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				validateString(bookingRevision.getContractEmployee().getContractorEmployeeName()));
-		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				validateString(bookingRevision.getContractor().getContractorName()));
+		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(), contractEmployeeName);
+		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(), contractorName);
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
 				validateString(bookingRevision.getSupplierType().getName()));
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
