@@ -94,7 +94,7 @@ public class BookingController {
 	}
 
 	@DeleteMapping("/{booking_id}")
-	public List<BookingDto> canceBooking(@PathVariable("booking_id") Long bookingId) {
+	public BookingDto canceBooking(@PathVariable("booking_id") Long bookingId) {
 		return bookingServiceImpl.cancelBooking(bookingId);
 	}
 
@@ -106,6 +106,6 @@ public class BookingController {
 	@GetMapping("/{booking_id}/reminder")
 	public ResponseEntity<String> sendBookingReminder(@PathVariable("booking_id") Long bookingId) {
 		bookingServiceImpl.sendBookingReminder(bookingId);
-		return new ResponseEntity<String>("Reminder Mail Sent Sucessfully", HttpStatus.OK);
+		return new ResponseEntity<>("Reminder Mail Sent Sucessfully", HttpStatus.OK);
 	}
 }

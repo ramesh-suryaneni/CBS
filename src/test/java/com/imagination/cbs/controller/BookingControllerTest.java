@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -184,7 +183,7 @@ public class BookingControllerTest {
 	public void shouldCancleBooking() throws Exception {
 
 		long bookingId = 1035l;
-		when(bookingService.cancelBooking(bookingId)).thenReturn(Collections.singletonList(createBookingDto()));
+		when(bookingService.cancelBooking(bookingId)).thenReturn(createBookingDto());
 
 		this.mockMvc.perform(
 				delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))

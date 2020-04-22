@@ -8,7 +8,6 @@ import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import java.io.InputStream;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -100,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private CreateBookingHelper createBookingHelper;
-	
+
 	@Autowired
 	private EmailService emailService;
 
@@ -175,7 +174,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	@Transactional
-	public List<BookingDto> cancelBooking(Long bookingId) {
+	public BookingDto cancelBooking(Long bookingId) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		Optional<Booking> bookingDomain = bookingRepository.findById(bookingId);
@@ -193,13 +192,13 @@ public class BookingServiceImpl implements BookingService {
 				bookingSaveHelper.saveBooking(booking, latestBookingRevision,
 						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(),
 						loggedInUserService.getLoggedInUserDetails());
-				return retrieveBookingRevisions(bookingId);
+				return retrieveBookingDetails(bookingId);
 			}
 
 		} else {
 			throw new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
 		}
-		return Collections.emptyList();
+		return new BookingDto();
 	}
 
 	@Transactional
@@ -264,17 +263,7 @@ public class BookingServiceImpl implements BookingService {
 	public List<BookingDto> retrieveBookingRevisions(Long bookingId) {
 		Booking booking = bookingRepository.findById(bookingId)
 				.orElseThrow(() -> new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId));
-		List<BookingDto> convertToDtoList = bookingMapper.convertToDtoList(booking.getBookingRevisions());
-		return mapBookingToBookingDto(convertToDtoList, booking);
-	}
-
-	public List<BookingDto> mapBookingToBookingDto(List<BookingDto> list, Booking booking) {
-		BookingDto bookingDto = list.get(0);
-		bookingDto.setBookingId(booking.getBookingId().toString());
-		bookingDto.setBookingDescription(booking.getBookingDescription());
-		bookingDto.setCreatedBy(booking.getChangedBy());
-		list.set(0, bookingDto);
-		return list;
+		return bookingMapper.convertToDtoList(booking.getBookingRevisions());
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public interface BookingService {
 
 	public BookingDto retrieveBookingDetails(Long bookingId);
 
-	public List<BookingDto> cancelBooking(Long bookingId);
+	public BookingDto cancelBooking(Long bookingId);
 
 	public BookingDto approveBooking(ApproveRequest request);
 
