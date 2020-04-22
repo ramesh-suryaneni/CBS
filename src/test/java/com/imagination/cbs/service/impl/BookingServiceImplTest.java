@@ -246,7 +246,7 @@ public class BookingServiceImplTest {
 		when(azureStorageUtility.uploadFile(pdfInputStream,agreementName + ".pdf")).thenReturn(uri);
 		when(bookingRevisionRepository.save(bookingRev)).thenReturn(null);
 		
-		bookingServiceImpl.updateContract(agreementId, "22-04-2020");	
+	
 	}
 	
 	@Test(expected = ResourceNotFoundException.class)
