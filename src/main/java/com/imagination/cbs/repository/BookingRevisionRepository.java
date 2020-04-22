@@ -22,8 +22,9 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " cbs.booking_revision br where br.approval_status_id in (select approval_status_id from cbs.approval_status_dm "
 			+ " where approval_name in (:status))) "
 			+ " select asd.approval_name as status, temp.booking_id as bookingId, temp.job_name as jobName, rd.role_name as roleName,"
-			+ " temp.contracted_from_date as contractedFromDate, temp.contracted_to_date as contractedToDate, bo.changed_by as changedBy,"
-			+ " temp.changed_date as changedDate, con.contractor_name as contractorName, temp.booking_revision_id as bookingRevisionId"
+			+ " temp.contracted_from_date as contractedFromDate, temp.contracted_to_date as contractedToDate, temp.changed_by as changedBy,"
+			+ " temp.changed_date as changedDate, con.contractor_name as contractorName, temp.booking_revision_id as bookingRevisionId, "
+			+ " bo.changed_by as bookingCreater "
 			+ " from temp join cbs.booking bo on temp.booking_id=bo.booking_id "
 			+ " and bo.status_id=temp.approval_status_id"
 			+ " join cbs.role_dm rd on rd.role_id = temp.role_id"
@@ -42,8 +43,9 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " cbs.booking_revision br where br.approval_status_id in (select approval_status_id from cbs.approval_status_dm "
 			+ " where approval_name not in ('Draft', 'Cancelled'))) "
 			+ " select asd.approval_name as status, temp.booking_id as bookingId, temp.job_name as jobName, rd.role_name as roleName,"
-			+ " temp.contracted_from_date as contractedFromDate, temp.contracted_to_date as contractedToDate, bo.changed_by as changedBy,"
-			+ " temp.changed_date as changedDate, con.contractor_name as contractorName, temp.booking_revision_id as bookingRevisionId"
+			+ " temp.contracted_from_date as contractedFromDate, temp.contracted_to_date as contractedToDate, temp.changed_by as changedBy,"
+			+ " temp.changed_date as changedDate, con.contractor_name as contractorName, temp.booking_revision_id as bookingRevisionId,"
+			+ " bo.changed_by as bookingCreater "
 			+ " from temp join cbs.booking bo on temp.booking_id=bo.booking_id "
 			+ " and bo.status_id=temp.approval_status_id"
 			+ " join cbs.role_dm rd on rd.role_id = temp.role_id"
@@ -53,7 +55,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	public List<Tuple> retrieveBookingRevisionForSubmitted(@Param("loggedInUser") String loggedInUser, Pageable pageable);
 	
 	@Query(value ="with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName,br.contracted_from_date as contractedFromDate,"
-			+ " br.contracted_to_date as contractedToDate,bo.changed_by as changedBy, br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,"
+			+ " br.contracted_to_date as contractedToDate,br.changed_by as changedBy, bo.changed_by as bookingCreater, br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,"
 			+ " br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName from cbs.booking_revision br,"
 			+ " cbs.employee_mapping emp,cbs.approver_override_jobs aoj,cbs.booking bo,cbs.approval_status_dm asd, cbs.role_dm rd"
 			+ " where bo.booking_id = br.booking_id and bo.status_id=br.approval_status_id and asd.approval_status_id=br.approval_status_id"
@@ -65,7 +67,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	
 	@Query(value = "with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName, rd.role_name as roleName,"
-			+ " br.contracted_from_date as contractedFromDate, br.contracted_to_date as contractedToDate, bo.changed_by as changedBy,"
+			+ " br.contracted_from_date as contractedFromDate, br.contracted_to_date as contractedToDate, br.changed_by as changedBy, bo.changed_by as bookingCreater, "
 			+ " br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status"
 			+ " from cbs.booking_revision br, cbs.approver approver, cbs.role_dm rd, cbs.approval_status_dm asd,cbs.booking bo where"
 			+ " case when br.approval_status_id = 1002 then 1 when br.approval_status_id = 1003 then 2"
@@ -78,7 +80,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	public List<Tuple> retrieveBookingRevisionForWaitingForApprovalByEmployeeId(@Param("employeeId") long  employeeId,Pageable pageable);
 	
 	@Query(value ="with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName,br.contracted_from_date as contractedFromDate,"
-			+ " br.contracted_to_date as contractedToDate,bo.changed_by as changedBy, br.changed_date as changedDate,br.booking_revision_id"
+			+ " br.contracted_to_date as contractedToDate,br.changed_by as changedBy, bo.changed_by as bookingCreater, br.changed_date as changedDate,br.booking_revision_id"
 			+ " as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName from cbs.booking_revision br,"
 			+ " cbs.employee_mapping emp, cbs.booking bo,cbs.approval_status_dm asd ,cbs.role_dm rd	where bo.booking_id = br.booking_id"
 			+ " and bo.status_id = br.approval_status_id and br.approval_status_id = 1005 and asd.approval_status_id=br.approval_status_id"
