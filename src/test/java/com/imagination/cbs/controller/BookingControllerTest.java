@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -96,7 +96,7 @@ public class BookingControllerTest {
 	@Test
 	public void shouldAddBookingDetails() throws Exception {
 
-		when(bookingService.addBookingDetails(Mockito.any(BookingRequest.class))).thenReturn(createBookingDto());
+		when(bookingService.addBookingDetails(createBookingRequest())).thenReturn(createBookingDto());
 
 		MvcResult mvcResult = this.mockMvc
 				.perform(post("/bookings").content(createBookingJsonRequest()).contentType(MediaType.APPLICATION_JSON))
@@ -108,8 +108,7 @@ public class BookingControllerTest {
 	@Test
 	public void shouldReturnDashBoardBookingStatusDetails() throws Exception {
 
-		when(dashBoardService.getDashBoardBookingsStatusDetails(Mockito.anyString(), Mockito.anyInt(),
-				Mockito.anyInt())).thenReturn(createPageDashBoardDto());
+		when(dashBoardService.getDashBoardBookingsStatusDetails("draft", 0, 100)).thenReturn(createPageDashBoardDto());
 
 		this.mockMvc
 				.perform(get("/bookings").param("status", "draft").param("pageNo", "0").param("pageSize", "100")
@@ -123,58 +122,57 @@ public class BookingControllerTest {
 	@WithMockUser("developer")
 	@Test
 	public void shouldUpdateBookingDetailsBasedOnBookingId() throws Exception {
-		long bookingId = 2020l;
-		when(bookingService.updateBookingDetails(Mockito.anyLong(), Mockito.any(BookingRequest.class)))
-				.thenReturn(createBookingDto());
+		
+		when(bookingService.updateBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
 		this.mockMvc
-				.perform(patch("/bookings/{bookingId}", bookingId).content(createBookingJsonRequest())
+				.perform(patch("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
 						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.discipline.disciplineId").value("8000"));
-		verify(bookingService).updateBookingDetails(bookingId, createBookingRequest());
+		verify(bookingService).updateBookingDetails(2020L, createBookingRequest());
 	}
 
-	/*
-	 * @WithMockUser("/developer")
-	 * 
-	 * @Test public void shouldProcessBookingDetailsBasedOnBookingId() throws
-	 * Exception { long bookingId = 2020l;
-	 * 
-	 * when(bookingService.submitBookingDetails(Mockito.anyLong(),Mockito.any(
-	 * BookingRequest.class))).thenReturn(createBookingDto());
-	 * this.mockMvc.perform(put("/bookings/{bookingId}",bookingId)
-	 * .content(createBookingJsonRequest())
-	 * .contentType(MediaType.APPLICATION_JSON)
-	 * .accept(MediaType.APPLICATION_JSON)) .andExpect(status().isOk())
-	 * .andExpect(jsonPath("$.jobname").value("JLR Experience Center"));
-	 * //.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
-	 * //verify(bookingService).submitBookingDetails(bookingId,
-	 * createBookingRequest()); }
-	 */
+	@WithMockUser("/developer")
+	@Test public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
+		  
+		when(bookingService.submitBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
+		
+		this.mockMvc
+				.perform(put("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.jobname").value("JLR Experience Center"))
+				.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
+
+		verify(bookingService).submitBookingDetails(2020L, createBookingRequest());
+	 
+	}
+
 
 	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnBookingDetailsBasedOnBookingId() throws Exception {
 
-		long bookingId = 1035l;
-		when(bookingService.retrieveBookingDetails(bookingId)).thenReturn(createBookingDto());
+		when(bookingService.retrieveBookingDetails(1035L)).thenReturn(createBookingDto());
+		
 		this.mockMvc.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.contractor.contractorName").value("Yash"));
-		verify(bookingService).retrieveBookingDetails(bookingId);
+		verify(bookingService).retrieveBookingDetails(1035L);
 	}
 
 	@WithMockUser("/developer")
 	@Test
 	public void shouldCreateApprovedBooking() throws Exception {
+		
 		String jsonRequest = objectMapper.writeValueAsString(createApproveRequest());
 
-		when(bookingService.approveBooking(Mockito.any(ApproveRequest.class))).thenReturn(createBookingDto());
+		when(bookingService.approveBooking(createApproveRequest())).thenReturn(createBookingDto());
 
 		MvcResult mvcResult = this.mockMvc
 				.perform(post("/bookings/process-request").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn();
 		assertEquals(HttpStatus.SC_OK, mvcResult.getResponse().getStatus());
+		
 		verify(bookingService).approveBooking(createApproveRequest());
 	}
 
@@ -191,6 +189,34 @@ public class BookingControllerTest {
 		verify(bookingService).cancelBooking(bookingId);
 
 	}
+	
+	@WithMockUser("/developer")
+	@Test
+	public void ShouldReturnAllBookingRevisionsInBookingDtoWhenBiikingIDIsPresentInDB()throws Exception {
+		
+		BookingDto bookingDto = createBookingDto();
+		List<BookingDto> bookingDtoList = new ArrayList<>();
+		bookingDtoList.add(bookingDto);
+		
+		when(bookingService.retrieveBookingRevisions(1035L)).thenReturn(bookingDtoList);
+		
+		mockMvc.perform(get("/bookings/1035/revisions").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].bookingRevisionId").value("2025"))
+				.andExpect(jsonPath("$[0].contractor.contractorName").value("Yash"));
+		
+		verify(bookingService).retrieveBookingRevisions(1035L);
+	}
+	
+	@WithMockUser("/developer")
+	@Test
+	public void ShouldSendBookingReminderThroughEmailToBookingApprover()throws Exception {
+		
+		mockMvc.perform(get("/bookings/1035/reminder").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+		
+		verify(bookingService).sendBookingReminder(1035L);
+	}
+
+	
 
 	private String createBookingJsonRequest() throws JsonProcessingException {
 		return objectMapper.writeValueAsString(createBookingRequest());
@@ -412,13 +438,16 @@ public class BookingControllerTest {
 		bookingRequest.setJobDeptName("2D");
 		bookingRequest.setJobNumber("1111l");
 		bookingRequest.setRate("154");
-		bookingRequest.setReasonForRecruiting("Specific Skills Required");
+		bookingRequest.setReasonForRecruiting("123");
 		bookingRequest.setRoleId("4326");
 		bookingRequest.setSiteOptions(createSiteOptions());
 		bookingRequest.setSupplierTypeId("7658");
 		bookingRequest.setWorkDays(createWorkDaysDtoList());
 		bookingRequest.setWorkTasks(createWorkTaskDtoList());
-
+		bookingRequest.setCommisioningOffice("10");
+		bookingRequest.setContractAmountAftertax("10.0");
+		bookingRequest.setContractAmountBeforetax("0.5");
+		
 		return bookingRequest;
 	}
 

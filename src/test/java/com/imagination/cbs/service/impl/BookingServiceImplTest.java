@@ -3,16 +3,12 @@
  */
 package com.imagination.cbs.service.impl;
 
-import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -41,6 +38,7 @@ import com.imagination.cbs.mapper.DisciplineMapper;
 import com.imagination.cbs.mapper.TeamMapper;
 import com.imagination.cbs.repository.BookingRepository;
 import com.imagination.cbs.repository.BookingRevisionRepository;
+import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.helper.BookingApproveHelper;
@@ -216,13 +214,6 @@ public class BookingServiceImplTest {
 		verify(bookingRepository,times(1)).findById(1910l);
 	}
 	
-	/*@Test
-	public void shouldCancleBooking() {
-		
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
-		when(loggedInUserService.getLoggedInUserDetails().getDisplayName()).thenReturn(value)
-		
-	}*/
 	
 	@Test
 	public void shouldUpdateContractWhenBookingRevisionPresentInDB() throws URISyntaxException {
@@ -252,10 +243,51 @@ public class BookingServiceImplTest {
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldNotUpdateContractWhenBookingRevisionNotPresentInDB() throws URISyntaxException {
 		
-		String agreementId = "C-546";
-		when(bookingRevisionRepository.findByAgreementId(agreementId)).thenReturn(Optional.empty());
-		bookingServiceImpl.updateContract(agreementId, "22-04-2020");
+		when(bookingRevisionRepository.findByAgreementId("C-546")).thenReturn(Optional.empty());
+		bookingServiceImpl.updateContract("C-546", "22-04-2020");
 	}
+	
+	@Test(expected = ResourceNotFoundException.class)
+	public void shouldThrowResourceNotFoundExceptionWhenBookingIdIsNotPresentInDBForcancelBooking() {
+	
+		CBSUser cbsUser = createCBSUser();
+		
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+		when(bookingRepository.findById(1910L)).thenReturn(Optional.empty());
+		
+		bookingServiceImpl.cancelBooking(1910L);
+	
+	}
+	
+	@Test
+	public void shouldReturnEmptyBookingDtoWhenBookingIdIsPresentInDBForcancelBooking() {
+	
+		CBSUser cbsUser = createCBSUser();
+		Booking booking = createBooking();
+		Optional<Booking> bookingList = Optional.of(booking);
+		bookingList.get().getApprovalStatus().setApprovalStatusId(1001L);
+		bookingList.get().setChangedBy("Pappu");
+		
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+		when(bookingRepository.findById(1910L)).thenReturn(bookingList);
+		
+		BookingDto actual = bookingServiceImpl.cancelBooking(1910L);
+		
+		verify(loggedInUserService).getLoggedInUserDetails();
+		verify(bookingRepository).findById(1910L);
+		verify(bookingRepository).delete(bookingList.get());
+		
+		assertEquals(null, actual.getBookingId());
+		
+	
+	}
+	
+	private CBSUser createCBSUser() {
+		CBSUser cbsUser = new CBSUser("Pappu");
+		cbsUser.setEmpId(1002L);
+		return cbsUser;
+	}
+	
 	private BookingRequest createBookingRequest()
 	{
 		BookingRequest bookingRequest = new BookingRequest();
@@ -302,7 +334,7 @@ public class BookingServiceImplTest {
 		Booking booking = new Booking();
 		booking.setApprovalStatus(createApprovalStatusDm());
 		booking.setBookingDescription("Test Data");
-		booking.setBookingId(1910l);
+		booking.setBookingId(1910L);
 		booking.setChangedBy("nafisa.ujloomwale");
 		booking.setTeam(createTeam());
 		booking.setBookingDescription("Test Data");

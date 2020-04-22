@@ -190,8 +190,7 @@ public class BookingServiceImpl implements BookingService {
 				BookingRevision latestBookingRevision = bookingSaveHelper.getLatestRevision(booking);
 
 				bookingSaveHelper.saveBooking(booking, latestBookingRevision,
-						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(),
-						loggedInUserService.getLoggedInUserDetails());
+						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(), loggedInUserService.getLoggedInUserDetails());
 				return retrieveBookingDetails(bookingId);
 			}
 
