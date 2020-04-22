@@ -94,4 +94,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
     
 	@Query("FROM BookingRevision br where br.booking.bookingId=:bookingId")
 	List<BookingRevision> findByBookingId(@Param("bookingId") Long bookingId);
+		
+	@Query("SELECT DISTINCT(br.jobname) FROM BookingRevision br where br.contractEmployee.contractorEmployeeId=:contractorEmployeeId")
+	List<String> findByContractEmployeeId(@Param("contractorEmployeeId") Long contractorEmployeeId);
 }
