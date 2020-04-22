@@ -63,7 +63,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
         List<DashBoardBookingDto> bookingDashboradDtosList = toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByJobName);
 		
-		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId);
+		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId, pageable);
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByHR = bookingRevisionRepository.retrieveBookingRevisionForWaitingForHRApproval(employeeId, pageable);
 		

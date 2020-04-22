@@ -96,7 +96,7 @@ public class DashBoardServiceImplTest {
 		
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByJobNumber(1002L, PageRequest.of(10, 100))).thenReturn(bookingRevisions);
-		when(bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(1002L)).thenReturn(bookingRevisions);
+		when(bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(1002L, PageRequest.of(10, 100))).thenReturn(bookingRevisions);
 		when(bookingRevisionRepository.retrieveBookingRevisionForWaitingForHRApproval(1002L, PageRequest.of(10, 100))).thenReturn(bookingRevisions);
 		when(tuple.get("status", String.class)).thenReturn("waiting");
 		
@@ -104,7 +104,7 @@ public class DashBoardServiceImplTest {
 		
 		verify(loggedInUserService, times(2)).getLoggedInUserDetails();
 		verify(bookingRevisionRepository).retrieveBookingRevisionForWaitingForApprovalByJobNumber(1002L, PageRequest.of(10, 100));
-		verify(bookingRevisionRepository).retrieveBookingRevisionForWaitingForApprovalByEmployeeId(1002L);
+		verify(bookingRevisionRepository).retrieveBookingRevisionForWaitingForApprovalByEmployeeId(1002L, PageRequest.of(10, 100));
 		verify(bookingRevisionRepository).retrieveBookingRevisionForWaitingForHRApproval(1002L, PageRequest.of(10, 100));
 		
 		assertEquals(1002, actual.getContent().get(0).getBookingId().intValue());
