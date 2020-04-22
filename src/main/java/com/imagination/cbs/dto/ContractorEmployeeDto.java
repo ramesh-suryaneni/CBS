@@ -1,5 +1,8 @@
 package com.imagination.cbs.dto;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -20,4 +23,8 @@ public class ContractorEmployeeDto {
 	private String knownAs;
 
 	private String status;
+	
+	private BigDecimal rate;
+	
+	private List<String> projects;
 }
