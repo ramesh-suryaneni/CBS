@@ -123,7 +123,6 @@ public class BookingServiceImpl implements BookingService {
 		} else {
 			throw new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
 		}
-
 	}
 
 	@Transactional

@@ -3,9 +3,22 @@
  */
 package com.imagination.cbs.service.impl;
 
+import static com.imagination.cbs.util.AdobeConstant.FILE_EXTENSION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.StringJoiner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -96,13 +109,76 @@ public class BookingServiceImplTest {
 	public void shouldAddBookingDetails() {
 		BookingRequest bookingRequest = createBookingRequest();
 		Booking booking = createBooking();
+		
 		when(createBookingHelper.populateBooking(bookingRequest,1L, false)).thenReturn(booking);
 		when(bookingRepository.save(booking)).thenReturn(booking);
 		
 		shouldRetriveBookingDetailsWhenBookingDomainPresentInDB();
+		BookingDto actualBookingDto = bookingServiceImpl.addBookingDetails(bookingRequest);
 		
+		assertEquals("2025", actualBookingDto.getBookingRevisionId());
+		verify(createBookingHelper,times(1)).populateBooking(bookingRequest,1l, false);
+		verify(bookingRepository,times(1)).save(booking);
 	}
 	
+	@Test
+	public void shouldUpdateBookingDetailsWhenBookingDomainPresentInDB() {
+
+		BookingRequest bookingRequest = createBookingRequest();
+		Booking newBooking = createBooking();
+		Optional<Booking> bookingDomain = Optional.of(newBooking);
+		BookingRevision bookingRevision =  createBookingRevision();
+		Booking bookingDetails = bookingDomain.get();
+		long revNo = bookingRevision.getRevisionNumber();
+		
+		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
+		when(bookingSaveHelper.getLatestRevision(bookingDetails)).thenReturn(bookingRevision);
+		when(createBookingHelper.populateBooking(bookingRequest, ++revNo, false)).thenReturn(newBooking);
+		when(bookingRepository.save(newBooking)).thenReturn(null);
+		
+		shouldRetriveBookingDetailsWhenBookingDomainPresentInDB();
+		BookingDto actualBookingDto = bookingServiceImpl.updateBookingDetails(1910l, bookingRequest);
+		
+		assertEquals("1910", actualBookingDto.getBookingId());
+		assertEquals("Test Data", actualBookingDto.getBookingDescription());
+		verify(bookingRepository,times(1)).save(newBooking);
+	}
+	
+	@Test(expected = ResourceNotFoundException.class)
+	public void shouldNotUpdateBookingDetailsWhenBookingDomainNotPresentInDB() {
+		
+		BookingRequest bookingRequest = createBookingRequest();
+		when(bookingRepository.findById(1910l)).thenReturn(Optional.empty());
+		bookingServiceImpl.updateBookingDetails(1910l, bookingRequest);
+	}
+	
+	@Test
+	public void shouldSubmitBookingDetailsWhenBookingDomainPresentInDB() {
+		Booking newBooking = createBooking();
+		Optional<Booking> bookingDomain = Optional.of(newBooking);
+		BookingRequest bookingRequest = createBookingRequest();
+		BookingRevision bookingRevision =  createBookingRevision();
+		Booking bookingDetails = bookingDomain.get();
+		long revNo = bookingRevision.getRevisionNumber();
+		
+		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
+		when(bookingSaveHelper.getLatestRevision(bookingDetails)).thenReturn(bookingRevision);
+		when(createBookingHelper.populateBooking(bookingRequest, ++revNo, true)).thenReturn(newBooking);
+		when(bookingRepository.save(newBooking)).thenReturn(null);
+		
+		shouldRetriveBookingDetailsWhenBookingDomainPresentInDB();
+		BookingDto actualBookingDto = bookingServiceImpl.submitBookingDetails(1910l, bookingRequest);
+
+		assertEquals("2025", actualBookingDto.getBookingRevisionId());
+	}
+	
+	@Test(expected = ResourceNotFoundException.class)
+	public void shouldNotSubmitBookingDetailsWhenBookingDomainNotPresentInDB() {
+		
+		BookingRequest bookingRequest = createBookingRequest();
+		when(bookingRepository.findById(1910l)).thenReturn(Optional.empty());
+		bookingServiceImpl.submitBookingDetails(1910l, bookingRequest);
+	}
 	@Test
 	public void shouldRetriveBookingDetailsWhenBookingDomainPresentInDB() {
 	
@@ -110,11 +186,7 @@ public class BookingServiceImplTest {
 		Optional<Booking> bookingDomain = Optional.of(booking);
 		BookingRevision bookingRevision =  createBookingRevision();
 		BookingDto bookingDto = createBookingDto();
-		
-		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
-		Booking booking1 = bookingDomain.get();
-		when(bookingSaveHelper.getLatestRevision(booking1)).thenReturn(bookingRevision);
-		when(bookingMapper.convertToDto(bookingRevision)).thenReturn(bookingDto);
+		Booking bookingDetails = bookingDomain.get();
 		
 		bookingDto.setTeam(createTeamDtoFromMapper());
 		bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
@@ -122,16 +194,67 @@ public class BookingServiceImplTest {
 		bookingDto.setBookingDescription(booking.getBookingDescription());
 		bookingDto.setInsideIr35(bookingRevision.getRole().getInsideIr35());
 		
+		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
+		when(bookingSaveHelper.getLatestRevision(bookingDetails)).thenReturn(bookingRevision);
+		when(bookingMapper.convertToDto(bookingRevision)).thenReturn(bookingDto);
+		
 		BookingDto actual = bookingServiceImpl.retrieveBookingDetails(1910l);
 		assertEquals("2025", actual.getBookingRevisionId());
 		assertEquals(8000l, actual.getCommisioningOffice().getOfficeId());
+		
+		verify(bookingRepository,times(1)).findById(1910l);
+		verify(bookingSaveHelper,times(1)).getLatestRevision(bookingDetails);
+		verify(bookingMapper,times(1)).convertToDto(bookingRevision);
 	}
 	
 	@Test(expected = ResourceNotFoundException.class)
-	public void shouldRetriveBookingDetailsWhenBookingDomainNotPresentInDB() {
+	public void shouldNotRetriveBookingDetailsWhenBookingDomainNotPresentInDB() {
 		
 		when(bookingRepository.findById(1910l)).thenReturn(Optional.empty());
 		bookingServiceImpl.retrieveBookingDetails(1910l);
+		
+		verify(bookingRepository,times(1)).findById(1910l);
+	}
+	
+	/*@Test
+	public void shouldCancleBooking() {
+		
+		CBSUser cbsUser = Mockito.mock(CBSUser.class);
+		when(loggedInUserService.getLoggedInUserDetails().getDisplayName()).thenReturn(value)
+		
+	}*/
+	
+	@Test
+	public void shouldUpdateContractWhenBookingRevisionPresentInDB() throws URISyntaxException {
+		
+		String agreementId = "C-546";
+		URI uri = new URI("https://imaginationcbs.blob.core.windows.net/templates/page.html");
+		byte b[] = {20,10,30,5};
+		InputStream pdfInputStream = new ByteArrayInputStream(b);
+		
+		Optional<BookingRevision> bookingRevision = Optional.of(createBookingRevision());
+		BookingRevision bookingRev = bookingRevision.get();
+		bookingRev.setCompletedAgreementPdf(uri.toString());
+	
+		StringJoiner agreementName = new StringJoiner("-");
+		agreementName.add(String.valueOf(bookingRev.getBooking().getBookingId()));
+		agreementName.add(bookingRev.getJobNumber());
+		agreementName.add(bookingRev.getJobname());
+		
+		when(bookingRevisionRepository.findByAgreementId(agreementId)).thenReturn(bookingRevision);
+		when(adobeSignService.downloadAgreement(agreementId)).thenReturn(pdfInputStream);
+		when(azureStorageUtility.uploadFile(pdfInputStream,agreementName + ".pdf")).thenReturn(uri);
+		when(bookingRevisionRepository.save(bookingRev)).thenReturn(null);
+		
+		bookingServiceImpl.updateContract(agreementId, "22-04-2020");	
+	}
+	
+	@Test(expected = ResourceNotFoundException.class)
+	public void shouldNotUpdateContractWhenBookingRevisionNotPresentInDB() throws URISyntaxException {
+		
+		String agreementId = "C-546";
+		when(bookingRevisionRepository.findByAgreementId(agreementId)).thenReturn(Optional.empty());
+		bookingServiceImpl.updateContract(agreementId, "22-04-2020");
 	}
 	private BookingRequest createBookingRequest()
 	{
@@ -182,6 +305,8 @@ public class BookingServiceImplTest {
 		booking.setBookingId(1910l);
 		booking.setChangedBy("nafisa.ujloomwale");
 		booking.setTeam(createTeam());
+		booking.setBookingDescription("Test Data");
+		
 		return booking;
 	}
 	private ApprovalStatusDm createApprovalStatusDm() {
@@ -198,8 +323,17 @@ public class BookingServiceImplTest {
 		return team;
 	}
 	private BookingRevision createBookingRevision() {
+		Booking booking = new Booking();
+		booking.setApprovalStatus(createApprovalStatusDm());
+		booking.setBookingDescription("Test Data");
+		booking.setBookingId(1910l);
+		booking.setChangedBy("nafisa.ujloomwale");
+		booking.setTeam(createTeam());
+
 		BookingRevision bookingRevision = new BookingRevision();
 		bookingRevision.setBookingRevisionId(4065l);
+		bookingRevision.setBooking(booking);
+		bookingRevision.setAgreementId("C-546");
 		bookingRevision.setChangedBy("nafisa.ujloomwale");
 		bookingRevision.setContractorTotalAvailableDays(11l);
 		bookingRevision.setContractorTotalWorkingDays(10l);
@@ -228,13 +362,14 @@ public class BookingServiceImplTest {
 	{
 		BookingDto bookingDto = new BookingDto();
 		bookingDto.setBookingId("1910");
-		bookingDto.setBookingDescription("test data");
+		bookingDto.setBookingDescription("Test Data");
 		bookingDto.setBookingRevisionId("2025");
+		bookingDto.setTeam(createTeamDto());
 		bookingDto.setCommisioningOffice(createCommisioningOffice());
 		bookingDto.setInsideIr35("true");
 		bookingDto.setJobDeptName("Admin");
-		bookingDto.setJobname("JLR Experience Center");
-		bookingDto.setJobNumber("0987");
+		bookingDto.setJobname("RRMC Geneva AS 20 Press Conf - Production");
+		bookingDto.setJobNumber("100204205-02");
 		return bookingDto;
 	}
 	private OfficeDto createCommisioningOffice() {
