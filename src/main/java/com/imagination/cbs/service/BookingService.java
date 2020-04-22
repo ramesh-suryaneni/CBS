@@ -30,4 +30,6 @@ public interface BookingService {
 	public void updateContract(String contractor, String date);
 
 	public List<BookingDto> retrieveBookingRevisions(Long bookingId);
+
+	public void sendBookingReminder(Long bokingId);
 }

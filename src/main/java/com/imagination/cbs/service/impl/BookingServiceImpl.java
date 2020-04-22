@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.SecurityConstants;
 import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -159,6 +160,7 @@ public class BookingServiceImpl implements BookingService {
 			bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
 			bookingDto.setBookingDescription(booking.getBookingDescription());
 			bookingDto.setInsideIr35(bookingRevision.getRole().getInsideIr35());
+			bookingDto.setCreatedBy(booking.getChangedBy());
 			bookingDto.setDiscipline(
 					disciplineMapper.toDisciplineDtoFromDisciplineDomain(bookingRevision.getRole().getDiscipline()));
 		} else {
@@ -253,5 +255,31 @@ public class BookingServiceImpl implements BookingService {
 			throw new CBSApplicationException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
 		}
 		return bookingMapper.convertToDtoList(bookingRevisions);
+	}
+
+	@Override
+	public void sendBookingReminder(Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId));
+
+		Long statusId = booking.getApprovalStatus().getApprovalStatusId();
+		BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(booking);
+		if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(statusId)) {
+			emailHelper.prepareMailAndSendToHR(latestRevision);
+			return;
+		}
+		Long approverOrder = -1L;
+		if (ApprovalStatusConstant.APPROVAL_1.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_APPROVER_ID.getRoleDetails();
+		}
+
+		if (ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_BOOKING_CREATOR_ID.getRoleDetails();
+		}
+
+		if (ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_BOOKING_VIEWER_ID.getRoleDetails();
+		}
+		emailHelper.prepareMailAndSend(booking, latestRevision, approverOrder);
 	}
 }
