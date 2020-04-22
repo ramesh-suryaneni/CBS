@@ -257,16 +257,29 @@ public class ContractorServiceImplTest {
 
 	@Test
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfNotExistInDB() {
-		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
+		ContractorEmployee contractorEmployee = null;
 		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
-		ContractorEmployeeDefaultRate employeeDefaultRate = Mockito.mock(ContractorEmployeeDefaultRate.class);
 		
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
 				.thenReturn(contractorEmployeeDto);
-		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(employeeDefaultRate);
-		when(employeeDefaultRate.getRate()).thenReturn(new BigDecimal(0));
+
+		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+	}
+
+	@Test
+	public void getContractorEmployeeByContractorIdAndEmployeeIdIfRateNotExistInDB() {
+		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
+		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
+		
+		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
+				Mockito.anyLong())).thenReturn(contractorEmployee);
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
+				.thenReturn(contractorEmployeeDto);
+		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(null);
 		
 		List<String> projects = new ArrayList<>();
 		when(bookingRevisionRepository.findByContractEmployeeId(Mockito.anyLong())).thenReturn(projects);
