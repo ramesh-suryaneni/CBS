@@ -23,7 +23,6 @@ import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENTS_ENDPOIN
 import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENT_ID;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -237,7 +236,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			return response.getBody().path(ID).asText();
 
-		} catch (IOException exception) {
+		} catch (Exception exception) {
 
 			throw new CBSApplicationException(exception.getLocalizedMessage());
 		}
