@@ -79,10 +79,6 @@ public class BookingControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	/*
-	 * @MockBean private BookingValidator bookingValidator;
-	 */
-
 	@MockBean
 	private BookingService bookingService;
 
