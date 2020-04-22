@@ -94,7 +94,7 @@ public class BookingController {
 	}
 
 	@DeleteMapping("/{booking_id}")
-	public BookingDto canceBooking(@PathVariable("booking_id") Long bookingId) {
+	public List<BookingDto> canceBooking(@PathVariable("booking_id") Long bookingId) {
 		return bookingServiceImpl.cancelBooking(bookingId);
 	}
 

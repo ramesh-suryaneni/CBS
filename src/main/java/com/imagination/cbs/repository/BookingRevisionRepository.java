@@ -91,7 +91,4 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	
     Optional<BookingRevision> findByAgreementId(String agreementId);
-    
-	@Query("FROM BookingRevision br where br.booking.bookingId=:bookingId")
-	List<BookingRevision> findByBookingId(@Param("bookingId") Long bookingId);
 }
