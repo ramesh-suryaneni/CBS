@@ -42,7 +42,7 @@ public enum EmailConstants {
 	FROM_EMAIL("CBS@imagination.com"),
 	TO_EMAIL("internal_sourcing.email_to"),
 	INTERNAL_NOTIFICATION_SUBJECT_LINE("Internal Email Notification : Contractor Booking request #  "),
-	CONTRACT_RCEIPT_SUBJECT_LINE("Completed Contract: JLR Experience Centre - Contractor - Booking # {0}");
+	CONTRACT_RCEIPT_SUBJECT_LINE("Completed Contract: {0}-{1} - Contractor - Booking #{2}");
 	
 	
 	private String constantString;

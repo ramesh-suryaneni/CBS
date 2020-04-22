@@ -80,6 +80,7 @@ public class EmailServiceImpl implements EmailService {
 
 			String subject = MessageFormat.format(
 					(String) EmailConstants.CONTRACT_RCEIPT_SUBJECT_LINE.getConstantString(),
+					String.valueOf(revision.getJobNumber()), revision.getJobname(),
 					String.valueOf(revision.getBooking().getBookingId()));
 
 			MailRequest emailRequestDetails = new MailRequest();
