@@ -68,17 +68,26 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendContractReceipt(MailRequest request) {
+	public void sendContractReceipt(BookingRevision revision) {
 		try {
+
+			String[] contractReceiptToEmailReceipt = {
+					revision.getChangedBy() + EmailConstants.DOMAIN.getConstantString(),
+					revision.getContractor().getEmail() };
+
+			MailRequest emailRequestDetails = new MailRequest();
+			emailRequestDetails.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+			emailRequestDetails.setMailTo(contractReceiptToEmailReceipt);
+			emailRequestDetails.setSubject(EmailConstants.CONTRACT_RCEIPT_SUBJECT_LINE.getConstantString());
 
 			Template contractNotificationEmailTemplate = config.getTemplate(EmailConstants.PREFIX.getConstantString()
 					+ EmailConstants.CONTRACT_RECEIPT_TEMPLATE.getConstantString()
 					+ EmailConstants.EXT.getConstantString());
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(contractNotificationEmailTemplate,
-					getContractReceiptDataModel());
+					getContractReceiptDataModel(revision));
 
-			emailUtility.sendEmail(request, body);
+			emailUtility.sendEmail(emailRequestDetails, body);
 
 		} catch (Exception e) {
 
@@ -190,10 +199,7 @@ public class EmailServiceImpl implements EmailService {
 		return mapOfTemplateValues;
 	}
 
-	private Map<String, Object> getContractReceiptDataModel() {
-
-		String contractorPdfLink = "dummyLink";
-		String scopeOfWorkLink = "dummyLink";
+	private Map<String, Object> getContractReceiptDataModel(BookingRevision revision) {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
@@ -202,8 +208,8 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
-		mapOfTemplateValues.put(EmailConstants.CONTRACTOR_PDF_LINK.getConstantString(), contractorPdfLink);
-		mapOfTemplateValues.put(EmailConstants.SCOPE_OF_WORK_LINK.getConstantString(), scopeOfWorkLink);
+		mapOfTemplateValues.put(EmailConstants.CONTRACTOR_PDF_LINK.getConstantString(),
+				validateString(revision.getCompletedAgreementPdf()));
 
 		return mapOfTemplateValues;
 	}

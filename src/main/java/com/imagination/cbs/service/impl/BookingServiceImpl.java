@@ -37,6 +37,7 @@ import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
+import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.helper.BookingApproveHelper;
 import com.imagination.cbs.service.helper.BookingDeclineHelper;
@@ -99,6 +100,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private CreateBookingHelper createBookingHelper;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@Transactional
 	@Override
@@ -229,11 +233,14 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public void updateContract(String agreementId, String date) {
+
 		// update contract signed details to booking
 		BookingRevision bookingRevision = bookingRevisionRepository.findByAgreementId(agreementId)
 				.orElseThrow(() -> new ResourceNotFoundException("Agreement Id Not Found: " + agreementId));
+
 		// download agreement from adobe
 		InputStream pdfInputStream = adobeSignService.downloadAgreement(agreementId);
+
 		// upload agreement to azure
 		StringJoiner agreementName = new StringJoiner("-");
 		agreementName.add(String.valueOf(bookingRevision.getBooking().getBookingId()));
@@ -241,11 +248,16 @@ public class BookingServiceImpl implements BookingService {
 		agreementName.add(bookingRevision.getJobname());
 
 		URI url = azureStorageUtility.uploadFile(pdfInputStream, agreementName + FILE_EXTENSION);
+
 		lOGGER.info("Azure storage uri ::: {}", url);
+
 		bookingRevision.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRevision.setCompletedAgreementPdf(url.toString());
 		bookingRevisionRepository.save(bookingRevision);
+
 		// send email to creator/HR/?
+		emailService.sendContractReceipt(bookingRevision);
+
 	}
 
 	@Override
