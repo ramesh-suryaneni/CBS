@@ -1,6 +1,7 @@
 package com.imagination.cbs.service.impl;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,10 +76,14 @@ public class EmailServiceImpl implements EmailService {
 					revision.getChangedBy() + EmailConstants.DOMAIN.getConstantString(),
 					revision.getContractor().getEmail() };
 
+			String subject = MessageFormat.format(
+					(String) EmailConstants.CONTRACT_RCEIPT_SUBJECT_LINE.getConstantString(),
+					String.valueOf(revision.getBooking().getBookingId()));
+
 			MailRequest emailRequestDetails = new MailRequest();
 			emailRequestDetails.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
 			emailRequestDetails.setMailTo(contractReceiptToEmailReceipt);
-			emailRequestDetails.setSubject(EmailConstants.CONTRACT_RCEIPT_SUBJECT_LINE.getConstantString());
+			emailRequestDetails.setSubject(subject);
 
 			Template contractNotificationEmailTemplate = config.getTemplate(EmailConstants.PREFIX.getConstantString()
 					+ EmailConstants.CONTRACT_RECEIPT_TEMPLATE.getConstantString()
