@@ -60,10 +60,7 @@ public class ContractorController {
 	@GetMapping("/{id}")
 	public ContractorDto getContractor(@PathVariable("id") Long id){
 		
-		
 		return contractorService.getContractorByContractorId(id);
-	
-		
 	}
 	
 	

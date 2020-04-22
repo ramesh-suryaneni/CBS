@@ -4,57 +4,24 @@
 package com.imagination.cbs.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
-import com.imagination.cbs.domain.BookingWorkTask;
-import com.imagination.cbs.domain.Contractor;
-import com.imagination.cbs.domain.ContractorEmployee;
-import com.imagination.cbs.domain.ContractorMonthlyWorkDay;
-import com.imagination.cbs.domain.ContractorWorkSite;
-import com.imagination.cbs.domain.CurrencyDm;
 import com.imagination.cbs.domain.Discipline;
-import com.imagination.cbs.domain.OfficeDm;
-import com.imagination.cbs.domain.ReasonsForRecruiting;
-import com.imagination.cbs.domain.Region;
 import com.imagination.cbs.domain.RoleDm;
-import com.imagination.cbs.domain.SiteOptions;
-import com.imagination.cbs.domain.SupplierTypeDm;
 import com.imagination.cbs.domain.Team;
-import com.imagination.cbs.dto.ApprovalStatusDmDto;
 import com.imagination.cbs.dto.BookingDto;
 import com.imagination.cbs.dto.BookingRequest;
-import com.imagination.cbs.dto.ContractorDto;
-import com.imagination.cbs.dto.ContractorEmployeeDto;
-import com.imagination.cbs.dto.ContractorWorkSiteDto;
-import com.imagination.cbs.dto.CurrencyDto;
 import com.imagination.cbs.dto.DisciplineDto;
 import com.imagination.cbs.dto.OfficeDto;
-import com.imagination.cbs.dto.RecruitingDto;
-import com.imagination.cbs.dto.RegionDto;
-import com.imagination.cbs.dto.RoleDto;
-import com.imagination.cbs.dto.SiteOptionsDto;
-import com.imagination.cbs.dto.SupplierTypeDto;
 import com.imagination.cbs.dto.TeamDto;
-import com.imagination.cbs.dto.WorkDaysDto;
-import com.imagination.cbs.dto.WorkTasksDto;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.mapper.DisciplineMapper;

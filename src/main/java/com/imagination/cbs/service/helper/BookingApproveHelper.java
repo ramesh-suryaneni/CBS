@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,8 +26,7 @@ import com.imagination.cbs.security.CBSUser;
  */
 @Component("bookingApproveHelper")
 public class BookingApproveHelper {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BookingApproveHelper.class);
-
+	
 	@Autowired
 	private ApproverRepository approverRepository;
 
@@ -52,13 +49,9 @@ public class BookingApproveHelper {
 		Long currentApprovalStatus = latestRevision.getApprovalStatus().getApprovalStatusId();
 		boolean isInApprovalStatus = isInApproverStatus(currentApprovalStatus.intValue());
 
-		LOGGER.info("BOOKING ID :: {} CURRENT STATUS :: {} TEAM :: {}", booking.getBookingId(), currentApprovalStatus,
-				approverTeam.getTeamId());
-
 		if (isInApprovalStatus) {
 			// find next approval status based on current status and approval
 			Long nextStatus = getNextApprovalStatus(currentApprovalStatus, approverTeam);
-			LOGGER.info(" NEXT STATUS :: {} ", nextStatus);
 
 			// check if booking can be override.
 			ApproverOverrides approverOverride = approverOverridesRepository
@@ -130,10 +123,8 @@ public class BookingApproveHelper {
 		Optional<Approver> max = approvers.stream().max(Comparator.comparing(Approver::getApproverOrder));
 		Long maxApproverOrder = -1L;
 		if (max.isPresent()) {
-			maxApproverOrder = max.get().getApproverId();
+			maxApproverOrder = max.get().getApproverOrder();
 		}
-
-		LOGGER.info("TEAM :: {} MAX APPROVER ORDER :: {} ", approverTeam.getTeamId(), maxApproverOrder);
 
 		Long nextStatus = -1L;
 

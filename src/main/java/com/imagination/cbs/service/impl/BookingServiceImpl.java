@@ -53,7 +53,7 @@ import com.imagination.cbs.util.AzureStorageUtility;
 @Service("bookingService")
 public class BookingServiceImpl implements BookingService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
+	private static final Logger lOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
 
 	private static final String BOOKING_NOT_FOUND_MESSAGE = "No Booking Available with this number : ";
 
@@ -239,7 +239,7 @@ public class BookingServiceImpl implements BookingService {
 		agreementName.add(bookingRevision.getJobname());
 
 		URI url = azureStorageUtility.uploadFile(pdfInputStream, agreementName + FILE_EXTENSION);
-		LOGGER.info("Azure storage uri ::: {}", url);
+		lOGGER.info("Azure storage uri ::: {}", url);
 		bookingRevision.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRevision.setCompletedAgreementPdf(url.toString());
 		bookingRevisionRepository.save(bookingRevision);
