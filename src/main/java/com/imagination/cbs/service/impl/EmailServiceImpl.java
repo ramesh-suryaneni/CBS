@@ -166,10 +166,10 @@ public class EmailServiceImpl implements EmailService {
 			mapOfTemplateValues.put(EmailConstants.WORK_TASKS.getConstantString(), row.toString());
 		}
 
-		CBSUser user = loggedInUserService.getLoggedInUserDetails();
-		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
+		String creator = bookingRevision.getBooking().getChangedBy();
+		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), creator);
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
-				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
+				creator + EmailConstants.DOMAIN.getConstantString());
 
 		return mapOfTemplateValues;
 	}
