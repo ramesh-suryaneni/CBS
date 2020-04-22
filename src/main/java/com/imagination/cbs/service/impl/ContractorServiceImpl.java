@@ -124,11 +124,14 @@ public class ContractorServiceImpl implements ContractorService {
 		ContractorEmployee contractorEmployee = contractorEmployeeRepository
 				.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
 		ContractorEmployeeDto contractorEmployeeDto = contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
-		contractorEmployeeDto.setRate(contractorEmployee.getContractorEmployeeDefaultRate().getRate());
-		List<String> bookingRevisions = bookingRevisionRepository.findByContractEmployeeId(employeeId);
-		contractorEmployeeDto.setProjects(bookingRevisions);
+		if(null != contractorEmployee) {
+			if(null != contractorEmployee.getContractorEmployeeDefaultRate()) {
+				contractorEmployeeDto.setRate(contractorEmployee.getContractorEmployeeDefaultRate().getRate());
+			}
+			List<String> bookingRevisions = bookingRevisionRepository.findByContractEmployeeId(employeeId);
+			contractorEmployeeDto.setProjects(bookingRevisions);
+		}
 		
-		bookingRevisions.forEach(System.out::println);
 		return contractorEmployeeDto;
 	}
 
