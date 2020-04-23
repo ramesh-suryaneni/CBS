@@ -1,5 +1,6 @@
 package com.imagination.cbs.service.impl;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
@@ -165,20 +167,22 @@ public class ContractorServiceImpl implements ContractorService {
 		contractorEmpDomain.setContractor(optionalContractor.get());
 
 		Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
-		ContractorEmployeeRole contractorEmployeeRole = new ContractorEmployeeRole();
-		Optional<RoleDm> optionalRoleDm = roleRepository.findById(request.getRoleId());
-		if (!optionalRoleDm.isPresent()) {
-			throw new ResourceNotFoundException("Role Not Found with Id:- " + request.getRoleId());
+		if(!StringUtils.isEmpty(request.getRoleId())) {
+			Optional<RoleDm> optionalRoleDm = roleRepository.findById(Long.parseLong(request.getRoleId()));
+			if (!optionalRoleDm.isPresent()) {
+				throw new ResourceNotFoundException("Role Not Found with Id:- " + request.getRoleId());
+			}
+			ContractorEmployeeRole contractorEmployeeRole = new ContractorEmployeeRole();
+			contractorEmployeeRole.setRoleDm(optionalRoleDm.get());
+			contractorEmployeeRole.setDateFrom(currentTimeStamp);
+			contractorEmployeeRole.setChangedBy(loggedInUser);
+			contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
+			contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
 		}
-		contractorEmployeeRole.setRoleDm(optionalRoleDm.get());
-		contractorEmployeeRole.setDateFrom(currentTimeStamp);
-		contractorEmployeeRole.setChangedBy(loggedInUser);
-		contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
-		contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
-
+		
 		ContractorEmployeeDefaultRate contractorEmployeeDefaultRate = new ContractorEmployeeDefaultRate();
-		contractorEmployeeDefaultRate.setCurrencyId(request.getCurrencyId());
-		contractorEmployeeDefaultRate.setRate(request.getDayRate());
+		contractorEmployeeDefaultRate.setCurrencyId(Long.parseLong(request.getCurrencyId()));
+		contractorEmployeeDefaultRate.setRate(new BigDecimal(request.getDayRate()));
 		contractorEmployeeDefaultRate.setDateFrom(currentTimeStamp);
 		contractorEmployeeDefaultRate.setChangedBy(loggedInUser);
 		contractorEmployeeDefaultRate.setContractorEmployee(contractorEmpDomain);

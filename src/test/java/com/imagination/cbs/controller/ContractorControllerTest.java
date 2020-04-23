@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.ContractorDto;
@@ -96,7 +96,7 @@ public class ContractorControllerTest {
 				.thenReturn(createContractorEmployeeDto());
 
 		MvcResult mvcResult = this.mockMvc.perform(
-				post("/contractors/6000/employees").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+				post("/contractors/6001/employees").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 
 		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
@@ -180,10 +180,10 @@ public class ContractorControllerTest {
 	public ContractorEmployeeRequest createContractorEmployeeRequest() {
 		ContractorEmployeeRequest contractorEmpRequest = new ContractorEmployeeRequest();
 		contractorEmpRequest.setContractorEmployeeName("Akshay");
-		contractorEmpRequest.setCurrencyId(203l);
-		contractorEmpRequest.setDayRate(new BigDecimal(342));
+		contractorEmpRequest.setCurrencyId("203");
+		contractorEmpRequest.setDayRate("342.00");
 		contractorEmpRequest.setKnownAs("Aliace3");
-		contractorEmpRequest.setRoleId(123l);
+		contractorEmpRequest.setRoleId("123");
 
 		return contractorEmpRequest;
 	}

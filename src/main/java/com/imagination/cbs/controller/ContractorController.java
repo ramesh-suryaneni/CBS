@@ -3,6 +3,8 @@
  */
 package com.imagination.cbs.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -54,12 +56,11 @@ public class ContractorController {
 		}
 		
 		return contractorService.getContractorDeatils(pageNo, pageSize, sortingBy, sortingOrder);
-		
 	}
 	
 	@GetMapping("/{id}")
 	public ContractorDto getContractor(@PathVariable("id") Long id){
-		
+
 		return contractorService.getContractorByContractorId(id);
 	}
 	
@@ -69,8 +70,6 @@ public class ContractorController {
 			@PathVariable("empId") Long employeeId){
 		
 		return contractorService.getContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
-	
-		
 	}
 	
 	@PostMapping(consumes = "application/json", produces = "application/json")
@@ -78,16 +77,14 @@ public class ContractorController {
 		
 		ContractorDto createdContractorMap = contractorService.addContractorDetails(request);
 		return new ResponseEntity<>(createdContractorMap, HttpStatus.CREATED);
-	
 	}
 	
 	@PostMapping(value= "/{contractorId}/employees", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<ContractorEmployeeDto> addNewContractorEmployee(@PathVariable("contractorId") Long contractorId,
-			@RequestBody ContractorEmployeeRequest request){
+			@Valid @RequestBody ContractorEmployeeRequest request){
 		
 		ContractorEmployeeDto createdContractorEmployee = contractorService.addContractorEmployee(contractorId, request);
 		return new ResponseEntity<>(createdContractorEmployee, HttpStatus.CREATED);
-		
 	}
 	
 }

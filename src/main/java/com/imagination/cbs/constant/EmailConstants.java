@@ -29,6 +29,7 @@ public enum EmailConstants {
 	EMAIL_ADDRESS("mailAddress"),
 	JOB_NUMBER("jobNumber"),
 	JOB_NAME("jobName"),
+	REDIRECT_URL("redirectUrl"),
 
 	CONTRACTOR_PDF_LINK("contractorPdf"),
 	SCOPE_OF_WORK_LINK("scopeOfWorkPdf"),

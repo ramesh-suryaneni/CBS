@@ -5,22 +5,27 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
 import com.imagination.cbs.constant.EmailConstants;
+import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
+import com.imagination.cbs.repository.ApprovalStatusDmRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
@@ -48,6 +53,12 @@ public class EmailServiceImpl implements EmailService {
 	private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
 	private static final String TD = "</td>";
+
+	@Value("${baseUrl}")
+	private String baseUrl;
+
+	@Autowired
+	private ApprovalStatusDmRepository approvalStatusDmRepository;
 
 	@Override
 	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) { 
@@ -191,7 +202,11 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), creator);
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				creator + EmailConstants.DOMAIN.getConstantString());
-
+		baseUrl = baseUrl.replace("{bookingId}", String.valueOf(bookingRevision.getBooking().getBookingId()));
+		Optional<ApprovalStatusDm> status = approvalStatusDmRepository
+				.findById(bookingRevision.getApprovalStatus().getApprovalStatusId());
+		baseUrl = baseUrl.replace("{status}", status.isPresent() ? status.get().getApprovalName() : "");
+		mapOfTemplateValues.put(EmailConstants.REDIRECT_URL.getConstantString(), baseUrl);
 		return mapOfTemplateValues;
 	}
 

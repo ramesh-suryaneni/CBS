@@ -339,13 +339,8 @@ public class ContractorServiceImplTest {
 
 	@Test
 	public void addContractorEmployeeSucess() {
-		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
-		contractorEmployeeRequest.setContractorEmployeeName("Alex");
-		contractorEmployeeRequest.setKnownAs("Alias 1");
-		contractorEmployeeRequest.setRoleId(201L);
-		contractorEmployeeRequest.setDayRate(new BigDecimal(500));
-		contractorEmployeeRequest.setCurrencyId(101L);
-
+		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
+		
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("1001");
 		contractorEmployeeDto.setEmployeeId("101");
@@ -370,18 +365,50 @@ public class ContractorServiceImplTest {
 		assertEquals("1001", response.getContractorEmployeeId());
 	}
 
+	@Test
+	public void shouldAddContractorEmployeeIfRoleIdIsNull() {
+		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
+		contractorEmployeeRequest.setContractorEmployeeName("Alex");
+		contractorEmployeeRequest.setKnownAs("Alias 1");
+		contractorEmployeeRequest.setDayRate("500");
+		contractorEmployeeRequest.setCurrencyId("101");
+		
+		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
+		contractorEmployeeDto.setContractorEmployeeId("1001");
+		contractorEmployeeDto.setEmployeeId("101");
+		contractorEmployeeDto.setContractorEmployeeName("Alex");
+		contractorEmployeeDto.setKnownAs("Alias 1");
+		contractorEmployeeDto.setChangedBy("Test");
+
+		CBSUser cbsUser = Mockito.mock(CBSUser.class);
+		Contractor contractor = Mockito.mock(Contractor.class);
+
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
+
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(Mockito.any()))
+				.thenReturn(contractorEmployeeDto);
+
+		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
+
+		assertEquals("Alex", response.getContractorEmployeeName());
+		assertEquals("1001", response.getContractorEmployeeId());
+	}
+
 	@Test(expected = ResourceNotFoundException.class)
 	public void addContractorEmployeeIfContractorNotFound() {
+		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
 		CBSUser cbsUser = Mockito.mock(CBSUser.class);
 
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-		contractorServiceImpl.addContractorEmployee(2001L, new ContractorEmployeeRequest());
+		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
 	public void addContractorEmployeeIfRoleIdNotFound() {
+		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
 		CBSUser cbsUser = Mockito.mock(CBSUser.class);
 		Contractor contractor = Mockito.mock(Contractor.class);
 
@@ -389,8 +416,6 @@ public class ContractorServiceImplTest {
 		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
 		when(roleRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
-		contractorEmployeeRequest.setRoleId(101L);
 		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
 
@@ -454,4 +479,14 @@ public class ContractorServiceImplTest {
 		return new PageImpl<Contractor>(contractorList, PageRequest.of(0, 5), contractorList.size());
 	}
 
+	private ContractorEmployeeRequest getContractorEmployeeRequest() {
+		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
+		contractorEmployeeRequest.setContractorEmployeeName("Alex");
+		contractorEmployeeRequest.setKnownAs("Alias 1");
+		contractorEmployeeRequest.setRoleId("201");
+		contractorEmployeeRequest.setDayRate("500");
+		contractorEmployeeRequest.setCurrencyId("101");
+		
+		return contractorEmployeeRequest;
+	}
 }
