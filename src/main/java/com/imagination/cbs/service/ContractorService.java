@@ -27,5 +27,5 @@ public interface ContractorService {
 	
 	ContractorDto addContractorDetails(ContractorRequest request );
 	
-	ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request);
+	ContractorEmployeeDto addContractorEmployee(ContractorEmployeeRequest request);
 }
