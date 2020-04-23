@@ -19,11 +19,8 @@ public class ContractorEmployeeRequest {
 	@Pattern(regexp = "^\\d+\\.?\\d+$", message = "dayRate should be decimal")
 	private String dayRate;
 	
-	@NotEmpty(message = "knownAs must be non-empty")
 	private String knownAs; 
 	
-	private String contractorId;
-
 	private String roleId;
 	
 }
