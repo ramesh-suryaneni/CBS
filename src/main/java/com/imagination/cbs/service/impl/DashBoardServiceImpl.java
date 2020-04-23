@@ -63,7 +63,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
         List<DashBoardBookingDto> bookingDashboradDtosList = toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByJobName);
 		
-		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId);
+		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId, pageable);
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByHR = bookingRevisionRepository.retrieveBookingRevisionForWaitingForHRApproval(employeeId, pageable);
 		
@@ -91,6 +91,7 @@ public class DashBoardServiceImpl implements DashBoardService{
             bookingDashBoardDto.setChangedDate(CBSDateUtils.convertTimeStampToString(bookingRevision.get("changedDate", Timestamp.class)));
             bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
             bookingDashBoardDto.setBookingRevisionId(bookingRevision.get("bookingRevisionId", BigInteger.class));
+            bookingDashBoardDto.setBookingCreater(bookingRevision.get("bookingCreater", String.class));
             
             return bookingDashBoardDto;
             

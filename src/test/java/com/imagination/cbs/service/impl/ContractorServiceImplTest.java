@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort.Direction;
 
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
+import com.imagination.cbs.domain.ContractorEmployeeDefaultRate;
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
 import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.dto.ContractorDto;
@@ -37,6 +38,7 @@ import com.imagination.cbs.dto.ContractorRequest;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.ContractorEmployeeMapper;
 import com.imagination.cbs.mapper.ContractorMapper;
+import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -56,6 +58,9 @@ public class ContractorServiceImplTest {
 	@Mock
 	private ContractorEmployeeRepository contractorEmployeeRepository;
 
+	@Mock
+	private BookingRevisionRepository bookingRevisionRepository;
+	
 	@Mock
 	private ContractorMapper contractorMapper;
 
@@ -228,18 +233,23 @@ public class ContractorServiceImplTest {
 	@Test
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfExistInDB() {
 		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
-
+		ContractorEmployeeDefaultRate employeeDefaultRate = Mockito.mock(ContractorEmployeeDefaultRate.class);
+		
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("2001");
 		contractorEmployeeDto.setEmployeeId("3001");
 		contractorEmployeeDto.setContractorEmployeeName("John");
 		contractorEmployeeDto.setKnownAs("Alias");
-
+		
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
 				.thenReturn(contractorEmployeeDto);
-
+		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(employeeDefaultRate);
+		when(employeeDefaultRate.getRate()).thenReturn(new BigDecimal(1000));
+		List<String> projects = new ArrayList<>();
+		projects.add("Project1"); projects.add("Project2");
+		when(bookingRevisionRepository.findByContractEmployeeId(Mockito.anyLong())).thenReturn(projects);
 		ContractorEmployeeDto response = contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L,
 				3001L);
 		assertEquals("John", response.getContractorEmployeeName());
@@ -248,12 +258,32 @@ public class ContractorServiceImplTest {
 	@Test
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfNotExistInDB() {
 		ContractorEmployee contractorEmployee = null;
-
+		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
+		
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
-				.thenReturn(null);
+				.thenReturn(contractorEmployeeDto);
 
+		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+	}
+
+	@Test
+	public void getContractorEmployeeByContractorIdAndEmployeeIdIfRateNotExistInDB() {
+		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
+		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
+		
+		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
+				Mockito.anyLong())).thenReturn(contractorEmployee);
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
+				.thenReturn(contractorEmployeeDto);
+		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(null);
+		
+		List<String> projects = new ArrayList<>();
+		when(bookingRevisionRepository.findByContractEmployeeId(Mockito.anyLong())).thenReturn(projects);
+		
 		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
 		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
 		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);

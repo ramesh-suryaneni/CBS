@@ -15,5 +15,5 @@ public interface AdobeSignService {
 
 	void saveOrUpdateAdobeKeys(AdobeOAuthDto adobeOAuthDto);
 
-	public void saveOrUpdateAuthCode(String authcode);
+	void saveOrUpdateAuthCode(String authcode, String apiAccessPoint, String webAccessPoint);
 }

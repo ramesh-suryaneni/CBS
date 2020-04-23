@@ -4,10 +4,12 @@ import static com.imagination.cbs.util.AdobeConstant.ACCESS_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN_EXP_TIME;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_API_BASE_URI;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_AUTH_CODE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_CLIENT_ID;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_CLIENT_SECRET;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_GRANT_TYPE;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_OAUTH_BASE_URL;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REDIRECT_URL;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REFRESH_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.BEARER;
@@ -17,7 +19,6 @@ import static com.imagination.cbs.util.AdobeConstant.CODE;
 import static com.imagination.cbs.util.AdobeConstant.EXPIRES_IN;
 import static com.imagination.cbs.util.AdobeConstant.GRANT_TYPE;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_ACCESS_TOKEN_ENDPOINT;
-import static com.imagination.cbs.util.AdobeConstant.OAUTH_BASE_URL;
 import static com.imagination.cbs.util.AdobeConstant.OAUTH_REFRESH_TOKEN_ENDPOINT;
 import static com.imagination.cbs.util.AdobeConstant.REDIRECT_URI;
 import static com.imagination.cbs.util.AdobeConstant.REFRESH_TOKEN;
@@ -65,6 +66,7 @@ public class AdobeUtility {
 
 		String oauthAccessToken = "";
 		String oauthRefreshToken = "";
+		String oauthUri = "";
 
 		try {
 
@@ -75,20 +77,26 @@ public class AdobeUtility {
 				if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
 
 					oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
+
 					return BEARER + oauthAccessToken;
 
 				} else {
 					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
-					oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
+					oauthAccessToken = getNewAccessToken(oauthRefreshToken,
+							keys.get(ADOBE_OAUTH_BASE_URL).getKeyValue()).getAccessToken();
+
 					return BEARER + oauthAccessToken;
 				}
 
 			} else {
 
-				if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN))
+				if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN)) {
 					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
+					oauthUri = keys.get(ADOBE_OAUTH_BASE_URL).getKeyValue();
+				}
 
-				oauthAccessToken = getNewAccessToken(oauthRefreshToken).getAccessToken();
+				oauthAccessToken = getNewAccessToken(oauthRefreshToken, oauthUri).getAccessToken();
+
 			}
 
 			log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
@@ -105,13 +113,14 @@ public class AdobeUtility {
 	public String getBaseURIForRestAPI(String accessToken) {
 
 		String servicesBaseUrl = "";
-		Map<String, Config> keyValue = getAdobeKeyDetails("ADOBE_SERVICES_BASE_URL");
+		Map<String, Config> keyValue = getAdobeKeyDetails(ADOBE_API_BASE_URI);
 
 		log.info("servicesBaseUrl= {}", keyValue);
 
 		if (!CollectionUtils.isEmpty(keyValue)) {
 
-			servicesBaseUrl = keyValue.get("ADOBE_SERVICES_BASE_URL").getKeyValue();
+			servicesBaseUrl = keyValue.get(ADOBE_API_BASE_URI).getKeyValue();
+
 			return servicesBaseUrl;
 
 		} else {
@@ -132,13 +141,13 @@ public class AdobeUtility {
 		}
 	}
 
-	private AdobeOAuthDto getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken) {
+	private AdobeOAuthDto getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken, String oAutBaseUri) {
 
-		log.debug("oAuthToken::Refresh:: {}", oAuthRefreshToken);
+		log.debug("oAuthToken::Refresh:: {} oAutBaseUri::{}", oAuthRefreshToken, oAutBaseUri);
 		JsonNode response = null;
 		AdobeOAuthDto adobeOAuthDto = new AdobeOAuthDto();
 
-		String uri = OAUTH_BASE_URL + OAUTH_REFRESH_TOKEN_ENDPOINT;
+		String uri = oAutBaseUri + OAUTH_REFRESH_TOKEN_ENDPOINT;
 		HttpHeaders headers = new HttpHeaders();
 
 		try {
@@ -178,14 +187,14 @@ public class AdobeUtility {
 		return adobeOAuthDto;
 	}
 
-	private AdobeOAuthDto getNewAccessToken(String oauthRefreshToken) {
+	private AdobeOAuthDto getNewAccessToken(String oauthRefreshToken, String oAuthBaseUri) {
 
-		log.info("AdobeOAuth:::OAuthRefreshToken:: {}", oauthRefreshToken);
+		log.info("AdobeOAuth:::OAuthRefreshToken::{} oAuthBaseUri::{}", oauthRefreshToken, oAuthBaseUri);
 
 		ResponseEntity<JsonNode> results = null;
 		AdobeOAuthDto adobeOAuthDto = null;
 
-		String url = OAUTH_BASE_URL + OAUTH_ACCESS_TOKEN_ENDPOINT;
+		String url = oAuthBaseUri + OAUTH_ACCESS_TOKEN_ENDPOINT;
 		MultiValueMap<String, String> headers = new HttpHeaders();
 
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
@@ -201,7 +210,7 @@ public class AdobeUtility {
 				log.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
 
 			} else {
-				adobeOAuthDto = getOauthAccessTokenFromRefreshToken(oauthRefreshToken);
+				adobeOAuthDto = getOauthAccessTokenFromRefreshToken(oauthRefreshToken, oAuthBaseUri);
 				log.info("Get Access Token Used by Refresh Token :::{}", adobeOAuthDto);
 			}
 
@@ -247,7 +256,7 @@ public class AdobeUtility {
 			body.add(CLIENT_ID, adobeKeys.get(ADOBE_CLIENT_ID).getKeyValue());
 			body.add(CLIENT_SECRET, adobeKeys.get(ADOBE_CLIENT_SECRET).getKeyValue());
 			body.add(REDIRECT_URI, adobeKeys.get(ADOBE_REDIRECT_URL).getKeyValue());
-			body.add(GRANT_TYPE, adobeKeys.get(ADOBE_GRANT_TYPE).getKeyValue());
+			body.add(GRANT_TYPE, ADOBE_GRANT_TYPE);
 
 			log.info("Access Token Body:::{}", body);
 

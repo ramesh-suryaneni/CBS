@@ -9,6 +9,7 @@ public class BookingDto {
 	private String bookingId;
 	private String bookingDescription;
 	private String changedBy;
+	private String createdBy;
 	private String changedDate;
 
 	private String jobNumber;

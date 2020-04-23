@@ -1,6 +1,7 @@
 package com.imagination.cbs.service.impl;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import org.springframework.util.StringUtils;
 import com.imagination.cbs.constant.EmailConstants;
 import com.imagination.cbs.domain.BookingRevision;
 import com.imagination.cbs.domain.BookingWorkTask;
+import com.imagination.cbs.domain.Contractor;
+import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.dto.MailRequest;
 import com.imagination.cbs.security.CBSUser;
@@ -47,7 +50,7 @@ public class EmailServiceImpl implements EmailService {
 	private static final String TD = "</td>";
 
 	@Override
-	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
+	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) { 
 
 		logger.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request,
 				bookingRevision.getApprovalStatus().getApprovalName(), bookingRevision.getBooking().getBookingId());
@@ -68,17 +71,31 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendContractReceipt(MailRequest request) {
+	public void sendContractReceipt(BookingRevision revision) {
 		try {
+
+			String[] contractReceiptToEmailReceipt = {
+					revision.getChangedBy() + EmailConstants.DOMAIN.getConstantString(),
+					revision.getContractor().getEmail() };
+
+			String subject = MessageFormat.format(
+					(String) EmailConstants.CONTRACT_RCEIPT_SUBJECT_LINE.getConstantString(),
+					String.valueOf(revision.getJobNumber()), revision.getJobname(),
+					String.valueOf(revision.getBooking().getBookingId()));
+
+			MailRequest emailRequestDetails = new MailRequest();
+			emailRequestDetails.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
+			emailRequestDetails.setMailTo(contractReceiptToEmailReceipt);
+			emailRequestDetails.setSubject(subject);
 
 			Template contractNotificationEmailTemplate = config.getTemplate(EmailConstants.PREFIX.getConstantString()
 					+ EmailConstants.CONTRACT_RECEIPT_TEMPLATE.getConstantString()
 					+ EmailConstants.EXT.getConstantString());
 
 			String body = FreeMarkerTemplateUtils.processTemplateIntoString(contractNotificationEmailTemplate,
-					getContractReceiptDataModel());
+					getContractReceiptDataModel(revision));
 
-			emailUtility.sendEmail(request, body);
+			emailUtility.sendEmail(emailRequestDetails, body);
 
 		} catch (Exception e) {
 
@@ -117,14 +134,18 @@ public class EmailServiceImpl implements EmailService {
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
 		BigDecimal contractAmountAftertax = bookingRevision.getContractAmountAftertax();
+		ContractorEmployee contractEmployee = bookingRevision.getContractEmployee();
+		String contractEmployeeName = contractEmployee != null
+				? validateString(contractEmployee.getContractorEmployeeName()) : "";
+
+		Contractor contractor = bookingRevision.getContractor();
+		String contractorName = contractor != null ? validateString(contractor.getContractorName()) : "";
 
 		mapOfTemplateValues.put(EmailConstants.DISCIPLINE.getConstantString(),
 				bookingRevision.getRole().getDiscipline().getDisciplineName());
 		mapOfTemplateValues.put(EmailConstants.ROLE.getConstantString(), bookingRevision.getRole().getRoleName());
-		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(),
-				validateString(bookingRevision.getContractEmployee().getContractorEmployeeName()));
-		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(),
-				validateString(bookingRevision.getContractor().getContractorName()));
+		mapOfTemplateValues.put(EmailConstants.CONTRCTOR_EMPLOYEE.getConstantString(), contractEmployeeName);
+		mapOfTemplateValues.put(EmailConstants.CONTRCTOR.getConstantString(), contractorName);
 		mapOfTemplateValues.put(EmailConstants.SUPPLIER_TYPE.getConstantString(),
 				validateString(bookingRevision.getSupplierType().getName()));
 		mapOfTemplateValues.put(EmailConstants.START_DATE.getConstantString(),
@@ -190,10 +211,7 @@ public class EmailServiceImpl implements EmailService {
 		return mapOfTemplateValues;
 	}
 
-	private Map<String, Object> getContractReceiptDataModel() {
-
-		String contractorPdfLink = "dummyLink";
-		String scopeOfWorkLink = "dummyLink";
+	private Map<String, Object> getContractReceiptDataModel(BookingRevision revision) {
 
 		Map<String, Object> mapOfTemplateValues = new HashMap<>();
 
@@ -202,8 +220,8 @@ public class EmailServiceImpl implements EmailService {
 		mapOfTemplateValues.put(EmailConstants.REQUESTED_BY.getConstantString(), user.getDisplayName());
 		mapOfTemplateValues.put(EmailConstants.EMAIL_ADDRESS.getConstantString(),
 				user.getEmail() + EmailConstants.DOMAIN.getConstantString());
-		mapOfTemplateValues.put(EmailConstants.CONTRACTOR_PDF_LINK.getConstantString(), contractorPdfLink);
-		mapOfTemplateValues.put(EmailConstants.SCOPE_OF_WORK_LINK.getConstantString(), scopeOfWorkLink);
+		mapOfTemplateValues.put(EmailConstants.CONTRACTOR_PDF_LINK.getConstantString(),
+				validateString(revision.getCompletedAgreementPdf()));
 
 		return mapOfTemplateValues;
 	}

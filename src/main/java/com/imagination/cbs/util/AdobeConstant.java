@@ -12,6 +12,8 @@ public class AdobeConstant {
 	public static final String ADOBE_REFRESH_TOKEN = "ADOBE_REFRESH_TOKEN";
 	public static final String ADOBE_TOKEN_TYPE = "ADOBE_TOKEN_TYPE";
 	public static final String ADOBE_ACCESS_TOKEN_EXP_TIME = "ADOBE_ACCESS_TOKEN_EXP_TIME";
+	public static final String ADOBE_API_BASE_URI = "ADOBE_API_BASE_URI";
+	public static final String ADOBE_OAUTH_BASE_URL = "ADOBE_OAUTH_BASE_URL";
 	public static final String ACCESS_POINT = "api/rest/v6";
 	public static final String ROLE = "role";
 	public static final String ORDER = "order";
@@ -29,13 +31,11 @@ public class AdobeConstant {
 	public static final String STATE_IN_PROCESS = "IN_PROCESS";
 	
 	public static final String ADOBE_AUTH_CODE = "ADOBE_AUTH_CODE";
-	public static final String ADOBE_SIGN_BASE_URL = "ADOBE_SIGN_BASE_URL";
 	public static final String ADOBE_REDIRECT_URL = "ADOBE_REDIRECT_URL";
 
 	public static final String OAUTH_ACCESS_TOKEN_ENDPOINT = "/token";
 	public static final String OAUTH_REFRESH_TOKEN_ENDPOINT = "/refresh";
 	public static final String BEARER = "Bearer ";
-	public static final String OAUTH_BASE_URL = "https://secure.echosign.com/oauth";
 	public static final String ACCESS_TOKEN = "access_token";
 	public static final String REFRESH_TOKEN = "refresh_token";
 	public static final String TOKEN_TYPE = "token_type";
@@ -44,8 +44,7 @@ public class AdobeConstant {
 	public static final String ADOBE_CLIENT_ID = "ADOBE_CLIENT_ID";
 	public static final String ADOBE_CLIENT_SECRET = "ADOBE_CLIENT_SECRET";
 	public static final String ADOBE_REDIRECT_URI = "ADOBE_REDIRECT_URL";
-	public static final String ADOBE_GRANT_TYPE = "ADOBE_GRANT_TYPE";
-	//public static final String ADOBE_BASE_URI = "adobe.base_uri";  //get from DB
+	public static final String ADOBE_GRANT_TYPE = "authorization_code";
 
 	public static final String GRANT_TYPE = "grant_type";
 	public static final String CLIENT_ID = "client_id";

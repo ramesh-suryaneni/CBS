@@ -254,8 +254,8 @@ public class AdobeSignServiceImplTest {
 		when(configRepository.findByKeyName(ADOBE_AUTH_CODE)).thenReturn(configOptional);
 		when(configRepository.save(Mockito.any())).thenReturn(config);
 		
-		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode");
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode");
+		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
+		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
 	}
 
 	@Test
@@ -268,8 +268,8 @@ public class AdobeSignServiceImplTest {
 		when(configRepository.findByKeyName(ADOBE_AUTH_CODE)).thenReturn(configOptional);
 		when(configRepository.save(Mockito.any())).thenReturn(config);
 		
-		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode");
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode");
+		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
+		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
 	}
 
 	private void beforesaveOrUpdateAdobeKeysTestCases(boolean isEmptyOptional) throws Exception {

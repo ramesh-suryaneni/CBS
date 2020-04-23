@@ -91,7 +91,6 @@ public class BookingController {
 	@GetMapping("/{booking_id}")
 	public BookingDto getBookingDetails(@PathVariable("booking_id") Long bookingId) {
 		return bookingServiceImpl.retrieveBookingDetails(bookingId);
-
 	}
 
 	@DeleteMapping("/{booking_id}")
@@ -102,5 +101,11 @@ public class BookingController {
 	@GetMapping("/{booking_id}/revisions")
 	public List<BookingDto> getBookingRevisions(@PathVariable("booking_id") Long bookingId) {
 		return bookingServiceImpl.retrieveBookingRevisions(bookingId);
+	}
+
+	@GetMapping("/{booking_id}/reminder")
+	public ResponseEntity<String> sendBookingReminder(@PathVariable("booking_id") Long bookingId) {
+		bookingServiceImpl.sendBookingReminder(bookingId);
+		return new ResponseEntity<>("Reminder Mail Sent Sucessfully", HttpStatus.OK);
 	}
 }

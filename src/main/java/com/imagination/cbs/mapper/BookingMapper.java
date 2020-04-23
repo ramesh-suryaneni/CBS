@@ -20,8 +20,6 @@ public interface BookingMapper {
 
 	public Booking toBookingDomainFromBookingDto(BookingRequest bookingDto);
 
-	public BookingDto toBookingDtoFromBooking(Booking booking);
-
 	@Mapping(source = "contractedFromDate", dateFormat = "dd/MM/yyyy", target = "contractedFromDate")
 	@Mapping(source = "contractedToDate", dateFormat = "dd/MM/yyyy", target = "contractedToDate")
 	@Mapping(source = "contractorSignedDate", dateFormat = "dd/MM/yyyy", target = "contractorSignedDate")
@@ -43,6 +41,6 @@ public interface BookingMapper {
 		taskDto.setChangedDate(String.valueOf(workTask.getChangedDate()));
 		return taskDto;
 	}
-	
+
 	public List<BookingDto> convertToDtoList(List<BookingRevision> revisions);
 }

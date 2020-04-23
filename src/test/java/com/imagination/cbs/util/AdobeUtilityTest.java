@@ -144,8 +144,9 @@ public class AdobeUtilityTest {
 	
 	@Test
 	public void shouldGetExistingBaseURIForRestAPI() {
-		
-		when(configRepository.findBykeyNameStartingWith("ADOBE_SERVICES_BASE_URL")).thenReturn(getConfigList("ADOBE_SERVICES_BASE_URL", true, true));
+
+		when(configRepository.findBykeyNameStartingWith("ADOBE_API_BASE_URI"))
+				.thenReturn(getConfigList("ADOBE_API_BASE_URI", true, true));
 		String baseUrl = adobeUtility.getBaseURIForRestAPI("3AAABLblqZhCuY1hFaBq5aUHda_kQrZBWfpVAXiSAo");
 		assertEquals("localhost:8080/baseUrl", baseUrl);
 	}
@@ -155,9 +156,11 @@ public class AdobeUtilityTest {
 	public void shouldGetNewBaseURIForRestAPI() {
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		JsonNode jsonNode = Mockito.mock(JsonNode.class);
-		
-		when(configRepository.findBykeyNameStartingWith("ADOBE_SERVICES_BASE_URL")).thenReturn(getConfigList("Empty", true, true));
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+
+		when(configRepository.findBykeyNameStartingWith("ADOBE_API_BASE_URI"))
+				.thenReturn(getConfigList("Empty", true, true));
+		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(JsonNode.class)))
+				.thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(jsonNode);
 		when(jsonNode.path(Mockito.anyString())).thenReturn(jsonNode);
 		when(jsonNode.asText()).thenReturn("localhost:8080/baseUrl/");
@@ -214,18 +217,21 @@ public class AdobeUtilityTest {
 			keysList.add(c7);
 			
 			Config c8 = new Config();
-			c8.setKeyName("ADOBE_GRANT_TYPE");
-			c8.setKeyValue("ADOBE_GRANT_TYPE");
+			c8.setKeyName("ADOBE_OAUTH_BASE_URL");
+			c8.setKeyValue("https://secure.echosign.com/oauth");
 			keysList.add(c8);
-			
-		}else if(keyName.equals("ADOBE_SERVICES_BASE_URL")) {
+
+		} else if (keyName.equals("ADOBE_API_BASE_URI")) {
 			keysList = new ArrayList<>();
 			Config c = new Config();
-			c.setKeyName("ADOBE_SERVICES_BASE_URL");
+			c.setKeyName("ADOBE_API_BASE_URI");
 			c.setKeyValue("localhost:8080/baseUrl");
 			keysList.add(c);
 
-			
+			Config c1 = new Config();
+			c1.setKeyName("ADOBE_OAUTH_BASE_URL");
+			c1.setKeyValue("https://secure.echosign.com/oauth");
+			keysList.add(c1);
 		}
 			
 

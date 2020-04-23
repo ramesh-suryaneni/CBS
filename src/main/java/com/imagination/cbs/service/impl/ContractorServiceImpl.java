@@ -1,6 +1,7 @@
 package com.imagination.cbs.service.impl;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -27,6 +28,7 @@ import com.imagination.cbs.dto.ContractorRequest;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.mapper.ContractorEmployeeMapper;
 import com.imagination.cbs.mapper.ContractorMapper;
+import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorEmployeeSearchRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -49,6 +51,9 @@ public class ContractorServiceImpl implements ContractorService {
 	@Autowired
 	private RoleRepository roleRepository;
 
+	@Autowired
+	private BookingRevisionRepository bookingRevisionRepository;
+	
 	@Autowired
 	private ContractorEmployeeMapper contractorEmployeeMapper;
 
@@ -118,8 +123,16 @@ public class ContractorServiceImpl implements ContractorService {
 
 		ContractorEmployee contractorEmployee = contractorEmployeeRepository
 				.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
-
-		return contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		ContractorEmployeeDto contractorEmployeeDto = contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		if(null != contractorEmployee) {
+			if(null != contractorEmployee.getContractorEmployeeDefaultRate()) {
+				contractorEmployeeDto.setRate(contractorEmployee.getContractorEmployeeDefaultRate().getRate());
+			}
+			List<String> bookingRevisions = bookingRevisionRepository.findByContractEmployeeId(employeeId);
+			contractorEmployeeDto.setProjects(bookingRevisions);
+		}
+		
+		return contractorEmployeeDto;
 	}
 
 	@Transactional

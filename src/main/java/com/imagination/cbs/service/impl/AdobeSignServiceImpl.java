@@ -1,7 +1,9 @@
 package com.imagination.cbs.service.impl;
 
+import static com.imagination.cbs.util.AdobeConstant.ACCESS_POINT;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN_EXP_TIME;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_API_BASE_URI;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_AUTH_CODE;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REFRESH_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_TOKEN_TYPE;
@@ -243,20 +245,31 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	}
 
 	@Override
-	public void saveOrUpdateAuthCode(String authcode) {
-		
+	public void saveOrUpdateAuthCode(String authcode, String apiAccessPoint, String webAccessPoint) {
+
 		Optional<Config> config = configRepository.findByKeyName(ADOBE_AUTH_CODE);
-		if(config.isPresent()) {
+		if (config.isPresent()) {
 			Config con = config.get();
 			con.setKeyValue(authcode);
 			configRepository.save(con);
-		}else{
+		} else {
 			Config con = new Config();
 			con.setKeyName(ADOBE_AUTH_CODE);
 			con.setKeyValue(authcode);
 			configRepository.save(con);
 		}
-		
+
+		Optional<Config> configApiAccessPoint = configRepository.findByKeyName(ADOBE_API_BASE_URI);
+		if (configApiAccessPoint.isPresent()) {
+			Config con = configApiAccessPoint.get();
+			con.setKeyValue(apiAccessPoint + ACCESS_POINT);
+			configRepository.save(con);
+		} else {
+			Config con = new Config();
+			con.setKeyName(ADOBE_API_BASE_URI);
+			con.setKeyValue(apiAccessPoint + ACCESS_POINT);
+			configRepository.save(con);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

@@ -80,7 +80,7 @@ public class WebhookController {
 			@RequestParam(required = false, name = "api_access_point") String apiAccessPoint,
 			@RequestParam(required = false, name = "web_access_point") String webAccessPoint) {
 
-		adobeSignService.saveOrUpdateAuthCode(code);
+		adobeSignService.saveOrUpdateAuthCode(code, apiAccessPoint, webAccessPoint);
 				
 		return "sucess";
 		

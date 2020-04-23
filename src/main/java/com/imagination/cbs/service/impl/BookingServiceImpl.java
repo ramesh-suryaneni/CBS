@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.imagination.cbs.constant.ApprovalStatusConstant;
+import com.imagination.cbs.constant.SecurityConstants;
 import com.imagination.cbs.constant.UserActionConstant;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -36,6 +36,7 @@ import com.imagination.cbs.repository.BookingRevisionRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.AdobeSignService;
 import com.imagination.cbs.service.BookingService;
+import com.imagination.cbs.service.EmailService;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.helper.BookingApproveHelper;
 import com.imagination.cbs.service.helper.BookingDeclineHelper;
@@ -99,9 +100,12 @@ public class BookingServiceImpl implements BookingService {
 	@Autowired
 	private CreateBookingHelper createBookingHelper;
 
+	@Autowired
+	private EmailService emailService;
+
 	@Transactional
 	@Override
-	public BookingDto addBookingDetails(BookingRequest bookingRequest) {
+	public BookingDto addBookingDetails(BookingRequest bookingRequest) { 
 		Booking bookingDomain = createBookingHelper.populateBooking(bookingRequest, 1L, false);
 		Booking savedBooking = bookingRepository.save(bookingDomain);
 		return retrieveBookingDetails(savedBooking.getBookingId());
@@ -137,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
 			newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 			newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 			bookingRepository.save(newBookingDomain);
-			BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(newBookingDomain);
+	 		BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(newBookingDomain);
 			// send mail to approver order #1
 			emailHelper.prepareMailAndSend(newBookingDomain, latestRevision, 1L);
 			return retrieveBookingDetails(bookingId);
@@ -158,6 +162,7 @@ public class BookingServiceImpl implements BookingService {
 			bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
 			bookingDto.setBookingDescription(booking.getBookingDescription());
 			bookingDto.setInsideIr35(bookingRevision.getRole().getInsideIr35());
+			bookingDto.setCreatedBy(booking.getChangedBy());
 			bookingDto.setDiscipline(
 					disciplineMapper.toDisciplineDtoFromDisciplineDomain(bookingRevision.getRole().getDiscipline()));
 		} else {
@@ -184,8 +189,7 @@ public class BookingServiceImpl implements BookingService {
 				BookingRevision latestBookingRevision = bookingSaveHelper.getLatestRevision(booking);
 
 				bookingSaveHelper.saveBooking(booking, latestBookingRevision,
-						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(),
-						loggedInUserService.getLoggedInUserDetails());
+						ApprovalStatusConstant.APPROVAL_CANCELLED.getApprovalStatusId(), loggedInUserService.getLoggedInUserDetails());
 				return retrieveBookingDetails(bookingId);
 			}
 
@@ -226,11 +230,14 @@ public class BookingServiceImpl implements BookingService {
 
 	@Override
 	public void updateContract(String agreementId, String date) {
+
 		// update contract signed details to booking
 		BookingRevision bookingRevision = bookingRevisionRepository.findByAgreementId(agreementId)
 				.orElseThrow(() -> new ResourceNotFoundException("Agreement Id Not Found: " + agreementId));
+
 		// download agreement from adobe
 		InputStream pdfInputStream = adobeSignService.downloadAgreement(agreementId);
+
 		// upload agreement to azure
 		StringJoiner agreementName = new StringJoiner("-");
 		agreementName.add(String.valueOf(bookingRevision.getBooking().getBookingId()));
@@ -238,19 +245,48 @@ public class BookingServiceImpl implements BookingService {
 		agreementName.add(bookingRevision.getJobname());
 
 		URI url = azureStorageUtility.uploadFile(pdfInputStream, agreementName + FILE_EXTENSION);
+
 		lOGGER.info("Azure storage uri ::: {}", url);
+
 		bookingRevision.setContractorSignedDate(new Timestamp(System.currentTimeMillis()));
 		bookingRevision.setCompletedAgreementPdf(url.toString());
 		bookingRevisionRepository.save(bookingRevision);
+
 		// send email to creator/HR/?
+		emailService.sendContractReceipt(bookingRevision);
+
 	}
 
 	@Override
 	public List<BookingDto> retrieveBookingRevisions(Long bookingId) {
-		List<BookingRevision> bookingRevisions = bookingRevisionRepository.findByBookingId(bookingId);
-		if (CollectionUtils.isEmpty(bookingRevisions)) {
-			throw new CBSApplicationException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId));
+		return bookingMapper.convertToDtoList(booking.getBookingRevisions());
+	}
+
+	@Override
+	public void sendBookingReminder(Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId));
+
+		Long statusId = booking.getApprovalStatus().getApprovalStatusId();
+		BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(booking);
+		if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(statusId)) { 
+			emailHelper.prepareMailAndSendToHR(latestRevision);
+			return;
 		}
-		return bookingMapper.convertToDtoList(bookingRevisions);
+		Long approverOrder = -1L;
+		if (ApprovalStatusConstant.APPROVAL_1.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_APPROVER_ID.getRoleDetails();
+		}
+
+		if (ApprovalStatusConstant.APPROVAL_2.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_BOOKING_CREATOR_ID.getRoleDetails();
+		}
+
+		if (ApprovalStatusConstant.APPROVAL_3.getApprovalStatusId().equals(statusId)) {
+			approverOrder = SecurityConstants.ROLE_BOOKING_VIEWER_ID.getRoleDetails();
+		}
+		emailHelper.prepareMailAndSend(booking, latestRevision, approverOrder);
 	}
 }
