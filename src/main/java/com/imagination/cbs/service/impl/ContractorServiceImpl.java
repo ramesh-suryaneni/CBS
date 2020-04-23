@@ -152,7 +152,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public ContractorEmployeeDto addContractorEmployee(ContractorEmployeeRequest request) {
+	public ContractorEmployeeDto addContractorEmployee(Long contractorId, ContractorEmployeeRequest request) {
 
 		String loggedInUser = loggedInUserService.getLoggedInUserDetails().getDisplayName();
 		ContractorEmployee contractorEmpDomain = new ContractorEmployee();
@@ -160,14 +160,12 @@ public class ContractorServiceImpl implements ContractorService {
 		contractorEmpDomain.setKnownAs(request.getKnownAs());
 		contractorEmpDomain.setChangedBy(loggedInUser);
 
-		if(!StringUtils.isEmpty(request.getContractorId())) {
-			Optional<Contractor> optionalContractor = contractorRepository.findById(Long.parseLong(request.getContractorId()));
-			if (!optionalContractor.isPresent()) {
-				throw new ResourceNotFoundException("Contactor Not Found with Id:- " + request.getContractorId());
-			}
-			contractorEmpDomain.setContractor(optionalContractor.get());
+		Optional<Contractor> optionalContractor = contractorRepository.findById(contractorId);
+		if (!optionalContractor.isPresent()) {
+			throw new ResourceNotFoundException("Contactor Not Found with Id:- " + contractorId);
 		}
-		
+		contractorEmpDomain.setContractor(optionalContractor.get());
+
 		Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
 		if(!StringUtils.isEmpty(request.getRoleId())) {
 			Optional<RoleDm> optionalRoleDm = roleRepository.findById(Long.parseLong(request.getRoleId()));

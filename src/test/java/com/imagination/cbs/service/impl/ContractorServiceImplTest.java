@@ -359,14 +359,14 @@ public class ContractorServiceImplTest {
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(Mockito.any()))
 				.thenReturn(contractorEmployeeDto);
 
-		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(contractorEmployeeRequest);
+		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 
 		assertEquals("Alex", response.getContractorEmployeeName());
 		assertEquals("1001", response.getContractorEmployeeId());
 	}
 
 	@Test
-	public void shouldAddContractorEmployeeIfContractorIdAndRoleIdIsNull() {
+	public void shouldAddContractorEmployeeIfRoleIdIsNull() {
 		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
 		contractorEmployeeRequest.setContractorEmployeeName("Alex");
 		contractorEmployeeRequest.setKnownAs("Alias 1");
@@ -381,13 +381,15 @@ public class ContractorServiceImplTest {
 		contractorEmployeeDto.setChangedBy("Test");
 
 		CBSUser cbsUser = Mockito.mock(CBSUser.class);
+		Contractor contractor = Mockito.mock(Contractor.class);
 
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
 
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(Mockito.any()))
 				.thenReturn(contractorEmployeeDto);
 
-		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(contractorEmployeeRequest);
+		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 
 		assertEquals("Alex", response.getContractorEmployeeName());
 		assertEquals("1001", response.getContractorEmployeeId());
@@ -401,7 +403,7 @@ public class ContractorServiceImplTest {
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-		contractorServiceImpl.addContractorEmployee(contractorEmployeeRequest);
+		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
@@ -414,7 +416,7 @@ public class ContractorServiceImplTest {
 		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
 		when(roleRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-		contractorServiceImpl.addContractorEmployee(contractorEmployeeRequest);
+		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
 
 	private Page<ContractorEmployeeSearch> createContractorEmployeePagedData() {
@@ -484,7 +486,6 @@ public class ContractorServiceImplTest {
 		contractorEmployeeRequest.setRoleId("201");
 		contractorEmployeeRequest.setDayRate("500");
 		contractorEmployeeRequest.setCurrencyId("101");
-		contractorEmployeeRequest.setContractorId("2001");
 		
 		return contractorEmployeeRequest;
 	}

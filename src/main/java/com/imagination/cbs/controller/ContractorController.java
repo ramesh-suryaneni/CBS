@@ -79,10 +79,11 @@ public class ContractorController {
 		return new ResponseEntity<>(createdContractorMap, HttpStatus.CREATED);
 	}
 	
-	@PostMapping(value= "/employees", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<ContractorEmployeeDto> addNewContractorEmployee(@Valid @RequestBody ContractorEmployeeRequest request){
+	@PostMapping(value= "/{contractorId}/employees", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<ContractorEmployeeDto> addNewContractorEmployee(@PathVariable("contractorId") Long contractorId,
+			@Valid @RequestBody ContractorEmployeeRequest request){
 		
-		ContractorEmployeeDto createdContractorEmployee = contractorService.addContractorEmployee(request);
+		ContractorEmployeeDto createdContractorEmployee = contractorService.addContractorEmployee(contractorId, request);
 		return new ResponseEntity<>(createdContractorEmployee, HttpStatus.CREATED);
 	}
 	

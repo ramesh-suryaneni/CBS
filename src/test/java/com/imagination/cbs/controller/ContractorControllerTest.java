@@ -92,11 +92,11 @@ public class ContractorControllerTest {
 	public void shouldAddNewContractorEmployee() throws Exception {
 		String jsonRequest = objectMapper.writeValueAsString(createContractorEmployeeRequest());
 
-		when(contractorService.addContractorEmployee(Mockito.any(ContractorEmployeeRequest.class)))
+		when(contractorService.addContractorEmployee(Mockito.anyLong(), Mockito.any(ContractorEmployeeRequest.class)))
 				.thenReturn(createContractorEmployeeDto());
 
 		MvcResult mvcResult = this.mockMvc.perform(
-				post("/contractors/employees").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+				post("/contractors/6001/employees").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 
 		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
@@ -184,7 +184,6 @@ public class ContractorControllerTest {
 		contractorEmpRequest.setDayRate("342.00");
 		contractorEmpRequest.setKnownAs("Aliace3");
 		contractorEmpRequest.setRoleId("123");
-		contractorEmpRequest.setContractorId("6000");
 
 		return contractorEmpRequest;
 	}
