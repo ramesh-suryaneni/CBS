@@ -113,7 +113,7 @@ margin-right:25%;
 }
 </style>
 
-<center><button class="button">Review Document</button></center>
+<center><button class="button"><a style="text-decoration:none" href="${redirectUrl}">Review Document</a></button></center>
 <p style="font-size:12px;">  Please review and approve documents  <br> </br>Requested by:<br>
 <b>${requestedBy}</b>  <br>
 ${mailAddress}</p>

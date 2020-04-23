@@ -43,3 +43,5 @@ azure:
                 
 internal_sourcing:
     email_to: ramesh.suryaneni@imagination.com,pappu.rout@imagination.com,mitul.deshmukh@imagination.com
+
+baseUrl : https://imaginationcbs.z10.web.core.windows.net/#/dashboard/bookingSummary?bookingId={bookingId}&status={status}
