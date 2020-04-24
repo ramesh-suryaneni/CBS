@@ -47,7 +47,7 @@ public class DisciplineServiceImplTest {
 
 		assertEquals(8000, actualListOfDisciplineDto.get(0).getDisciplineId());
 		assertEquals("Creative", actualListOfDisciplineDto.get(0).getDisciplineName());
-		assertEquals("Client Services", actualListOfDisciplineDto.get(0).getDisciplineDescription());
+		assertEquals("Client Services", actualListOfDisciplineDto.get(0).getDisciplineDescription()); 
 
 	}
 	

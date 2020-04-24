@@ -1,6 +1,9 @@
 package com.imagination.cbs.controller;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -8,12 +11,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -32,6 +39,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,7 +140,8 @@ public class BookingControllerTest {
 	}
 
 	@WithMockUser("/developer")
-	@Test public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
+	@Test 
+	public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
 		  
 		when(bookingService.submitBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
 		
@@ -142,7 +154,20 @@ public class BookingControllerTest {
 		verify(bookingService).submitBookingDetails(2020L, createBookingRequest());
 	 
 	}
-
+	
+	/*@WithMockUser("/developer")
+	@Test(expected = MethodArgumentNotValidException.class)
+	public void shouldThrowMethodArgumentNotValidExceptionWhenBindingREsultHasErrors_ProcessBookingDetails() throws Exception {
+		BookingController controller = mock(BookingController.class);
+		BindingResult result = mock(BindingResult.class);
+		when(result.hasErrors()).thenReturn(true);
+		when(controller.processBookingDetails(2020L, createBookingRequest(), result)).thenReturn(Optional.empty());
+		//assertThatThrownBy(() ->processBookingDetails(2020L, createBookingRequest()).hasCause(MethodArgumentNotValidException .class));
+	//	when(bookingService.submitBookingDetails(2020L, createBookingRequest())).thenThrow(MethodArgumentNotValidException.class);
+		 this.mockMvc.perform(put("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
+					.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+				 	//.andExpect(status().isBadRequest());
+	}*/
 
 	@WithMockUser("/developer")
 	@Test

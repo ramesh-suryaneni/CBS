@@ -615,7 +615,7 @@ public class BookingServiceImplTest {
 		bookingRevision.setContractorTotalAvailableDays(11l);
 		bookingRevision.setContractorTotalWorkingDays(10l);
 		bookingRevision.setRole(createRoleDm());
-		bookingRevision.setJobname("RRMC Geneva AS 20 Press Conf - Production");
+		bookingRevision.setJobname("RRMC Geneva AS 20 Press Conf - Production"); 
 		bookingRevision.setJobNumber("100204205-02");
 		bookingRevision.setRevisionNumber(5l);
 		bookingRevision.setInsideIr35("true");
