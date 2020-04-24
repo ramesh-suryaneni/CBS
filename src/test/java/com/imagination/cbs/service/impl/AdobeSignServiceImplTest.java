@@ -1,6 +1,5 @@
 package com.imagination.cbs.service.impl;
 
-import static com.imagination.cbs.util.AdobeConstant.ADOBE_AUTH_CODE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -55,224 +54,201 @@ public class AdobeSignServiceImplTest {
 	public void init() throws Exception {
 		
 		when(adobeUtility.getOauthAccessToken()).thenReturn("AcessToken");
-		when(adobeUtility.getBaseURIForRestAPI(Mockito.anyString())).thenReturn("baseurl");
-		
+		when(adobeUtility.getBaseURIForRestAPI("AcessToken")).thenReturn("baseurl");
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldReturnInputStreamOnDownloadAgreement(){
+	public void shouldReturnDownloadedAgreementAsInputStream_DownloadAgreement(){
 
 		ResponseEntity<byte[]> mockedResult = Mockito.mock(ResponseEntity.class);
- 
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(byte[].class))).thenReturn(mockedResult);
 		byte b[] = {20,10,30,5};
+		
+		when(restTemplate.exchange(eq("baseurl/agreements/A-101/combinedDocument"), eq(HttpMethod.GET), Mockito.any(), eq(byte[].class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(b);
+		
 		InputStream actualInputStream = adobeSignServiceImpl.downloadAgreement("A-101");
 		assertNotNull(actualInputStream);
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void expectedResourceNotFoundExceptionOnDownloadAgreement() throws Exception {
+	public void shouldThrowResourceNotFoundException_DownloadAgreement() throws Exception {
+		
 		when(adobeUtility.getOauthAccessToken()).thenThrow(RuntimeException.class);
 		adobeSignServiceImpl.downloadAgreement("A-101");
 	}
 	
 	@Test
-	public void shouldUpdateAdobeKeys() throws Exception {
+	public void shouldUpdateExistingAdobeKey_SaveOrUpdateAdobeKeys() throws Exception {
 		
-		AdobeOAuthDto adobeOAuth = new AdobeOAuthDto();
-		adobeOAuth.setAccessToken("AccessToken-1234");
-		adobeOAuth.setRefreshToken("RefreshToken-1234");
-		adobeOAuth.setTokenType("Access");
-		adobeOAuth.setExpiresIn(Integer.MAX_VALUE);
+		AdobeOAuthDto adobeOAuth = createAdobeOAuthDto();
 		
-		beforesaveOrUpdateAdobeKeysTestCases(false);
+		beforeSaveOrUpdateAdobeKeysTestCases(false);
 
 		AdobeSignServiceImpl adobeSignServiceImplSpy = Mockito.spy(adobeSignServiceImpl);
 		adobeSignServiceImplSpy.saveOrUpdateAdobeKeys(adobeOAuth);
 		
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAdobeKeys(adobeOAuth);
+		verify(adobeSignServiceImplSpy).saveOrUpdateAdobeKeys(adobeOAuth);
 	}
 	
 	@Test
-	public void shouldSaveAdobeKeys() throws Exception {
+	public void shouldSaveNewAdobeKeyDetailsWhenAdobeKeyIsNotPresentInDB_SaveOrUpdateAdobeKeys() throws Exception {
 		
-		AdobeOAuthDto adobeOAuth = new AdobeOAuthDto();
-		adobeOAuth.setAccessToken("AccessToken-1234");
-		adobeOAuth.setRefreshToken("RefreshToken-1234");
-		adobeOAuth.setTokenType("Access");
-		adobeOAuth.setExpiresIn(Integer.MAX_VALUE);
-
-		beforesaveOrUpdateAdobeKeysTestCases(true);
+		AdobeOAuthDto adobeOAuth = createAdobeOAuthDto();
+		beforeSaveOrUpdateAdobeKeysTestCases(true);
 
 		AdobeSignServiceImpl adobeSignServiceImplSpy = Mockito.spy(adobeSignServiceImpl);
 		adobeSignServiceImplSpy.saveOrUpdateAdobeKeys(adobeOAuth);
 		
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAdobeKeys(adobeOAuth);
+		verify(adobeSignServiceImplSpy).saveOrUpdateAdobeKeys(adobeOAuth);
 	}
 	
 	@Test(expected = ResourceNotFoundException.class)
-	public void expectResourceNotFoundOnsaveOrUpdateAdobeKeys() throws Exception {
-		AdobeOAuthDto adobeOAuth = new AdobeOAuthDto();
-		adobeOAuth.setAccessToken("AccessToken-1234");
-		adobeOAuth.setRefreshToken("RefreshToken-1234");
-		adobeOAuth.setTokenType("Access");
-		adobeOAuth.setExpiresIn(Integer.MAX_VALUE);
+	public void shouldThrowResourceNotFoundWhenKeyNameIsNotPresentInDB_SaveOrUpdateAdobeKeys() throws Exception {
+		AdobeOAuthDto adobeOAuth = createAdobeOAuthDto();
 		
-		when(configRepository.findByKeyName(Mockito.anyString())).thenThrow(RuntimeException.class);
+		when(configRepository.findByKeyName("ADOBE_ACCESS_TOKEN")).thenThrow(RuntimeException.class);
 		
 		AdobeSignServiceImpl adobeSignServiceImplSpy = Mockito.spy(adobeSignServiceImpl);
 		adobeSignServiceImplSpy.saveOrUpdateAdobeKeys(adobeOAuth);
 		
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAdobeKeys(adobeOAuth);
+		verify(adobeSignServiceImplSpy).saveOrUpdateAdobeKeys(adobeOAuth);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldUploadAndCreateAgreement(){
-		String testStr = "This is a string to create inputstream";
+	public void shouldReturnTransientDocumentId_UploadAndCreateAgreement(){
+		String testStr = "Content to upload an Agreement";
 		InputStream inputStream = new ByteArrayInputStream(testStr.getBytes());
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		JsonNode mockedJsonNode = Mockito.mock(JsonNode.class);
 		
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+		when(restTemplate.exchange(eq("baseurl/transientDocuments"), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(mockedJsonNode);
-		when(mockedJsonNode.path(Mockito.anyString())).thenReturn(mockedJsonNode);
+		when(mockedJsonNode.path("transientDocumentId")).thenReturn(mockedJsonNode);
 		when(mockedJsonNode.asText()).thenReturn("TransientId:111222");
 		
 		String transientId = adobeSignServiceImpl.uploadAndCreateAgreement(inputStream, "Test.pdf");
-		
 		assertEquals("TransientId:111222", transientId);
 	}
 	
 	@Test
-	public void shouldReturnNullWhileExceptionInUploadAndCreateAgreement() {
-		String testStr = "This is a string to create inputstream";
+	public void shouldReturnNullWhenExceptionOccuredDuringUploadingOrCreatingAnAgreement_UploadAndCreateAgreement() {
+		String testStr = "Content to upload an Agreement";
 		InputStream inputStream = new ByteArrayInputStream( testStr.getBytes() );
 		
 		when(adobeUtility.getOauthAccessToken()).thenThrow(RuntimeException.class);
 		
 		String transientId = adobeSignServiceImpl.uploadAndCreateAgreement(inputStream, "Test.pdf");
-		
 		assertNull(transientId);
 	}
 		
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldSendAgreement() throws Exception {
+	public void shouldReturnAgreementId_SendAgreement() throws Exception {
 		String transientDocId = "TransientDocId";
 		BookingRevision bookingRevision = getBookingRevision();
-		
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		JsonNode mockedJsonNode = Mockito.mock(JsonNode.class);
-
 		String envArr[] = {"dev", "local", "qual"};
+
 		when(environment.getActiveProfiles()).thenReturn(envArr);
-		
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+		when(restTemplate.exchange(eq("baseurl/agreements"), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(mockedJsonNode);
-		when(mockedJsonNode.path(Mockito.anyString())).thenReturn(mockedJsonNode);
+		when(mockedJsonNode.path("id")).thenReturn(mockedJsonNode);
 		when(mockedJsonNode.asText()).thenReturn("Id:12345");
 		
 		String id = adobeSignServiceImpl.sendAgreement(transientDocId, bookingRevision);
-		
 		assertEquals("Id:12345", id);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldSendAgreementForLocalEnv() throws Exception {
+	public void shouldReturnAgreementIdForLocalEnv_SendAgreement() throws Exception {
 		String transientDocId = "TransientDocId";
 		BookingRevision bookingRevision = getBookingRevision();
-		
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		JsonNode mockedJsonNode = Mockito.mock(JsonNode.class);
-
 		String envArr[] = {"local"};
+
 		when(environment.getActiveProfiles()).thenReturn(envArr);
-		
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+		when(restTemplate.exchange(eq("baseurl/agreements"), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(mockedJsonNode);
-		when(mockedJsonNode.path(Mockito.anyString())).thenReturn(mockedJsonNode);
+		when(mockedJsonNode.path("id")).thenReturn(mockedJsonNode);
 		when(mockedJsonNode.asText()).thenReturn("Id:12345");
 		
 		String id = adobeSignServiceImpl.sendAgreement(transientDocId, bookingRevision);
-		
 		assertEquals("Id:12345", id);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldSendAgreementForQualEnv() throws Exception {
+	public void shouldReturnAgreementIdForQualEnv_SendAgreement() throws Exception {
 		String transientDocId = "TransientDocId";
 		BookingRevision bookingRevision = getBookingRevision();
-		
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		JsonNode mockedJsonNode = Mockito.mock(JsonNode.class);
-
 		String envArr[] = {"qual"};
+
 		when(environment.getActiveProfiles()).thenReturn(envArr);
-		
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+		when(restTemplate.exchange(eq("baseurl/agreements"), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenReturn(mockedJsonNode);
-		when(mockedJsonNode.path(Mockito.anyString())).thenReturn(mockedJsonNode);
+		when(mockedJsonNode.path("id")).thenReturn(mockedJsonNode);
 		when(mockedJsonNode.asText()).thenReturn("Id:12345");
 		
 		String id = adobeSignServiceImpl.sendAgreement(transientDocId, bookingRevision);
-		
 		assertEquals("Id:12345", id);
 	}
 
 	
 	@SuppressWarnings("unchecked")
 	@Test(expected = CBSApplicationException.class)
-	public void expectCBSApplicationExceptionOnSendAgreement() throws Exception {
+	public void shouldThrowCBSApplicationExceptionWhenExceptionOccuredDutingSendingAnAgreement_SendAgreement() throws Exception {
 		
 		String transientDocId = "TransientDocId";
 		BookingRevision bookingRevision = getBookingRevision();
-		
 		ResponseEntity<JsonNode> mockedResult = Mockito.mock(ResponseEntity.class);
 		String envArr[] = {"test"};
+
 		when(environment.getActiveProfiles()).thenReturn(envArr);
-		
-		when(restTemplate.exchange(Mockito.anyString(), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
+		when(restTemplate.exchange(eq("baseurl/agreements"), eq(HttpMethod.POST), Mockito.any(), eq(JsonNode.class))).thenReturn(mockedResult);
 		when(mockedResult.getBody()).thenThrow(RuntimeException.class);
-		
 		
 		adobeSignServiceImpl.sendAgreement(transientDocId, bookingRevision);
 	}
 	
 	
 	@Test
-	public void shouldSaveAuthCode() {
+	public void shouldSaveNewAuthCodeAndApiAccessPointWhenKeyNameNotPresentInDB_SaveOrUpdateAuthCode() {
 
 		AdobeSignServiceImpl adobeSignServiceImplSpy = Mockito.spy(adobeSignServiceImpl);
 		Config config = new Config();
 		Optional<Config> configOptional = Optional.empty();
 		
-		when(configRepository.findByKeyName(ADOBE_AUTH_CODE)).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_AUTH_CODE")).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_API_BASE_URI")).thenReturn(configOptional);
 		when(configRepository.save(Mockito.any())).thenReturn(config);
 		
 		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
-		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
+		verify(adobeSignServiceImplSpy).saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
 	}
 
 	@Test
-	public void shouldUpdateAuthCode() {
+	public void shouldUpdateAuthCodeAndApiAccessPointWhenKeyNameIsPresentInDB_SaveOrUpdateAuthCode() {
 
 		AdobeSignServiceImpl adobeSignServiceImplSpy = Mockito.spy(adobeSignServiceImpl);
 		Config config = new Config();
 		Optional<Config> configOptional = Optional.of(config);
 		
-		when(configRepository.findByKeyName(ADOBE_AUTH_CODE)).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_AUTH_CODE")).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_API_BASE_URI")).thenReturn(configOptional);
 		when(configRepository.save(Mockito.any())).thenReturn(config);
 		
 		adobeSignServiceImplSpy.saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
 		verify(adobeSignServiceImplSpy, times(1)).saveOrUpdateAuthCode("AuthCode","apiAccessPoint","webAccessPoint");
 	}
 
-	private void beforesaveOrUpdateAdobeKeysTestCases(boolean isEmptyOptional) throws Exception {
+	private void beforeSaveOrUpdateAdobeKeysTestCases(boolean isEmptyOptional) throws Exception {
 		Config config = new Config();
 		config.setKeyName("TestKey");
 		config.setKeyValue("TestValue");
@@ -284,7 +260,10 @@ public class AdobeSignServiceImplTest {
 		}else {
 			configOptional = Optional.of(config);
 		}
-		when(configRepository.findByKeyName(Mockito.anyString())).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_ACCESS_TOKEN")).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_REFRESH_TOKEN")).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_TOKEN_TYPE")).thenReturn(configOptional);
+		when(configRepository.findByKeyName("ADOBE_ACCESS_TOKEN_EXP_TIME")).thenReturn(configOptional);
 		when(configRepository.save(Mockito.any())).thenReturn(config);
 
 	}
@@ -303,5 +282,15 @@ public class AdobeSignServiceImplTest {
 
 		return bookingRevision;
 	}
-	
+
+	private AdobeOAuthDto createAdobeOAuthDto() {
+		
+		AdobeOAuthDto adobeOAuth = new AdobeOAuthDto();
+		adobeOAuth.setAccessToken("AccessToken-1234");
+		adobeOAuth.setRefreshToken("RefreshToken-1234");
+		adobeOAuth.setTokenType("Access");
+		adobeOAuth.setExpiresIn(Integer.MAX_VALUE);
+
+		return adobeOAuth;
+	}
 } 
