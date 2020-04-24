@@ -1,0 +1,96 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "uksouth"
+        },
+        "storageAccountNameforWebsite": {
+            "value": "cbs-bucket-wa"
+        },
+        "accountType": {
+            "value": "Standard_LRS"
+        },
+        "kind": {
+            "value": "StorageV2"
+        },
+        "accessTier": {
+            "value": "Hot"
+        },
+        "supportsHttpsTrafficOnly": {
+            "value": true
+        },
+        "largeFileSharesState": {
+            "value": "Disabled"
+        },
+		"storageAccountNameforDocs": {
+            "value": "cbs-bucket-doc"
+        },
+		"subscriptionId": {
+            "value": "15******-91c7-4f5e-baa9-********"
+        },
+        "WebAppname": {
+            "value": "cbs-website"
+        },
+		"hostingPlanName": {
+            "value": "cbs-app-server"
+        },
+        "serverFarmResourceGroup": {
+            "value": "innovation-devops"
+        },
+        "alwaysOn": {
+            "value": false
+        },
+        "sku": {
+            "value": "Free"
+        },
+		"skuCode": {
+            "value": "F1"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "workerSizeId": {
+            "value": "0"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "linuxFxVersion": {
+            "value": "TOMCAT|9.0-jre8"
+        },
+		"administratorLogin": {
+            "value": "sqldblogin"
+        },
+        "administratorLoginPassword": {
+            "value": null
+        },
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "databaseName": {
+            "value": "cbs-database"
+        },
+		"tier": {
+            "value": "Basic"
+        },
+        "skuName": {
+            "value": "Basic"
+        },
+        "maxSizeBytes": {
+            "value": 2147483648
+        },
+        "serverName": {
+            "value": "testcests"
+        },
+		"zoneRedundant": {
+            "value": false
+        },
+        "enableATP": {
+            "value": false
+        },
+        "allowAzureIps": {
+            "value": true
+        }
+    }
+}
