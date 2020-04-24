@@ -18,6 +18,8 @@ public class DashBoardBookingDto {
 	private BigInteger bookingId;
 	private BigInteger bookingRevisionId;
 	private String bookingCreater;
-
+	private String completedAgreementPdf;
+	
+	
+	
 }
-

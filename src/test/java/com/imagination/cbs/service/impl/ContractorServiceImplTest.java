@@ -60,7 +60,7 @@ public class ContractorServiceImplTest {
 
 	@Mock
 	private BookingRevisionRepository bookingRevisionRepository;
-	
+
 	@Mock
 	private ContractorMapper contractorMapper;
 
@@ -234,22 +234,19 @@ public class ContractorServiceImplTest {
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfExistInDB() {
 		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
 		ContractorEmployeeDefaultRate employeeDefaultRate = Mockito.mock(ContractorEmployeeDefaultRate.class);
-		
+
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("2001");
 		contractorEmployeeDto.setEmployeeId("3001");
 		contractorEmployeeDto.setContractorEmployeeName("John");
 		contractorEmployeeDto.setKnownAs("Alias");
-		
+
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
 				.thenReturn(contractorEmployeeDto);
 		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(employeeDefaultRate);
 		when(employeeDefaultRate.getRate()).thenReturn(new BigDecimal(1000));
-		List<String> projects = new ArrayList<>();
-		projects.add("Project1"); projects.add("Project2");
-		when(bookingRevisionRepository.findByContractEmployeeId(Mockito.anyLong())).thenReturn(projects);
 		ContractorEmployeeDto response = contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L,
 				3001L);
 		assertEquals("John", response.getContractorEmployeeName());
@@ -259,7 +256,7 @@ public class ContractorServiceImplTest {
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfNotExistInDB() {
 		ContractorEmployee contractorEmployee = null;
 		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
-		
+
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
@@ -274,16 +271,13 @@ public class ContractorServiceImplTest {
 	public void getContractorEmployeeByContractorIdAndEmployeeIdIfRateNotExistInDB() {
 		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
 		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
-		
+
 		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
 				Mockito.anyLong())).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
 				.thenReturn(contractorEmployeeDto);
 		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(null);
-		
-		List<String> projects = new ArrayList<>();
-		when(bookingRevisionRepository.findByContractEmployeeId(Mockito.anyLong())).thenReturn(projects);
-		
+
 		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
 		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
 		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
@@ -340,7 +334,7 @@ public class ContractorServiceImplTest {
 	@Test
 	public void addContractorEmployeeSucess() {
 		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
-		
+
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("1001");
 		contractorEmployeeDto.setEmployeeId("101");
@@ -372,7 +366,7 @@ public class ContractorServiceImplTest {
 		contractorEmployeeRequest.setKnownAs("Alias 1");
 		contractorEmployeeRequest.setDayRate("500");
 		contractorEmployeeRequest.setCurrencyId("101");
-		
+
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("1001");
 		contractorEmployeeDto.setEmployeeId("101");
@@ -486,7 +480,7 @@ public class ContractorServiceImplTest {
 		contractorEmployeeRequest.setRoleId("201");
 		contractorEmployeeRequest.setDayRate("500");
 		contractorEmployeeRequest.setCurrencyId("101");
-		
+
 		return contractorEmployeeRequest;
 	}
 }

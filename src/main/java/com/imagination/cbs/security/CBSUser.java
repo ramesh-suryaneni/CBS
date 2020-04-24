@@ -29,36 +29,6 @@ public class CBSUser implements UserDetails {
 
 	private String displayName;
 
-	/**
-	 * @param authorities
-	 * @param email
-	 * @param empId
-	 * @param maconomyEmpNumber
-	 * @param displayName
-	 * @param password
-	 * @param username
-	 * @param enabled
-	 * @param accountNonExpired
-	 * @param accountNonLocked
-	 * @param credentialsNonExpired
-	 */
-	public CBSUser(Collection<? extends GrantedAuthority> authorities, String email, Long empId,
-			String maconomyEmpNumber, String displayName, String password, String username, boolean enabled,
-			boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired) {
-		super();
-		this.authorities = authorities;
-		this.email = email;
-		this.empId = empId;
-		this.maconomyEmpNumber = maconomyEmpNumber;
-		this.displayName = displayName;
-		this.password = password;
-		this.username = username;
-		this.enabled = enabled;
-		this.accountNonExpired = accountNonExpired;
-		this.accountNonLocked = accountNonLocked;
-		this.credentialsNonExpired = credentialsNonExpired;
-	}
-
 	public CBSUser(String displayName) {
 		this.displayName = displayName;
 

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.imagination.cbs.constant.ApprovalStatusConstant;
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorEmployeeDefaultRate;
@@ -55,7 +56,7 @@ public class ContractorServiceImpl implements ContractorService {
 
 	@Autowired
 	private BookingRevisionRepository bookingRevisionRepository;
-	
+
 	@Autowired
 	private ContractorEmployeeMapper contractorEmployeeMapper;
 
@@ -125,15 +126,17 @@ public class ContractorServiceImpl implements ContractorService {
 
 		ContractorEmployee contractorEmployee = contractorEmployeeRepository
 				.findContractorEmployeeByContractorIdAndEmployeeId(contractorId, employeeId);
-		ContractorEmployeeDto contractorEmployeeDto = contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
-		if(null != contractorEmployee) {
-			if(null != contractorEmployee.getContractorEmployeeDefaultRate()) {
+		ContractorEmployeeDto contractorEmployeeDto = contractorEmployeeMapper
+				.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		if (null != contractorEmployee) {
+			if (null != contractorEmployee.getContractorEmployeeDefaultRate()) {
 				contractorEmployeeDto.setRate(contractorEmployee.getContractorEmployeeDefaultRate().getRate());
 			}
-			List<String> bookingRevisions = bookingRevisionRepository.findByContractEmployeeId(employeeId);
+			List<String> bookingRevisions = bookingRevisionRepository.findByContractEmployeeId(employeeId,
+					ApprovalStatusConstant.APPROVAL_COMPLETED.getApprovalStatusId());
 			contractorEmployeeDto.setProjects(bookingRevisions);
 		}
-		
+
 		return contractorEmployeeDto;
 	}
 
@@ -167,7 +170,7 @@ public class ContractorServiceImpl implements ContractorService {
 		contractorEmpDomain.setContractor(optionalContractor.get());
 
 		Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
-		if(!StringUtils.isEmpty(request.getRoleId())) {
+		if (!StringUtils.isEmpty(request.getRoleId())) {
 			Optional<RoleDm> optionalRoleDm = roleRepository.findById(Long.parseLong(request.getRoleId()));
 			if (!optionalRoleDm.isPresent()) {
 				throw new ResourceNotFoundException("Role Not Found with Id:- " + request.getRoleId());
@@ -179,7 +182,7 @@ public class ContractorServiceImpl implements ContractorService {
 			contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
 			contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
 		}
-		
+
 		ContractorEmployeeDefaultRate contractorEmployeeDefaultRate = new ContractorEmployeeDefaultRate();
 		contractorEmployeeDefaultRate.setCurrencyId(Long.parseLong(request.getCurrencyId()));
 		contractorEmployeeDefaultRate.setRate(new BigDecimal(request.getDayRate()));

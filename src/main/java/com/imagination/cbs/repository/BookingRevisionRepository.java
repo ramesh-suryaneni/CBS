@@ -56,7 +56,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	@Query(value ="with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName,br.contracted_from_date as contractedFromDate,"
 			+ " br.contracted_to_date as contractedToDate,br.changed_by as changedBy, bo.changed_by as bookingCreater, br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,"
-			+ " br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName from cbs.booking_revision br,"
+			+ " br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName, br.completed_agreement_pdf as completedAgreementPdf from cbs.booking_revision br,"
 			+ " cbs.employee_mapping emp,cbs.approver_override_jobs aoj,cbs.booking bo,cbs.approval_status_dm asd, cbs.role_dm rd"
 			+ " where bo.booking_id = br.booking_id and bo.status_id=br.approval_status_id and asd.approval_status_id=br.approval_status_id"
 			+ " and rd.role_id = br.role_id and aoj.employee_id=emp.employee_id and br.job_number=aoj.job_number"
@@ -68,7 +68,8 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	@Query(value = "with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName, rd.role_name as roleName,"
 			+ " br.contracted_from_date as contractedFromDate, br.contracted_to_date as contractedToDate, br.changed_by as changedBy, bo.changed_by as bookingCreater, "
-			+ " br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status"
+			+ " br.changed_date as changedDate,br.booking_revision_id as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status,"
+			+ " br.completed_agreement_pdf as completedAgreementPdf "
 			+ " from cbs.booking_revision br, cbs.approver approver, cbs.role_dm rd, cbs.approval_status_dm asd,cbs.booking bo where"
 			+ " case when br.approval_status_id = 1002 then 1 when br.approval_status_id = 1003 then 2"
 			+ " when br.approval_status_id = 1004 then 3 "
@@ -81,7 +82,8 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 	
 	@Query(value ="with bookingRevesionTemp as (select br.booking_id as bookingId, br.job_name as jobName,br.contracted_from_date as contractedFromDate,"
 			+ " br.contracted_to_date as contractedToDate,br.changed_by as changedBy, bo.changed_by as bookingCreater, br.changed_date as changedDate,br.booking_revision_id"
-			+ " as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName from cbs.booking_revision br,"
+			+ " as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName, br.completed_agreement_pdf as completedAgreementPdf"
+			+ " from cbs.booking_revision br,"
 			+ " cbs.employee_mapping emp, cbs.booking bo,cbs.approval_status_dm asd ,cbs.role_dm rd	where bo.booking_id = br.booking_id"
 			+ " and bo.status_id = br.approval_status_id and br.approval_status_id = 1005 and asd.approval_status_id=br.approval_status_id"
 			+ " and rd.role_id = br.role_id	and emp.employee_id=:employeeId)select bookingRevesionTemp.*, con.contractor_name contractorName"
@@ -91,7 +93,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 		
     Optional<BookingRevision> findByAgreementId(String agreementId);
     
-	@Query("SELECT DISTINCT(br.jobname) FROM BookingRevision br where br.contractEmployee.contractorEmployeeId=:contractorEmployeeId")
-	List<String> findByContractEmployeeId(@Param("contractorEmployeeId") Long contractorEmployeeId);
+	@Query("SELECT DISTINCT(br.jobname) FROM BookingRevision br where br.contractEmployee.contractorEmployeeId=:contractorEmployeeId and br.approvalStatus.approvalStatusId=:statusId")
+	List<String> findByContractEmployeeId(@Param("contractorEmployeeId") Long contractorEmployeeId, @Param("statusId") Long statusId);
 
 }

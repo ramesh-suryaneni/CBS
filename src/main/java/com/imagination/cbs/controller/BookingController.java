@@ -3,7 +3,9 @@
  */
 package com.imagination.cbs.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -104,8 +106,10 @@ public class BookingController {
 	}
 
 	@GetMapping("/{booking_id}/reminder")
-	public ResponseEntity<String> sendBookingReminder(@PathVariable("booking_id") Long bookingId) {
+	public ResponseEntity<Map<Integer, String>> sendBookingReminder(@PathVariable("booking_id") Long bookingId) {
 		bookingServiceImpl.sendBookingReminder(bookingId);
-		return new ResponseEntity<>("Reminder Mail Sent Sucessfully", HttpStatus.OK);
+		Map<Integer, String> map = new HashMap<>();
+		map.put(1, "Reminder Mail Sent Sucessfully");
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 }
