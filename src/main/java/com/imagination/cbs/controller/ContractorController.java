@@ -51,11 +51,8 @@ public class ContractorController {
             @RequestParam(defaultValue = "contractorName") String sortingBy,
 			@RequestParam(defaultValue = "ASC") String sortingOrder){
 		
-		if(!name.equals("")) {
-			return contractorService.getContractorDeatilsContainingName(name, pageNo, pageSize, sortingBy, sortingOrder);			
-		}
-		
-		return contractorService.getContractorDeatils(pageNo, pageSize, sortingBy, sortingOrder);
+		return name.equals("") ? contractorService.getContractorDeatils(pageNo, pageSize, sortingBy, sortingOrder) : 
+			contractorService.getContractorDeatilsContainingName(name, pageNo, pageSize, sortingBy, sortingOrder);
 	}
 	
 	@GetMapping("/{id}")
