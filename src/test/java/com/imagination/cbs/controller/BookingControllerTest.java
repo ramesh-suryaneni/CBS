@@ -32,6 +32,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -140,6 +141,17 @@ public class BookingControllerTest {
 				.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
 
 		verify(bookingService).submitBookingDetails(2020L, createBookingRequest());
+	 
+	}
+	
+	@WithMockUser("/developer")
+	@Test public void shouldThrowMethodArgumentNotValidExceptionWhenRoleIdIsNotPresentInBookingRequest() throws Exception {
+		  
+		
+		this.mockMvc.perform(put("/bookings/{bookingId}", 2020L).content(objectMapper.writeValueAsString(new BookingRequest()))
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+
 	 
 	}
 

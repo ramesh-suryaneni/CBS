@@ -69,10 +69,13 @@ public class BookingController {
 	@PutMapping(value = "/{booking_id}", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<BookingDto> processBookingDetails(@PathVariable("booking_id") Long bookingId,
 			@Valid @RequestBody BookingRequest booking, BindingResult result) throws MethodArgumentNotValidException {
-		bookingValidator.validate(booking, result);
+		
 		if (result.hasErrors()) {
 			throw new MethodArgumentNotValidException(null, result);
 		}
+		
+		bookingValidator.validate(booking, result);
+		
 		BookingDto processedBooking = bookingServiceImpl.submitBookingDetails(bookingId, booking);
 		return new ResponseEntity<>(processedBooking, HttpStatus.OK);
 	}
