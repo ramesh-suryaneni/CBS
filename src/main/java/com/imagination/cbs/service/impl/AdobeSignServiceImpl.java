@@ -172,9 +172,9 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 			result.put(ADOBE_ACCESS_TOKEN_EXP_TIME, c4);
 			log.info("result:::{}", new ObjectMapper().writeValueAsString(result));
 
-		} catch (Exception e) {
+		} catch (Exception exception) {
 
-			throw new ResourceNotFoundException(e.getLocalizedMessage());
+			throw new ResourceNotFoundException(exception.getLocalizedMessage());
 
 		}
 	}
