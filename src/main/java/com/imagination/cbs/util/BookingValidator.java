@@ -16,6 +16,33 @@ public class BookingValidator implements Validator {
 
 	private static final String WORK_TASKS = "workTasks";
 	private static final String BAD_ERROR_CODE = HttpStatus.BAD_REQUEST.toString();
+	
+	@Override
+	public void validate(Object target, Errors errors) {
+		BookingRequest bookingRequest = (BookingRequest) target;
+		boolean insideIr35 = Boolean.parseBoolean(bookingRequest.getInsideIr35());
+		if (insideIr35 && bookingRequest.getContractWorkLocation() == null) {
+			errors.rejectValue("contractWorkLocation", BAD_ERROR_CODE, "Contract Work Location cannot be null");
+		}
+		if (insideIr35 && bookingRequest.getContractorTotalAvailableDays() == null) {
+			errors.rejectValue("contractWorkLocation", BAD_ERROR_CODE, "Contract Work Location cannot be null");
+		}
+		if (insideIr35 && bookingRequest.getContractAmountAftertax() == null) {
+			errors.rejectValue("contractAmountAfterTax", BAD_ERROR_CODE, "Contract Amount Tax Location cannot be null");
+		}
+		if (insideIr35 && bookingRequest.getEmployerTaxPercent() == null) {
+			errors.rejectValue("employerTaxPercent", BAD_ERROR_CODE, "Employer Tax Percent cannot be null");
+		}
+		if (!insideIr35) {
+			validateWorkTasks(bookingRequest.getWorkTasks(), errors);
+		}
+		if (insideIr35) {
+			validateWorkDays(bookingRequest.getWorkDays(), errors);
+		}
+		if (insideIr35 && bookingRequest.getCommisioningOffice() == null) {
+			errors.rejectValue("commisioningOffice", BAD_ERROR_CODE, "Commisioning Office cannot be null");
+		}
+	}
 
 	private void validateWorkTasks(List<WorkTasksDto> workTasks, Errors errors) {
 		for (WorkTasksDto work : workTasks) {
@@ -56,30 +83,5 @@ public class BookingValidator implements Validator {
 		return BookingRequest.class.equals(clazz);
 	}
 
-	@Override
-	public void validate(Object target, Errors errors) {
-		BookingRequest bookingRequest = (BookingRequest) target;
-		boolean insideIr35 = Boolean.parseBoolean(bookingRequest.getInsideIr35());
-		if (insideIr35 && bookingRequest.getContractWorkLocation() == null) {
-			errors.rejectValue("contractWorkLocation", BAD_ERROR_CODE, "Contract Work Location cannot be null");
-		}
-		if (insideIr35 && bookingRequest.getContractorTotalAvailableDays() == null) {
-			errors.rejectValue("contractWorkLocation", BAD_ERROR_CODE, "Contract Work Location cannot be null");
-		}
-		if (insideIr35 && bookingRequest.getContractAmountAftertax() == null) {
-			errors.rejectValue("contractAmountAfterTax", BAD_ERROR_CODE, "Contract Amount Tax Location cannot be null");
-		}
-		if (insideIr35 && bookingRequest.getEmployerTaxPercent() == null) {
-			errors.rejectValue("employerTaxPercent", BAD_ERROR_CODE, "Employer Tax Percent cannot be null");
-		}
-		if (!insideIr35) {
-			validateWorkTasks(bookingRequest.getWorkTasks(), errors);
-		}
-		if (insideIr35) {
-			validateWorkDays(bookingRequest.getWorkDays(), errors);
-		}
-		if (insideIr35 && bookingRequest.getCommisioningOffice() == null) {
-			errors.rejectValue("commisioningOffice", BAD_ERROR_CODE, "Commisioning Office cannot be null");
-		}
-	}
+	
 }

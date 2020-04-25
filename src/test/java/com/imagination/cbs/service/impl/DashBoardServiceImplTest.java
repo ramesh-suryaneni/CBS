@@ -74,6 +74,7 @@ public class DashBoardServiceImplTest {
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled("Pappu", "Draft", PageRequest.of(10, 100))).thenReturn(bookingRevisions);
 		when(tuple.get("status", String.class)).thenReturn("Draft");
+		when(tuple.get("completedAgreementPdf", String.class)).thenReturn("maginationcbs.z10.web.core.windows.net");
 		
 		Page<DashBoardBookingDto> actual = dashBoardServiceImpl.getDashBoardBookingsStatusDetails("Draft", 10, 100);
 		
@@ -133,6 +134,7 @@ public class DashBoardServiceImplTest {
 		when(tuple.get("changedDate", Timestamp.class)).thenReturn(new Timestamp(System.currentTimeMillis()));
 		when(tuple.get("bookingId", BigInteger.class)).thenReturn(BigInteger.valueOf(1002));
 		when(tuple.get("bookingRevisionId", BigInteger.class)).thenReturn(BigInteger.valueOf(1012));
+		when(tuple.get("bookingCreater", String.class)).thenReturn("Pappu");
 		
 		bookingRevisions.add(tuple);
 		return bookingRevisions;

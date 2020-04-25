@@ -25,10 +25,10 @@ import com.imagination.cbs.dto.ErrorResponse;
 public class CBSGlobalExceptionHandler {
 	
 	@ExceptionHandler(CBSApplicationException.class)
-	public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
+	public ResponseEntity<ErrorResponse> handlerCBSApplicationException(CBSApplicationException cbsApplicationException) {
 		ErrorResponse error = new ErrorResponse();
 		error.setErrorCode(HttpStatus.PRECONDITION_FAILED.value());
-		error.setMessage(ex.getMessage());
+		error.setMessage(cbsApplicationException.getMessage());
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 
@@ -56,7 +56,7 @@ public class CBSGlobalExceptionHandler {
 	
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler(CBSUnAuthorizedException.class)
-	public String handleHTTP403Exception(RuntimeException runtimeException){
+	public String handleCBSUnAuthorizedException(RuntimeException runtimeException){
 		return runtimeException.getMessage();
 	}
 	
