@@ -1,8 +1,7 @@
 package com.imagination.cbs.service.impl;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +27,7 @@ import org.springframework.data.domain.Sort.Direction;
 import com.imagination.cbs.domain.Contractor;
 import com.imagination.cbs.domain.ContractorEmployee;
 import com.imagination.cbs.domain.ContractorEmployeeDefaultRate;
+import com.imagination.cbs.domain.ContractorEmployeeRole;
 import com.imagination.cbs.domain.ContractorEmployeeSearch;
 import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.dto.ContractorDto;
@@ -77,104 +77,65 @@ public class ContractorServiceImplTest {
 	private ContractorServiceImpl contractorServiceImpl;
 
 	@Test
-	public void geContractorEmployeeDetailsIfExistsInDB() {
+	public void shouldReturnPaginatedContractorEmployeeDetails() {
 
 		Pageable pageable = PageRequest.of(0, 5, Sort.by(Direction.ASC, "roleId"));
+		
 		when(contractorEmployeeSearchRepository.findAll(pageable)).thenReturn(createContractorEmployeePagedData());
-		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.geContractorEmployeeDetails(0,
+		
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl.getContractorEmployeeDetails(0,
 				5, "roleId", "ASC");
 
-		verify(contractorEmployeeSearchRepository, times(1)).findAll(pageable);
-		String role = contractorEmployeeDto.getContent().get(0).getRole();
-		assertEquals("2D", role);
+		verify(contractorEmployeeSearchRepository).findAll(pageable);
+
+		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
 	}
 
 	@Test
-	public void geContractorEmployeeDetailsByRoleIdIfRoleIdExistsInDB() {
+	public void shouldReturnPaginatedContractorEmployeeDetailsByRoleId() {
 
-		when(contractorEmployeeSearchRepository.findByRoleId(Mockito.anyLong(), Mockito.any()))
+		when(contractorEmployeeSearchRepository.findByRoleId(1000L, PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
 				.thenReturn(createContractorEmployeePagedData());
+		
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.geContractorEmployeeDetailsByRoleId(1000L, 0, 5, "roleId", "ASC");
+				.getContractorEmployeeDetailsByRoleId(1000L, 0, 5, "roleId", "DESC");
 
-		verify(contractorEmployeeSearchRepository, times(1)).findByRoleId(1000L,
-				PageRequest.of(0, 5, Sort.by(Direction.ASC, "roleId")));
-		String role = contractorEmployeeDto.getContent().get(0).getRole();
-		assertEquals("2D", role);
-	}
-
-	@Test
-	public void geContractorEmployeeDetailsByRoleIdIfRoleIdNotExistsInDB() {
-
-		Page<ContractorEmployeeSearch> contractorEmployeeSearch = new PageImpl<>(
-				new ArrayList<ContractorEmployeeSearch>(), PageRequest.of(0, 5), 0);
-		when(contractorEmployeeSearchRepository.findByRoleId(Mockito.anyLong(), Mockito.any()))
-				.thenReturn(contractorEmployeeSearch);
-
-		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.geContractorEmployeeDetailsByRoleId(1001L, 0, 5, "roleId", "DESC");
-
-		verify(contractorEmployeeSearchRepository, times(1)).findByRoleId(1001L,
+		verify(contractorEmployeeSearchRepository).findByRoleId(1000L,
 				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
-		assertTrue(contractorEmployeeDto.getContent().isEmpty());
+		
+		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
 	}
 
 	@Test
-	public void geContractorEmployeeDetailsByRoleIdAndNameIfNameExistsInDB() {
+	public void shouldReturnPaginatedContractorEmployeeDetailsByName() {
 
-		when(contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(Mockito.anyLong(),
-				Mockito.anyString(), Mockito.any())).thenReturn(createContractorEmployeeSearchPagedDataForName());
+		when(contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(1000L, "Alex", 
+				PageRequest.of(0, 5, Sort.by(Direction.ASC, "dayRate")))).thenReturn(createContractorEmployeeSearchPagedDataForName());
 
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.geContractorEmployeeDetailsByRoleIdAndName(1000L, "Alex", 0, 5, "dayRate", "ASC");
+				.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Alex", 0, 5, "dayRate", "ASC");
 
-		verify(contractorEmployeeSearchRepository, times(1)).findByRoleIdAndContractorEmployeeNameContains(1000L,
+		verify(contractorEmployeeSearchRepository).findByRoleIdAndContractorEmployeeNameContains(1000L,
 				"Alex", PageRequest.of(0, 5, Sort.by(Direction.ASC, "dayRate")));
-		String contractorEmployeeName = contractorEmployeeDto.getContent().get(0).getContractorEmployeeName();
-		assertEquals("Alex", contractorEmployeeName);
+		
+		assertEquals("Alex", contractorEmployeeDto.getContent().get(0).getContractorEmployeeName());
 	}
 
 	@Test
-	public void geContractorEmployeeDetailsByRoleIdAndNameIfNameNotExistsInDB() {
-
-		Page<ContractorEmployeeSearch> contractorEmployeeSearch = new PageImpl<>(
-				new ArrayList<ContractorEmployeeSearch>(), PageRequest.of(0, 5), 0);
-		when(contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(Mockito.anyLong(),
-				Mockito.anyString(), Mockito.any())).thenReturn(contractorEmployeeSearch);
-
-		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.geContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 5, "dayRate", "ASC");
-		verify(contractorEmployeeSearchRepository, times(1)).findByRoleIdAndContractorEmployeeNameContains(1000L,
-				"Test", PageRequest.of(0, 5, Sort.by(Direction.ASC, "dayRate")));
-		assertTrue(contractorEmployeeDto.getContent().isEmpty());
-	}
-
-	@Test
-	public void getContractorEmployeeDetailsIfPresentInDB() {
+	public void shouldReturnPaginatedContractorDetails() {
 
 		when(contractorRepository.findAll(PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName"))))
 				.thenReturn(createContractorPagedData());
 
 		Page<ContractorDto> contractorDto = contractorServiceImpl.getContractorDeatils(0, 5, "contractorName", "ASC");
-		verify(contractorRepository, times(1)).findAll(PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName")));
-		String contractorName = contractorDto.getContent().get(0).getContractorName();
-		assertEquals("Imagination", contractorName);
+		
+		verify(contractorRepository).findAll(PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName")));
+
+		assertEquals("Imagination", contractorDto.getContent().get(0).getContractorName());
 	}
 
 	@Test
-	public void getContractorEmployeeDetailsIfNotPresentInDB() {
-
-		Page<Contractor> contractorPage = new PageImpl<>(new ArrayList<Contractor>(), PageRequest.of(0, 5), 0);
-		when(contractorRepository.findAll(PageRequest.of(0, 5, Sort.by(Direction.DESC, "contractorName"))))
-				.thenReturn(contractorPage);
-
-		Page<ContractorDto> contractorDto = contractorServiceImpl.getContractorDeatils(0, 5, "contractorName", "DESC");
-		verify(contractorRepository, times(1)).findAll(PageRequest.of(0, 5, Sort.by(Direction.DESC, "contractorName")));
-		assertTrue(contractorDto.getContent().isEmpty());
-	}
-
-	@Test
-	public void getContractorDeatilsContainingNameIfNameExistsInDB() {
+	public void shouldReturnPaginatedContractorDetailsForContainingName() {
 
 		when(contractorRepository.findByContractorNameContains("Im",
 				PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName"))))
@@ -182,31 +143,15 @@ public class ContractorServiceImplTest {
 
 		Page<ContractorDto> contractorDto = contractorServiceImpl.getContractorDeatilsContainingName("Im", 0, 5,
 				"contractorName", "ASC");
-		verify(contractorRepository, times(1)).findByContractorNameContains("Im",
-				PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName")));
-		String contractorName = contractorDto.getContent().get(0).getContractorName();
-		assertEquals("Imagination", contractorName);
+		
+		verify(contractorRepository).findByContractorNameContains("Im",	PageRequest.of(0, 5, Sort.by(Direction.ASC, "contractorName")));
+		
+		assertEquals("Imagination", contractorDto.getContent().get(0).getContractorName());
 	}
 
 	@Test
-	public void getContractorDeatilsContainingNameIfNameNotExistsInDB() {
-
-		Page<Contractor> contractorPage = new PageImpl<>(new ArrayList<Contractor>(), PageRequest.of(0, 5), 0);
-		when(contractorRepository.findByContractorNameContains("Test",
-				PageRequest.of(0, 5, Sort.by(Direction.DESC, "contractorName")))).thenReturn(contractorPage);
-
-		Page<ContractorDto> contractorDto = contractorServiceImpl.getContractorDeatilsContainingName("Test", 0, 5,
-				"contractorName", "DESC");
-		verify(contractorRepository, times(1)).findByContractorNameContains("Test",
-				PageRequest.of(0, 5, Sort.by(Direction.DESC, "contractorName")));
-		assertTrue(contractorDto.getContent().isEmpty());
-	}
-
-	@Test
-	public void getContractorByContractorIdIfIdExistInDB() {
-		Contractor contractor = Mockito.mock(Contractor.class);// new
-																// Contractor();
-
+	public void shouldReturnContractorDetailsByContractorIdWhenContractorIdIsPresentInDB() {
+		Contractor contractor = Mockito.mock(Contractor.class);
 		ContractorDto contractorDto = new ContractorDto();
 		contractorDto.setContractorId(1001);
 		contractorDto.setContractorName("Imagination");
@@ -215,200 +160,181 @@ public class ContractorServiceImplTest {
 		contractorDto.setChangedDate(new Timestamp(System.currentTimeMillis()));
 		contractorDto.setChangedBy("Test");
 
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
+		when(contractorRepository.findById(1001L)).thenReturn(Optional.of(contractor));
 		when(contractorMapper.toContractorDtoFromContractorDomain(contractor)).thenReturn(contractorDto);
 
 		ContractorDto response = contractorServiceImpl.getContractorByContractorId(1001L);
+
+		verify(contractorRepository).findById(1001L);
+		verify(contractorMapper).toContractorDtoFromContractorDomain(contractor);
 
 		assertEquals("Imagination", response.getContractorName());
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void getContractorByContractorIdIfIdNotExistInDB() {
+	public void shouldThrowResourceNotFoundExceptionWhenContractorIdNotPresentInDB() {
 
 		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 		contractorServiceImpl.getContractorByContractorId(1001L);
 	}
 
 	@Test
-	public void getContractorEmployeeByContractorIdAndEmployeeIdIfExistInDB() {
+	public void shouldReturnContractorEmployeeByContractorIdAndContractorEmployeeIdIfBothPresentInDB() {
 		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
 		ContractorEmployeeDefaultRate employeeDefaultRate = Mockito.mock(ContractorEmployeeDefaultRate.class);
-
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("2001");
 		contractorEmployeeDto.setEmployeeId("3001");
 		contractorEmployeeDto.setContractorEmployeeName("John");
 		contractorEmployeeDto.setKnownAs("Alias");
 
-		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
-				Mockito.anyLong())).thenReturn(contractorEmployee);
+		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L)).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
 				.thenReturn(contractorEmployeeDto);
 		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(employeeDefaultRate);
 		when(employeeDefaultRate.getRate()).thenReturn(new BigDecimal(1000));
+		
 		ContractorEmployeeDto response = contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L,
 				3001L);
+		
+		verify(contractorEmployeeRepository).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeMapper).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		
 		assertEquals("John", response.getContractorEmployeeName());
 	}
 
 	@Test
-	public void getContractorEmployeeByContractorIdAndEmployeeIdIfNotExistInDB() {
-		ContractorEmployee contractorEmployee = null;
-		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
+	public void shouldReturnEmptyContractorEmployeeByContractorIdAndEmployeeIdWhenBothNotPresentInDB() {
 
-		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
-				Mockito.anyLong())).thenReturn(contractorEmployee);
-		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
-				.thenReturn(contractorEmployeeDto);
+		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L)).thenReturn(null);
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(null))
+				.thenReturn(new ContractorEmployeeDto());
 
-		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
-		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
-		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		ContractorEmployeeDto contractorEmployeeDto = contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		
+		verify(contractorEmployeeRepository).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeMapper).toContractorEmployeeDtoFromContractorEmployee(null);
+		
+		assertEquals(null, contractorEmployeeDto.getContractorEmployeeName());
 	}
 
 	@Test
-	public void getContractorEmployeeByContractorIdAndEmployeeIdIfRateNotExistInDB() {
+	public void shouldReturnContractorEmployeeByContractorIdAndEmployeeIdWhenRateNotPresentInDB() {
 		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
-		ContractorEmployeeDto contractorEmployeeDto = Mockito.mock(ContractorEmployeeDto.class);
 
-		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(Mockito.anyLong(),
-				Mockito.anyLong())).thenReturn(contractorEmployee);
+		when(contractorEmployeeRepository.findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L)).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
-				.thenReturn(contractorEmployeeDto);
+				.thenReturn(Mockito.mock(ContractorEmployeeDto.class));
 		when(contractorEmployee.getContractorEmployeeDefaultRate()).thenReturn(null);
 
-		contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
-		verify(contractorEmployeeRepository, times(1)).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
-		verify(contractorEmployeeMapper, times(1)).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		ContractorEmployeeDto contractorEmployeeDto = contractorServiceImpl.getContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+
+		verify(contractorEmployeeRepository).findContractorEmployeeByContractorIdAndEmployeeId(2001L, 3001L);
+		verify(contractorEmployeeMapper).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		
+		assertEquals(null, contractorEmployeeDto.getRate());
 	}
 
 	@Test
-	public void addContractorDetailsSucess() {
-		ContractorRequest contractorRequest = new ContractorRequest();
-		contractorRequest.setContractorName("Imagination");
-		contractorRequest.setServiceProvided("LTD");
-		contractorRequest.setContactDetails("1234512345");
-
-		ContractorDto contractorDto = new ContractorDto();
-		contractorDto.setContractorId(1001);
-		contractorDto.setContractorName("Imagination");
-		contractorDto.setCompanyType("LTD");
-		contractorDto.setContactDetails("12341234");
-		contractorDto.setChangedDate(new Timestamp(System.currentTimeMillis()));
-		contractorDto.setChangedBy("Test");
+	public void shouldAddContractorDetails() {
 
 		CBSUser cbsUser = Mockito.mock(CBSUser.class);
 		Contractor contractor = Mockito.mock(Contractor.class);
 
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorMapper.toContractorDomainFromContractorRequest(Mockito.any())).thenReturn(contractor);
+		when(contractorMapper.toContractorDomainFromContractorRequest(createContractorRequest())).thenReturn(contractor);
 		when(contractorRepository.save(contractor)).thenReturn(contractor);
-		when(contractorMapper.toContractorDtoFromContractorDomain(contractor)).thenReturn(contractorDto);
+		when(contractorMapper.toContractorDtoFromContractorDomain(contractor)).thenReturn(createContractorDto());
 
-		ContractorDto response = contractorServiceImpl.addContractorDetails(contractorRequest);
+		ContractorDto response = contractorServiceImpl.addContractorDetails(createContractorRequest());
+
+		verify(loggedInUserService).getLoggedInUserDetails();
+		verify(contractorMapper).toContractorDomainFromContractorRequest(createContractorRequest());
+		verify(contractorRepository).save(contractor);
+		verify(contractorMapper).toContractorDtoFromContractorDomain(contractor);
 
 		assertEquals("Imagination", response.getContractorName());
 		assertEquals("LTD", response.getCompanyType());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void addContractorDetailsWithWrongInput() {
-		ContractorRequest contractorRequest = new ContractorRequest();
-		contractorRequest.setContractorName("Imagination");
-		contractorRequest.setServiceProvided("");
-		contractorRequest.setContactDetails("1234512345");
+	public void shouldThrowIllegalArgumentExceptionWhenContractorRequestIsNull() {
 
 		CBSUser cbsUser = Mockito.mock(CBSUser.class);
 		Contractor contractor = Mockito.mock(Contractor.class);
 
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorMapper.toContractorDomainFromContractorRequest(Mockito.any())).thenReturn(contractor);
+		when(contractorMapper.toContractorDomainFromContractorRequest(createContractorRequest())).thenReturn(contractor);
 		when(contractorRepository.save(contractor)).thenThrow(new IllegalArgumentException());
 
-		// ContractorDto response =
-		contractorServiceImpl.addContractorDetails(contractorRequest);
-
+		contractorServiceImpl.addContractorDetails(createContractorRequest());
 	}
 
 	@Test
-	public void addContractorEmployeeSucess() {
-		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
+	public void shouldAddContractorEmployee() {
+		
+		ContractorEmployee contractorEmployee = createContractorEmployeeDomain();
 
-		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
-		contractorEmployeeDto.setContractorEmployeeId("1001");
-		contractorEmployeeDto.setEmployeeId("101");
-		contractorEmployeeDto.setContractorEmployeeName("Alex");
-		contractorEmployeeDto.setKnownAs("Alias 1");
-		contractorEmployeeDto.setChangedBy("Test");
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
+		when(roleRepository.findById(201L)).thenReturn(Optional.of(Mockito.mock(RoleDm.class)));
+		when(contractorEmployeeRepository.save(any(ContractorEmployee.class))).thenReturn(contractorEmployee);
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
+				.thenReturn(createContractorEmployeeDto());
 
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
-		Contractor contractor = Mockito.mock(Contractor.class);
-		RoleDm roleDm = Mockito.mock(RoleDm.class);
+		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, createContractorEmployeeRequest());
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
-		when(roleRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(roleDm));
-
-		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(Mockito.any()))
-				.thenReturn(contractorEmployeeDto);
-
-		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
-
+		verify(loggedInUserService).getLoggedInUserDetails();
+		verify(contractorRepository).findById(2001L);
+		verify(roleRepository).findById(201L);
+		verify(contractorEmployeeRepository).save(any(ContractorEmployee.class));
+		verify(contractorEmployeeMapper).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
+		
 		assertEquals("Alex", response.getContractorEmployeeName());
 		assertEquals("1001", response.getContractorEmployeeId());
 	}
 
 	@Test
 	public void shouldAddContractorEmployeeIfRoleIdIsNull() {
-		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
-		contractorEmployeeRequest.setContractorEmployeeName("Alex");
-		contractorEmployeeRequest.setKnownAs("Alias 1");
-		contractorEmployeeRequest.setDayRate("500");
-		contractorEmployeeRequest.setCurrencyId("101");
+		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
+		contractorEmployeeRequest.setRoleId("");
+		
+		ContractorEmployee contractorEmployee = createContractorEmployeeDomain();
 
-		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
-		contractorEmployeeDto.setContractorEmployeeId("1001");
-		contractorEmployeeDto.setEmployeeId("101");
-		contractorEmployeeDto.setContractorEmployeeName("Alex");
-		contractorEmployeeDto.setKnownAs("Alias 1");
-		contractorEmployeeDto.setChangedBy("Test");
-
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
-		Contractor contractor = Mockito.mock(Contractor.class);
-
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
-
-		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(Mockito.any()))
-				.thenReturn(contractorEmployeeDto);
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
+		when(contractorEmployeeRepository.save(any(ContractorEmployee.class))).thenReturn(contractorEmployee);
+		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
+				.thenReturn(createContractorEmployeeDto());
 
 		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
+
+		verify(loggedInUserService).getLoggedInUserDetails();
+		verify(contractorRepository).findById(2001L);
+		verify(contractorEmployeeRepository).save(any(ContractorEmployee.class));
+		verify(contractorEmployeeMapper).toContractorEmployeeDtoFromContractorEmployee(contractorEmployee);
 
 		assertEquals("Alex", response.getContractorEmployeeName());
 		assertEquals("1001", response.getContractorEmployeeId());
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void addContractorEmployeeIfContractorNotFound() {
-		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
+	public void shouldThrowResourceNotFoundExceptionWhenContractorNotPresentInDB_addContractorEmployee() {
+		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.empty());
 
 		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void addContractorEmployeeIfRoleIdNotFound() {
-		ContractorEmployeeRequest contractorEmployeeRequest = getContractorEmployeeRequest();
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
-		Contractor contractor = Mockito.mock(Contractor.class);
+	public void shouldThrowResourceNotFoundExceptionWhenRoleIdNotPresentInDB_addContractorEmployee() {
+		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(contractor));
-		when(roleRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
+		when(roleRepository.findById(201L)).thenReturn(Optional.empty());
 
 		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 	}
@@ -473,7 +399,7 @@ public class ContractorServiceImplTest {
 		return new PageImpl<Contractor>(contractorList, PageRequest.of(0, 5), contractorList.size());
 	}
 
-	private ContractorEmployeeRequest getContractorEmployeeRequest() {
+	private ContractorEmployeeRequest createContractorEmployeeRequest() {
 		ContractorEmployeeRequest contractorEmployeeRequest = new ContractorEmployeeRequest();
 		contractorEmployeeRequest.setContractorEmployeeName("Alex");
 		contractorEmployeeRequest.setKnownAs("Alias 1");
@@ -482,5 +408,66 @@ public class ContractorServiceImplTest {
 		contractorEmployeeRequest.setCurrencyId("101");
 
 		return contractorEmployeeRequest;
+	}
+	
+	private ContractorRequest createContractorRequest() {
+		ContractorRequest contractorRequest = new ContractorRequest();
+		contractorRequest.setContractorName("Imagination");
+		contractorRequest.setServiceProvided("LTD");
+		contractorRequest.setContactDetails("1234512345");
+		
+		return contractorRequest;
+	}
+	
+	private ContractorDto createContractorDto() {
+		ContractorDto contractorDto = new ContractorDto();
+		contractorDto.setContractorId(1001);
+		contractorDto.setContractorName("Imagination");
+		contractorDto.setCompanyType("LTD");
+		contractorDto.setContactDetails("12341234");
+		contractorDto.setChangedDate(new Timestamp(System.currentTimeMillis()));
+		contractorDto.setChangedBy("Test");
+
+		return contractorDto;
+	}
+	
+	private ContractorEmployeeDto createContractorEmployeeDto() {
+		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
+		contractorEmployeeDto.setContractorEmployeeId("1001");
+		contractorEmployeeDto.setEmployeeId("101");
+		contractorEmployeeDto.setContractorEmployeeName("Alex");
+		contractorEmployeeDto.setKnownAs("Alias 1");
+		contractorEmployeeDto.setChangedBy("Test");
+
+		return contractorEmployeeDto;
+	}
+	
+	private ContractorEmployee createContractorEmployeeDomain() {
+
+		ContractorEmployee contractorEmpDomain = new ContractorEmployee();
+
+		contractorEmpDomain.setContractorEmployeeName("Alex");
+		contractorEmpDomain.setKnownAs("Alias 1");
+		contractorEmpDomain.setChangedBy("loggedInUser");
+		
+		contractorEmpDomain.setContractor(new Contractor());
+
+		Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
+		ContractorEmployeeRole contractorEmployeeRole = new ContractorEmployeeRole();
+		contractorEmployeeRole.setRoleDm(new RoleDm());
+		contractorEmployeeRole.setDateFrom(currentTimeStamp);
+		contractorEmployeeRole.setChangedBy("loggedInUser");
+		contractorEmployeeRole.setContractorEmployee(contractorEmpDomain);
+		contractorEmpDomain.setContractorEmployeeRole(contractorEmployeeRole);
+
+		ContractorEmployeeDefaultRate contractorEmployeeDefaultRate = new ContractorEmployeeDefaultRate();
+		contractorEmployeeDefaultRate.setCurrencyId(101L);
+		contractorEmployeeDefaultRate.setRate(new BigDecimal(500));
+		contractorEmployeeDefaultRate.setDateFrom(currentTimeStamp);
+		contractorEmployeeDefaultRate.setChangedBy("loggedInUser");
+		contractorEmployeeDefaultRate.setContractorEmployee(contractorEmpDomain);
+		contractorEmpDomain.setContractorEmployeeDefaultRate(contractorEmployeeDefaultRate);
+
+		return contractorEmpDomain;
 	}
 }
