@@ -5,10 +5,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.SiteOptionsDto;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
@@ -31,7 +28,6 @@ import com.imagination.cbs.service.WorkSiteOptionsService;
 @WebMvcTest(WorkSiteOptionsController.class)
 @ContextConfiguration(classes= {TestConfig.class})
 public class WorkSiteOptionsControllerTest {
-
 
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
@@ -48,9 +44,9 @@ public class WorkSiteOptionsControllerTest {
 	@MockBean
 	private WorkSiteOptionsService workSiteOptionsService;
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldAbleToFetchWorkSiteOptions() throws Exception {
+	public void shouldReturnSiteOptionDtoListForFetchWorkSiteOptions() throws Exception {
 		
 		when(workSiteOptionsService.fetchWorkSites()).thenReturn(createSiteOptionDtoList());
 		
@@ -58,6 +54,7 @@ public class WorkSiteOptionsControllerTest {
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$[0].name",comparesEqualTo("Clients premises")))
 					.andExpect(jsonPath("$[1].id", comparesEqualTo("2")));
+		
 		verify(workSiteOptionsService).fetchWorkSites();
 	}
 	

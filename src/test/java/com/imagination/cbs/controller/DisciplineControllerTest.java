@@ -51,22 +51,23 @@ public class DisciplineControllerTest {
 	private DisciplineService disciplineService;
 	
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnListOfDiscipline() throws Exception {
+	public void shouldReturnListOfAllDisciplines() throws Exception {
 		
 		 List<DisciplineDto> listOfDisciplineDto = new ArrayList<DisciplineDto>();
 		 listOfDisciplineDto.add(createDisciplineDto());
 		
 		 when(disciplineService.getAllDisciplines()).thenReturn(listOfDisciplineDto);
 		
-		 mockMvc.perform(get("/disciplines").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		 mockMvc.perform(get("/disciplines").contentType(MediaType.APPLICATION_JSON))
+		 .andExpect(status().isOk())
 		 .andExpect(jsonPath("$[0].disciplineName",comparesEqualTo("Creative")));
 		
 		 verify(disciplineService).getAllDisciplines();
 	}
 
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
 	public void shouldReturnListOfRoleBasedOnDisiplineId() throws Exception {
 
@@ -75,7 +76,8 @@ public class DisciplineControllerTest {
 		
 		 when(disciplineService.findAllContractorRoles(8009l)).thenReturn(roleDtoList);
 		
-		 mockMvc.perform(get("/disciplines/8009/roles").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).
+		 mockMvc.perform(get("/disciplines/8009/roles").contentType(MediaType.APPLICATION_JSON))
+		 .andExpect(status().isOk()).
 		 andExpect(jsonPath("$[0].roleName", comparesEqualTo("2D")));
 		
 		 verify(disciplineService).findAllContractorRoles(8009l);
@@ -83,16 +85,13 @@ public class DisciplineControllerTest {
 
 	private DisciplineDto createDisciplineDto() {
 		DisciplineDto disciplineDto = new DisciplineDto();
-
 		disciplineDto.setDisciplineId(8000);
 		disciplineDto.setDisciplineName("Creative");
 		disciplineDto.setDisciplineDescription("This is Creative");
-
 		return disciplineDto;
 	}
 	
-	private RoleDto createRoleDto()
-	{
+	private RoleDto createRoleDto(){
 		RoleDto roleDto = new RoleDto();
 		 roleDto.setStatus(null);
 		 roleDto.setRoleName("2D");
@@ -103,9 +102,7 @@ public class DisciplineControllerTest {
 		 roleDto.setInsideIr35("FALSE");
 		 roleDto.setDisciplineId(null);
 		 roleDto.setChangedDate("2020-03-17T08:02:03.767+05:30");
-		 roleDto.setChangedBy("Akshay");
-		 roleDto.setCestDownloadLink(null);
-		 
+		 roleDto.setChangedBy("Akshay");	 
 		 return roleDto;
 	}
 }

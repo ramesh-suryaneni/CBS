@@ -18,6 +18,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.hamcrest.Matchers.comparesEqualTo;
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.RoleDto;
@@ -45,47 +47,37 @@ public class RoleControllerTest {
 	@MockBean
 	private RoleService roleservice;
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnContractorRoleDto() throws Exception{
-		long roleId = 3214;
+	public void shouldReturnRoleDtoBasedOnRoleIdForGetRoleCESToutcome() throws Exception{
 		
-		when(roleservice.getCESToutcome(roleId)).thenReturn(createRoleDto());
+		when(roleservice.getCESToutcome(3214L)).thenReturn(createRoleDto());
 		
 		this.mockMvc.perform(get("/roles/3214/cestoutcome").contentType(MediaType.APPLICATION_JSON))
 						.andExpect(status().isOk())
 						.andExpect(jsonPath("$.roleDescription", comparesEqualTo("2D")));
 		
-		verify(roleservice,times(2)).getCESToutcome(roleId);
+		verify(roleservice,times(2)).getCESToutcome(3214L);
 	}
 	
-	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldThrowExceptionRoleId_Null() throws Exception{
+	public void shouldThrowResponseStatusExceptionWhenRoleDtoIsNullForGetRoleCESToutcome() throws Exception{
 		
-		long roleId = 3214;
-		
-		when(roleservice.getCESToutcome(roleId)).thenReturn(null);
+		when(roleservice.getCESToutcome(3214L)).thenReturn(null); 
 		
 		this.mockMvc.perform(get("/roles/3214/cestoutcome").contentType(MediaType.APPLICATION_JSON))
 						.andExpect(status().isNotFound());
 		
+		verify(roleservice).getCESToutcome(3214L);
 	}
 	
-	public RoleDto createRoleDto()
-	{
+	public RoleDto createRoleDto(){
 		RoleDto roleDto = new RoleDto();
-		
 		roleDto.setRoleName("2D");
 		roleDto.setRoleId("3214");
 		roleDto.setRoleDescription("2D");
 		roleDto.setInsideIr35("false");
-		roleDto.setDisciplineId("0");
-		roleDto.setChangedDate("2020-03-30T16:16:55.000+05:30");
-		roleDto.setChangedBy("Akshay");
-		roleDto.setCestDownloadLink("https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf");
-		
 		return roleDto;
 	}
 }

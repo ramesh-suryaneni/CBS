@@ -46,19 +46,20 @@ public class RecruitingControllerTest {
 	@MockBean
 	private RecruitingService recruitingService;
 
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnListOfReasonsForRecruiting() throws Exception {
+	public void shouldReturnRecruitingDtoList() throws Exception {
 
-		when(recruitingService.getAllReasonForRecruiting()).thenReturn(getRecruitingDto());
+		when(recruitingService.getAllReasonForRecruiting()).thenReturn(createRecruitingDtoList());
 
-		mockMvc.perform(get("/recruiting-reasons").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/recruiting-reasons").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].reasonName", comparesEqualTo("Specific skills required")));
 
 		verify(recruitingService).getAllReasonForRecruiting();
 	}
 
-	private List<RecruitingDto> getRecruitingDto() {
+	private List<RecruitingDto> createRecruitingDtoList() {
 
 		List<RecruitingDto> listOfRecruitingDto = new ArrayList<RecruitingDto>();
 

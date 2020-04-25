@@ -1,12 +1,11 @@
 package com.imagination.cbs.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,7 +15,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.JobDataDto;
 import com.imagination.cbs.dto.JobDetailDto;
@@ -27,7 +25,7 @@ import com.imagination.cbs.service.MaconomyService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(MaconomyController.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class MaconomyControllerTest {
+public class MaconomyControllerTest { 
 
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
@@ -44,35 +42,23 @@ public class MaconomyControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnJobDataDtoBasedOnJobNumber() throws Exception
-	{
-
-		String jobNo="6000";
-		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(jobNo, createJobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto());
-
+	public void shouldReturnJobDetailsBasedOnJobNumber() throws Exception {
 		
-		
-		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(Mockito.anyString(), Mockito.any(JobDataDto.class), Mockito.anyString(), Mockito.anyString())).thenReturn(createJobDataDto());
-
-		
+		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails("6000",new JobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto());
+				
 		this.mockMvc.perform(get("/macanomy?jobNumber=6000").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk());
-				//	.andExpect(jsonPath("$.data.text3", comparesEqualTo("se")));
-			
 	}
 	
-	private JobDataDto createJobDataDto()
-	{
+	private JobDataDto createJobDataDto() {
 		JobDataDto jobDataDto = new JobDataDto();
 		jobDataDto.setData(createJobDetailDto());
 		return jobDataDto;
 	}
 	
-	private JobDetailDto createJobDetailDto()
-	{
+	private JobDetailDto createJobDetailDto(){
 		JobDetailDto jobDetailDto = new JobDetailDto();
 		jobDetailDto.setJobname("SE");
 		jobDetailDto.setJobnumber("6000");

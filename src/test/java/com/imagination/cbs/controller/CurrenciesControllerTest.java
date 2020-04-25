@@ -1,6 +1,7 @@
 package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,18 +57,18 @@ public class CurrenciesControllerTest {
 		
 		this.mockMvc.perform(get("/currencies").accept(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$[0].currencyName",comparesEqualTo("Euros")));
+		
+		verify(currencyService).getAllCurrencies();
 
 	}
 
-	public CurrencyDto createCurrencyDto()
-	{
+	public CurrencyDto createCurrencyDto(){
 		CurrencyDto currencyDto = new CurrencyDto();
 		currencyDto.setCurrencyName("Euros");
 		currencyDto.setCurrencyId("103");
 		currencyDto.setCurrencyCode("EUR");
 		currencyDto.setChangedDate(null);
 		currencyDto.setChangedBy(null);
-		
 		return currencyDto;
 	}
 }

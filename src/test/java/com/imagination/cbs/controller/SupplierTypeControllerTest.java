@@ -28,7 +28,7 @@ import com.imagination.cbs.service.SupplierTypeService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(SupplierTypeController.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class SupplierTypeControllerTest {
+public class SupplierTypeControllerTest { 
 
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
@@ -44,21 +44,21 @@ public class SupplierTypeControllerTest {
 	
 	@MockBean
 	private SupplierTypeService supplierService;
-
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
 	public void shouldReturnListOfSupplierTypeDto() throws Exception {
 
-		when(supplierService.getAllSupplierTypes()).thenReturn(getSupplierTypeDto());
+		when(supplierService.getAllSupplierTypes()).thenReturn(createSupplierTypeDto());
 
-		mockMvc.perform(get("/supplier-types").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/supplier-types").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].name", comparesEqualTo("Yash")));
 
 		verify(supplierService).getAllSupplierTypes();
 	}
 
-	private List<SupplierTypeDto> getSupplierTypeDto() {
+	private List<SupplierTypeDto> createSupplierTypeDto() {
 
 		List<SupplierTypeDto> supplierDtoList = new ArrayList<SupplierTypeDto>();
 
