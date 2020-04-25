@@ -107,9 +107,9 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			inputStream = new ByteArrayInputStream(result.getBody());
 
-		} catch (Exception e) {
+		} catch (RuntimeException exception) {
 
-			throw new ResourceNotFoundException(e.getMessage());
+			throw new ResourceNotFoundException(exception.getMessage());
 		}
 
 		return inputStream;

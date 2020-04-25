@@ -35,7 +35,8 @@ public UserDetails loadUserByUsername(String email) {
 	}
 
 	 private Set<SimpleGrantedAuthority> getAuthority(EmployeeMapping employeeMapping) {
-	        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+	        
+		 Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 	        
 	        employeeMapping.getEmployeePermissions().forEach(employeePermissions ->{
 	        	String role = SecurityConstants.ROLE.getSecurityConstant()+String.valueOf(employeePermissions.getPermission().getPermissionId());
