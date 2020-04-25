@@ -91,14 +91,13 @@ public class BookingControllerTest {
 
 		when(bookingService.addBookingDetails(createBookingRequest())).thenReturn(createBookingDto()); 
 
-		MvcResult mvcResult = this.mockMvc
-								.perform(post("/bookings").content(createBookingJsonRequest())
-								.contentType(MediaType.APPLICATION_JSON))
-								.andExpect(status().isCreated()).andReturn();
+		this.mockMvc
+				.perform(post("/bookings").content(createBookingJsonRequest())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isCreated()).andReturn();
 		
 		verify(bookingService).addBookingDetails(createBookingRequest());
 		
-		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
 	}
 
 	@WithMockUser("developer")
@@ -170,12 +169,10 @@ public class BookingControllerTest {
 
 		when(bookingService.approveBooking(createApproveRequest())).thenReturn(createBookingDto());
 
-		MvcResult mvcResult = this.mockMvc
-									.perform(post("/bookings/process-request").content(jsonRequest)
-											.contentType(MediaType.APPLICATION_JSON))
-									.andExpect(status().isOk()).andReturn();
-		
-		assertEquals(HttpStatus.SC_OK, mvcResult.getResponse().getStatus());
+		this.mockMvc
+				.perform(post("/bookings/process-request").content(jsonRequest)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
 		
 		verify(bookingService).approveBooking(createApproveRequest());
 	}

@@ -136,13 +136,16 @@ public class BookingServiceImplTest {
 		BookingRevision bookingRevision =  createBookingRevision();
 		Booking bookingDetails = bookingDomain.get();
 		long revNo = bookingRevision.getRevisionNumber();
+		createBookingDtoDataForRetriveBooking(); 
 		
 		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
 		when(bookingSaveHelper.getLatestRevision(bookingDetails)).thenReturn(bookingRevision);
 		when(createBookingHelper.populateBooking(bookingRequest, ++revNo, false)).thenReturn(newBooking);
 		when(bookingRepository.save(newBooking)).thenReturn(null);
 		
-		shouldReturnBookingDtoWhenBookingDomainPresentInDB_RetriveBookingDetails();
+		when(bookingServiceImpl.retrieveBookingDetails(1910l)).thenReturn(createBookingDto());
+		
+		//shouldReturnBookingDtoWhenBookingDomainPresentInDB_RetriveBookingDetails();
 		BookingDto actualBookingDto = bookingServiceImpl.updateBookingDetails(1910l, bookingRequest);
 		
 		assertEquals("1910", actualBookingDto.getBookingId());
@@ -200,7 +203,6 @@ public class BookingServiceImplTest {
 		BookingRevision bookingRevision =  createBookingRevision();
 		BookingDto bookingDto = createBookingDto();
 		Booking bookingDetails = bookingDomain.get();
-		
 		bookingDto.setTeam(createTeamDtoFromMapper());
 		bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
 		bookingDto.setDiscipline(createDisciplineDtoFromMapper());
@@ -212,6 +214,7 @@ public class BookingServiceImplTest {
 		when(bookingMapper.convertToDto(bookingRevision)).thenReturn(bookingDto);
 		
 		BookingDto actual = bookingServiceImpl.retrieveBookingDetails(1910l);
+		
 		assertEquals("2025", actual.getBookingRevisionId());
 		assertEquals(8000l, actual.getCommisioningOffice().getOfficeId());
 		
@@ -220,6 +223,25 @@ public class BookingServiceImplTest {
 		verify(bookingMapper,times(1)).convertToDto(bookingRevision);
 	}
 	
+	private BookingDto createBookingDtoDataForRetriveBooking() {
+		Booking booking = createBooking();
+		Optional<Booking> bookingDomain = Optional.of(booking);
+		BookingRevision bookingRevision =  createBookingRevision(); 
+		BookingDto bookingDto = createBookingDto();
+		Booking bookingDetails = bookingDomain.get();
+		bookingDto.setTeam(createTeamDtoFromMapper());
+		bookingDto.setBookingId(String.valueOf(booking.getBookingId()));
+		bookingDto.setDiscipline(createDisciplineDtoFromMapper());
+		bookingDto.setBookingDescription(booking.getBookingDescription());
+		bookingDto.setInsideIr35(bookingRevision.getRole().getInsideIr35());
+		
+		when(bookingRepository.findById(1910l)).thenReturn(bookingDomain);
+		when(bookingSaveHelper.getLatestRevision(bookingDetails)).thenReturn(bookingRevision);
+		when(bookingMapper.convertToDto(bookingRevision)).thenReturn(bookingDto);
+		
+		return bookingServiceImpl.retrieveBookingDetails(1910l);
+		
+	}
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldThrowResourceNotFoundExceptionWhenBookingDomainNotPresentInDB_RetriveBookingDetails() {
 		when(bookingRepository.findById(1910l)).thenReturn(Optional.empty());
