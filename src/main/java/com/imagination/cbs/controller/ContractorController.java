@@ -31,7 +31,7 @@ import com.imagination.cbs.service.ContractorService;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/contractors")
-public class ContractorController {
+public class ContractorController { 
 
 	@Autowired
 	private ContractorService contractorService;

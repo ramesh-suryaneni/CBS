@@ -53,7 +53,7 @@ public class RoleControllerTest {
 		
 		when(roleservice.getCESToutcome(3214L)).thenReturn(createRoleDto());
 		
-		this.mockMvc.perform(get("/roles/3214/cestoutcome").contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/roles/3214/cestoutcome").contentType(MediaType.APPLICATION_JSON)) 
 						.andExpect(status().isOk())
 						.andExpect(jsonPath("$.roleDescription", comparesEqualTo("2D")));
 		

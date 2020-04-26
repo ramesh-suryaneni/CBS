@@ -22,7 +22,7 @@ public class InternalResourceEmailController {
 	@PostMapping(consumes = "application/json", produces = "application/json")
 	public HttpStatus addNewContractorEmployee(@RequestBody InternalResourceEmailDto internalResourceEmailDto) {
 
-		emailServiceImpl.sendInternalResourceEmail(internalResourceEmailDto);
+		emailServiceImpl.sendInternalResourceEmail(internalResourceEmailDto); 
 
 		return HttpStatus.OK;
 

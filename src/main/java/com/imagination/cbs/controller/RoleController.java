@@ -30,7 +30,7 @@ public class RoleController {
 	private RoleService roleService;
 	
 	@GetMapping("/{role_id}/cestoutcome")
-	public RoleDto getRoleCESToutcome(@PathVariable("role_id") Long roleId) {
+	public RoleDto getRoleCESToutcome(@PathVariable("role_id") Long roleId) { 
 		
 		if(roleService.getCESToutcome(roleId) == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "role not found :"+roleId);
