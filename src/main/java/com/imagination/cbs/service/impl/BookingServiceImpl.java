@@ -113,7 +113,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto updateBookingDetails(Long bookingId, BookingRequest bookingRequest) {
+	public BookingDto updateBookingDetails(Long bookingId, BookingRequest bookingRequest) { 
 		Optional<Booking> booking = bookingRepository.findById(bookingId);
 		if (booking.isPresent()) {
 			Booking bookingDetails = booking.get();

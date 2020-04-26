@@ -1,6 +1,5 @@
 package com.imagination.cbs.controller;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +45,7 @@ public class MaconomyControllerTest {
 	@Test
 	public void shouldReturnJobDetailsBasedOnJobNumber() throws Exception {
 		
-		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails("6000",new JobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto());
+		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails("6000",new JobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto()); 
 				
 		this.mockMvc.perform(get("/macanomy?jobNumber=6000").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk());
