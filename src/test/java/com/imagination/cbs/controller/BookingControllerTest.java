@@ -9,9 +9,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
@@ -88,8 +91,7 @@ public class BookingControllerTest {
 
 		when(bookingService.addBookingDetails(createBookingRequest())).thenReturn(createBookingDto()); 
 
-		this.mockMvc
-				.perform(post("/bookings").content(createBookingJsonRequest())
+		mockMvc.perform(post("/bookings").content(createBookingJsonRequest())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 		
@@ -103,8 +105,7 @@ public class BookingControllerTest {
 
 		when(dashBoardService.getDashBoardBookingsStatusDetails("draft", 0, 100)).thenReturn(createPageDashBoardDto());
 		
-		this.mockMvc
-				.perform(get("/bookings").param("status", "draft").param("pageNo", "0").param("pageSize", "100")
+		mockMvc.perform(get("/bookings").param("status", "draft").param("pageNo", "0").param("pageSize", "100")
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.content[0].contractorName").value("Yash"))
@@ -119,8 +120,7 @@ public class BookingControllerTest {
 		
 		when(bookingService.updateBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
 		
-		this.mockMvc
-				.perform(patch("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
+		mockMvc.perform(patch("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
 						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.discipline.disciplineId").value("8000"));
@@ -134,22 +134,37 @@ public class BookingControllerTest {
 		  
 		when(bookingService.submitBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
 		
-		this.mockMvc
-				.perform(put("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
+		
+		mockMvc.perform(put("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
 						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.jobname").value("JLR Experience Center"))
 				.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
 
 		verify(bookingService).submitBookingDetails(2020L, createBookingRequest()); 
 	}
+	
+	@WithMockUser("/developer")
+	@Test 
+	public void shouldThrowMethodArgumentNotValidExceptionWhenMandatoryFiledIsNotPresentInBookingRequest() throws Exception {
+		  
+		BookingRequest bookingRequest = createBookingRequest();
+		bookingRequest.setJobNumber(null);
+		
+		String bookingRequestAsString = objectMapper.writeValueAsString(bookingRequest);
+		
+		mockMvc.perform(put("/bookings/{bookingId}", 2020L).content(bookingRequestAsString)
+						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+				
+	}
+	
 	@WithMockUser("developer")
 	@Test
 	public void shouldReturnBookingDetailsBasedOnBookingId() throws Exception {
 
 		when(bookingService.retrieveBookingDetails(1035L)).thenReturn(createBookingDto());
 		
-		this.mockMvc
-				.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.contractor.contractorName").value("Yash"));
@@ -165,8 +180,7 @@ public class BookingControllerTest {
 
 		when(bookingService.approveBooking(createApproveRequest())).thenReturn(createBookingDto());
 
-		this.mockMvc
-				.perform(post("/bookings/process-request").content(jsonRequest)
+		mockMvc.perform(post("/bookings/process-request").content(jsonRequest)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn();
 		
@@ -179,8 +193,7 @@ public class BookingControllerTest {
 
 		when(bookingService.cancelBooking(1035l)).thenReturn(createBookingDto());
 
-		this.mockMvc
-				.perform(delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 		
@@ -418,6 +431,8 @@ public class BookingControllerTest {
 		bookingRequest.setCommisioningOffice("10");
 		bookingRequest.setContractAmountAftertax("10.0");
 		bookingRequest.setContractAmountBeforetax("0.5");
+		bookingRequest.setContractedToDate("10/06/2020");
+		bookingRequest.setContractedFromDate("10/02/2020");
 		
 		return bookingRequest;
 	}
