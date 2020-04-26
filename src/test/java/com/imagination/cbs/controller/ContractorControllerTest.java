@@ -1,7 +1,6 @@
 package com.imagination.cbs.controller;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,10 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +25,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
@@ -92,15 +88,14 @@ public class ContractorControllerTest {
 	public void shouldAddNewContractorEmployee() throws Exception {
 		String jsonRequest = objectMapper.writeValueAsString(createContractorEmployeeRequest());
 
-		when(contractorService.addContractorEmployee(Mockito.anyLong(), Mockito.any(ContractorEmployeeRequest.class)))
+		when(contractorService.addContractorEmployee(6001l, createContractorEmployeeRequest()))
 				.thenReturn(createContractorEmployeeDto());
 
-		MvcResult mvcResult = this.mockMvc.perform(
+		this.mockMvc.perform(
 				post("/contractors/6001/employees").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
 
-		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
-
+		verify(contractorService).addContractorEmployee(6001l, createContractorEmployeeRequest());
 	}
 
 	@WithMockUser("devloper")
@@ -108,13 +103,14 @@ public class ContractorControllerTest {
 	public void shouldAddNewContractor() throws Exception {
 		String jsonRequest = objectMapper.writeValueAsString(createContractorRequest());
 
-		when(contractorService.addContractorDetails(Mockito.any(ContractorRequest.class)))
+		when(contractorService.addContractorDetails(createContractorRequest()))
 				.thenReturn(createContractorDto());
 
-		MvcResult mvcResult = this.mockMvc
+		this.mockMvc
 				.perform(post("/contractors").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
-		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
+		
+		verify(contractorService).addContractorDetails(createContractorRequest());
 	}
 
 	@WithMockUser("developer")
