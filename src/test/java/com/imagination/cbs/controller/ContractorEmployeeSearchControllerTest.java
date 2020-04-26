@@ -1,17 +1,17 @@
 package com.imagination.cbs.controller;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,6 +24,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.ContractorEmployeeSearchDto;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
@@ -54,46 +55,46 @@ public class ContractorEmployeeSearchControllerTest {
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDto() throws Exception {
 
-		when(contractorServiceImpl.getContractorEmployeeDetails(Mockito.anyInt(), 
-				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
-		.thenReturn(createPagedData());
+		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
+		
+		when(contractorServiceImpl.getContractorEmployeeDetails(0, 10, "roleId", "ASC")).thenReturn(contractorEmployeeSearchDto);
 
 		mockMvc.perform(get("/contractor-employees").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
 				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
 
-		verify(contractorServiceImpl, times(1)).getContractorEmployeeDetails(0, 10, "roleId", "ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetails(0, 10, "roleId", "ASC");
 	}
 
 	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleId() throws Exception {
 
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleId(Mockito.anyLong(), Mockito.anyInt(),
-				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(createPagedData());
+		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
+		
+		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC")).thenReturn(contractorEmployeeSearchDto);
 
 		mockMvc.perform(get("/contractor-employees").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
 				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
 
-		verify(contractorServiceImpl, times(1)).getContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");
 	}
 
 	@WithMockUser("/developer")
 	@Test
 	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleIdAndName() throws Exception {
 
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(),
-				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
-						.thenReturn(createPagedData());
+		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
+		
+		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId", "ASC"))
+						.thenReturn(contractorEmployeeSearchDto);
 
 		mockMvc.perform(get("/contractor-employees").param("name", "Al").param("role", "1000")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
 
-		verify(contractorServiceImpl, times(1)).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId",
-				"ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId", "ASC");
 	}
 
 	@WithMockUser("/developer")
@@ -101,19 +102,18 @@ public class ContractorEmployeeSearchControllerTest {
 	public void shouldReturnEmptyPageResponseOfContractorEmployeeDtoIfContractorNameIsNotPresentInDB()
 			throws Exception {
 
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(Mockito.anyLong(), Mockito.anyString(),
-				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(
-						new PageImpl<>(new ArrayList<ContractorEmployeeSearchDto>(), PageRequest.of(0, 5), 0));
+		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,"roleId", "ASC")).thenReturn(
+						new PageImpl<>(new ArrayList<ContractorEmployeeSearchDto>(), PageRequest.of(0, 10), 0));
 
 		mockMvc.perform(get("/contractor-employees").param("name", "Test").param("role", "1000")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content").isEmpty());
 
-		verify(contractorServiceImpl, times(1)).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,
-				"roleId", "ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,"roleId", "ASC");
 	}
 
 	private Page<ContractorEmployeeSearchDto> createPagedData() {
+		
 		List<ContractorEmployeeSearchDto> contractorEmployeeSearchDtoList = new ArrayList<>();
 
 		ContractorEmployeeSearchDto ce1 = new ContractorEmployeeSearchDto();
