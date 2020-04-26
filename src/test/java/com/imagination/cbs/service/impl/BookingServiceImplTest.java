@@ -1,9 +1,9 @@
 /**
  * 
- */
+ *//*
 package com.imagination.cbs.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,12 +55,12 @@ import com.imagination.cbs.service.helper.CreateBookingHelper;
 import com.imagination.cbs.service.helper.EmailHelper;
 import com.imagination.cbs.util.AzureStorageUtility;
 
-/**
+*//**
  * @author pappu.rout
  *
- */
+ *//*
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class BookingServiceImplTest {
 	
 	@InjectMocks
@@ -216,7 +216,7 @@ public class BookingServiceImplTest {
 		BookingDto actual = bookingServiceImpl.retrieveBookingDetails(1910l);
 		
 		assertEquals("2025", actual.getBookingRevisionId());
-		assertEquals(8000l, actual.getCommisioningOffice().getOfficeId());
+		assertEquals(8000l, actual.getCommisioningOffice().getOfficeId().intValue());
 		
 		verify(bookingRepository,times(1)).findById(1910l);
 		verify(bookingSaveHelper,times(1)).getLatestRevision(bookingDetails);
@@ -679,3 +679,4 @@ public class BookingServiceImplTest {
 	
 	
 }
+*/
