@@ -1,10 +1,10 @@
 package com.imagination.cbs.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import static org.mockito.Mockito.any;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -49,6 +49,9 @@ import com.imagination.cbs.service.LoggedInUserService;
 @RunWith(MockitoJUnitRunner.class)
 public class ContractorServiceImplTest {
 
+	@InjectMocks
+	private ContractorServiceImpl contractorServiceImpl;
+	
 	@Mock
 	private ContractorRepository contractorRepository;
 
@@ -72,9 +75,7 @@ public class ContractorServiceImplTest {
 
 	@Mock
 	private RoleRepository roleRepository;
-
-	@InjectMocks
-	private ContractorServiceImpl contractorServiceImpl;
+	
 
 	@Test
 	public void shouldReturnPaginatedContractorEmployeeDetails() {
@@ -151,6 +152,7 @@ public class ContractorServiceImplTest {
 
 	@Test
 	public void shouldReturnContractorDetailsByContractorIdWhenContractorIdIsPresentInDB() {
+		
 		Contractor contractor = Mockito.mock(Contractor.class);
 		ContractorDto contractorDto = new ContractorDto();
 		contractorDto.setContractorId(1001);
@@ -174,14 +176,16 @@ public class ContractorServiceImplTest {
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldThrowResourceNotFoundExceptionWhenContractorIdNotPresentInDB() {
 
-		when(contractorRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+		when(contractorRepository.findById(1001L)).thenReturn(Optional.empty());
+		
 		contractorServiceImpl.getContractorByContractorId(1001L);
 	}
 
 	@Test
 	public void shouldReturnContractorEmployeeByContractorIdAndContractorEmployeeIdIfBothPresentInDB() {
-		ContractorEmployee contractorEmployee = Mockito.mock(ContractorEmployee.class);
-		ContractorEmployeeDefaultRate employeeDefaultRate = Mockito.mock(ContractorEmployeeDefaultRate.class);
+		
+		ContractorEmployee contractorEmployee = mock(ContractorEmployee.class);
+		ContractorEmployeeDefaultRate employeeDefaultRate = mock(ContractorEmployeeDefaultRate.class);
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setContractorEmployeeId("2001");
 		contractorEmployeeDto.setEmployeeId("3001");
@@ -257,30 +261,18 @@ public class ContractorServiceImplTest {
 		assertEquals("LTD", response.getCompanyType());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void shouldThrowIllegalArgumentExceptionWhenContractorRequestIsNull() {
-
-		CBSUser cbsUser = Mockito.mock(CBSUser.class);
-		Contractor contractor = Mockito.mock(Contractor.class);
-
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(contractorMapper.toContractorDomainFromContractorRequest(createContractorRequest())).thenReturn(contractor);
-		when(contractorRepository.save(contractor)).thenThrow(new IllegalArgumentException());
-
-		contractorServiceImpl.addContractorDetails(createContractorRequest());
-	}
-
 	@Test
 	public void shouldAddContractorEmployee() {
 		
 		ContractorEmployee contractorEmployee = createContractorEmployeeDomain();
+		ContractorEmployeeDto contractorEmployeeDto = createContractorEmployeeDto();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
-		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
-		when(roleRepository.findById(201L)).thenReturn(Optional.of(Mockito.mock(RoleDm.class)));
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(new CBSUser("pappu"));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(new Contractor()));
+		when(roleRepository.findById(201L)).thenReturn(Optional.of(new RoleDm()));
 		when(contractorEmployeeRepository.save(any(ContractorEmployee.class))).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
-				.thenReturn(createContractorEmployeeDto());
+				.thenReturn(contractorEmployeeDto);
 
 		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, createContractorEmployeeRequest());
 
@@ -296,16 +288,18 @@ public class ContractorServiceImplTest {
 
 	@Test
 	public void shouldAddContractorEmployeeIfRoleIdIsNull() {
+		
 		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
 		contractorEmployeeRequest.setRoleId("");
 		
 		ContractorEmployee contractorEmployee = createContractorEmployeeDomain();
+		ContractorEmployeeDto contractorEmployeeDto = createContractorEmployeeDto();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
-		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(new CBSUser("pappu"));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(new Contractor()));
 		when(contractorEmployeeRepository.save(any(ContractorEmployee.class))).thenReturn(contractorEmployee);
 		when(contractorEmployeeMapper.toContractorEmployeeDtoFromContractorEmployee(contractorEmployee))
-				.thenReturn(createContractorEmployeeDto());
+				.thenReturn(contractorEmployeeDto);
 
 		ContractorEmployeeDto response = contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
 
@@ -320,9 +314,10 @@ public class ContractorServiceImplTest {
 
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldThrowResourceNotFoundExceptionWhenContractorNotPresentInDB_addContractorEmployee() {
+		
 		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(new CBSUser("pappu"));
 		when(contractorRepository.findById(2001L)).thenReturn(Optional.empty());
 
 		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
@@ -330,10 +325,11 @@ public class ContractorServiceImplTest {
 
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldThrowResourceNotFoundExceptionWhenRoleIdNotPresentInDB_addContractorEmployee() {
+		
 		ContractorEmployeeRequest contractorEmployeeRequest = createContractorEmployeeRequest();
 
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(Mockito.mock(CBSUser.class));
-		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(Mockito.mock(Contractor.class)));
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(new CBSUser("pappu"));
+		when(contractorRepository.findById(2001L)).thenReturn(Optional.of(new Contractor()));
 		when(roleRepository.findById(201L)).thenReturn(Optional.empty());
 
 		contractorServiceImpl.addContractorEmployee(2001L, contractorEmployeeRequest);
