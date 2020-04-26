@@ -1,6 +1,5 @@
 package com.imagination.cbs.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -10,12 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +27,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
@@ -64,8 +58,8 @@ import com.imagination.cbs.util.BookingValidator;
 @Import(BookingValidator.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(BookingController.class)
-@ContextConfiguration(classes = { TestConfig.class })
-public class BookingControllerTest {
+@ContextConfiguration(classes = {TestConfig.class })
+public class BookingControllerTest { 
 
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
@@ -76,9 +70,6 @@ public class BookingControllerTest {
 	@MockBean
 	private RestTemplateBuilder restTemplateBuilder;
 
-	@Autowired
-	private MockMvc mockMvc;
-
 	@MockBean
 	private BookingService bookingService;
 
@@ -86,18 +77,24 @@ public class BookingControllerTest {
 	private DashBoardService dashBoardService;
 
 	@Autowired
+	private MockMvc mockMvc;
+
+	@Autowired
 	ObjectMapper objectMapper;
 
 	@WithMockUser("developer")
 	@Test
-	public void shouldAddBookingDetails() throws Exception {
+	public void shouldAddBookingDetailsBasedOnBookingRequest() throws Exception {
 
-		when(bookingService.addBookingDetails(createBookingRequest())).thenReturn(createBookingDto());
+		when(bookingService.addBookingDetails(createBookingRequest())).thenReturn(createBookingDto()); 
 
-		MvcResult mvcResult = this.mockMvc
-				.perform(post("/bookings").content(createBookingJsonRequest()).contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(post("/bookings").content(createBookingJsonRequest())
+						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()).andReturn();
-		assertEquals(HttpStatus.SC_CREATED, mvcResult.getResponse().getStatus());
+		
+		verify(bookingService).addBookingDetails(createBookingRequest());
+		
 	}
 
 	@WithMockUser("developer")
@@ -105,14 +102,15 @@ public class BookingControllerTest {
 	public void shouldReturnDashBoardBookingStatusDetails() throws Exception {
 
 		when(dashBoardService.getDashBoardBookingsStatusDetails("draft", 0, 100)).thenReturn(createPageDashBoardDto());
-
+		
 		this.mockMvc
 				.perform(get("/bookings").param("status", "draft").param("pageNo", "0").param("pageSize", "100")
 						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorName").value("Yash"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].contractorName").value("Yash"))
 				.andExpect(jsonPath("$.content[1].contractorName").value("Yard Nine LTD"));
+		
 		verify(dashBoardService).getDashBoardBookingsStatusDetails("draft", 0, 100);
-
 	}
 
 	@WithMockUser("developer")
@@ -120,16 +118,19 @@ public class BookingControllerTest {
 	public void shouldUpdateBookingDetailsBasedOnBookingId() throws Exception {
 		
 		when(bookingService.updateBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
+		
 		this.mockMvc
 				.perform(patch("/bookings/{bookingId}", 2020L).content(createBookingJsonRequest())
 						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.discipline.disciplineId").value("8000"));
+		
 		verify(bookingService).updateBookingDetails(2020L, createBookingRequest());
 	}
 
 	@WithMockUser("/developer")
-	@Test public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
+	@Test 
+	public void shouldProcessBookingDetailsBasedOnBookingId() throws Exception {
 		  
 		when(bookingService.submitBookingDetails(2020L, createBookingRequest())).thenReturn(createBookingDto());
 		
@@ -139,67 +140,56 @@ public class BookingControllerTest {
 				.andExpect(status().isOk()).andExpect(jsonPath("$.jobname").value("JLR Experience Center"))
 				.andExpect(jsonPath("$.approvalStatus.approvalName").value("Draft"));
 
-		verify(bookingService).submitBookingDetails(2020L, createBookingRequest());
-	 
+		verify(bookingService).submitBookingDetails(2020L, createBookingRequest()); 
 	}
-	
-	@WithMockUser("/developer")
-	@Test public void shouldThrowMethodArgumentNotValidExceptionWhenRoleIdIsNotPresentInBookingRequest() throws Exception {
-		  
-		
-		this.mockMvc.perform(put("/bookings/{bookingId}", 2020L).content(objectMapper.writeValueAsString(new BookingRequest()))
-						.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-
-	 
-	}
-
-
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
 	public void shouldReturnBookingDetailsBasedOnBookingId() throws Exception {
 
 		when(bookingService.retrieveBookingDetails(1035L)).thenReturn(createBookingDto());
 		
-		this.mockMvc.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockMvc
+				.perform(get("/bookings/1035").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.bookingRevisionId").value("2025"))
 				.andExpect(jsonPath("$.contractor.contractorName").value("Yash"));
+		
 		verify(bookingService).retrieveBookingDetails(1035L);
 	}
 
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldCreateApprovedBooking() throws Exception {
+	public void shouldApprovedBookingBasedOnApproveRequest() throws Exception {
 		
 		String jsonRequest = objectMapper.writeValueAsString(createApproveRequest());
 
 		when(bookingService.approveBooking(createApproveRequest())).thenReturn(createBookingDto());
 
-		MvcResult mvcResult = this.mockMvc
-				.perform(post("/bookings/process-request").content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(post("/bookings/process-request").content(jsonRequest)
+						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn();
-		assertEquals(HttpStatus.SC_OK, mvcResult.getResponse().getStatus());
 		
 		verify(bookingService).approveBooking(createApproveRequest());
 	}
 
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldCancleBooking() throws Exception {
+	public void shouldDeleteBookingWhenBookingIdIsPresentInDB() throws Exception {
 
-		long bookingId = 1035l;
-		when(bookingService.cancelBooking(bookingId)).thenReturn(createBookingDto());
+		when(bookingService.cancelBooking(1035l)).thenReturn(createBookingDto());
 
-		this.mockMvc.perform(
-				delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+		this.mockMvc
+				.perform(delete("/bookings/1035").contentType(MediaType.APPLICATION_JSON)
+						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
-		verify(bookingService).cancelBooking(bookingId);
-
+		
+		verify(bookingService).cancelBooking(1035l);
 	}
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void ShouldReturnAllBookingRevisionsInBookingDtoWhenBiikingIDIsPresentInDB()throws Exception {
+	public void shouldReturnAllBookingRevisionsInBookingDtoWhenBookingIDIsPresentInDB()throws Exception {
 		
 		BookingDto bookingDto = createBookingDto();
 		List<BookingDto> bookingDtoList = new ArrayList<>();
@@ -216,7 +206,7 @@ public class BookingControllerTest {
 	
 	@WithMockUser("/developer")
 	@Test
-	public void ShouldSendBookingReminderThroughEmailToBookingApprover()throws Exception {
+	public void shouldSendBookingReminderThroughEmailToBookingApprover()throws Exception {
 		
 		mockMvc.perform(get("/bookings/1035/reminder").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 		
@@ -231,38 +221,23 @@ public class BookingControllerTest {
 
 	private BookingDto createBookingDto() {
 		BookingDto bookingDto = new BookingDto();
-		bookingDto.setAgreementDocumentId("");
-		bookingDto.setAgreementId("");
-		bookingDto.setApproverComments("");
 		bookingDto.setApprovalStatus(createApprovalStatusDmDto());
 		bookingDto.setBookingId("1035");
-		bookingDto.setBookingDescription("");
 		bookingDto.setBookingRevisionId("2025");
 		bookingDto.setChangedBy("Pravin");
-		bookingDto.setChangedDate("");
 		bookingDto.setCommOffRegion(createRegionDto());
 		bookingDto.setCommisioningOffice(createCommisioningOffice());
-		bookingDto.setContractAmountAftertax("");
-		bookingDto.setContractAmountBeforetax("");
-		bookingDto.setContractedFromDate("2020-03-11 20:48:05.123");
-		bookingDto.setContractedToDate("2020-04-02 20:48:05.123");
 		bookingDto.setContractEmployee(createContractorEmployeeDto());
 		bookingDto.setContractor(createContractorDto());
-		bookingDto.setContractorSignedDate("2020-03-11 20:48:05.123");
-		bookingDto.setContractorTotalAvailableDays("");
-		bookingDto.setContractorTotalWorkingDays("");
 		bookingDto.setContractorWorkRegion(createRegionDto());
 		bookingDto.setContractorWorkSites(createContractorWorkSiteDtoList());
 		bookingDto.setContractWorkLocation(createOfficeDto());
 		bookingDto.setCurrency(createCurrencyDto());
 		bookingDto.setDiscipline(createDisciplineDto());
-		bookingDto.setEmployerTaxPercent("");
 		bookingDto.setInsideIr35("true");
-		bookingDto.setJobDeptName("");
 		bookingDto.setJobname("JLR Experience Center");
 		bookingDto.setJobNumber("0987");
 		bookingDto.setMonthlyWorkDays(createWorkDaysDtoList());
-		bookingDto.setRate("");
 		bookingDto.setReasonForRecruiting(createRecruitingDto());
 		bookingDto.setRole(createRoleDto());
 		bookingDto.setSupplierType(createSupplierTypeDto());
@@ -276,7 +251,6 @@ public class BookingControllerTest {
 		officeDto.setOfficeId(new Long(8000));
 		officeDto.setOfficeName("Melbourne");
 		officeDto.setOfficeDescription("Melbourne");
-
 		return officeDto;
 	}
 
@@ -290,21 +264,16 @@ public class BookingControllerTest {
 
 	public RoleDto createRoleDto() {
 		RoleDto roleDto = new RoleDto();
-
 		roleDto.setRoleName("2D");
 		roleDto.setRoleId("3214");
 		roleDto.setRoleDescription("2D");
 		roleDto.setInsideIr35("false");
-		roleDto.setDisciplineId("0");
-		roleDto.setChangedDate("2020-03-30T16:16:55.000+05:30");
 		roleDto.setChangedBy("Akshay");
 		roleDto.setCestDownloadLink("https://imaginationcbs.blob.core.windows.net/cbs/IR35 Example PDF outside.pdf");
-
 		return roleDto;
 	}
 
 	private RegionDto createRegionDto() {
-
 		RegionDto regionDto = new RegionDto();
 		regionDto.setRegionDescription("Europe & Middle East");
 		regionDto.setRegionId(1l);
@@ -339,14 +308,12 @@ public class BookingControllerTest {
 	private ContractorEmployeeDto createContractorEmployeeDto() {
 		ContractorEmployeeDto contractorEmployeeDto = new ContractorEmployeeDto();
 		contractorEmployeeDto.setChangedBy("admin");
-		contractorEmployeeDto.setChangedDate("2020-03-09 15:59:09.0");
 		contractorEmployeeDto.setContactDetails("1111-111-11");
 		contractorEmployeeDto.setContractorEmployeeId("6000");
 		contractorEmployeeDto.setContractorEmployeeName("Alex");
 		contractorEmployeeDto.setEmployeeId("5000");
 		contractorEmployeeDto.setKnownAs("Aliase1");
 		contractorEmployeeDto.setStatus("Status1");
-
 		return contractorEmployeeDto;
 	}
 
@@ -429,12 +396,9 @@ public class BookingControllerTest {
 		bookingRequest.setCommisioningOffice("Yash");
 		bookingRequest.setCommOffRegion("US");
 		bookingRequest.setContractAmountAftertax("23");
-		bookingRequest.setContractAmountBeforetax("20");
-		bookingRequest.setContractedFromDate("2020-04-1 20:48:05.127");
-		bookingRequest.setContractedToDate("2020-10-1 20:48:05.127");
+		bookingRequest.setContractAmountBeforetax("20");		
 		bookingRequest.setContractEmployeeId("5004");
 		bookingRequest.setContractorId("6002");
-		bookingRequest.setContractorSignedDate("2020-04-1 20:48:05.127");
 		bookingRequest.setContractorTotalAvailableDays("30");
 		bookingRequest.setContractorTotalWorkingDays("30");
 		bookingRequest.setContractorWorkRegion("US");

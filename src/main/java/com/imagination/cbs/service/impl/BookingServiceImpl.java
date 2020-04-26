@@ -105,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
 
 	@Transactional
 	@Override
-	public BookingDto addBookingDetails(BookingRequest bookingRequest) {
+	public BookingDto addBookingDetails(BookingRequest bookingRequest) { 
 		Booking bookingDomain = createBookingHelper.populateBooking(bookingRequest, 1L, false);
 		Booking savedBooking = bookingRepository.save(bookingDomain);
 		return retrieveBookingDetails(savedBooking.getBookingId());
@@ -127,7 +127,6 @@ public class BookingServiceImpl implements BookingService {
 		} else {
 			throw new ResourceNotFoundException(BOOKING_NOT_FOUND_MESSAGE + bookingId);
 		}
-
 	}
 
 	@Transactional
@@ -142,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
 			newBookingDomain.setBookingDescription(bookingDetails.getBookingDescription());
 			newBookingDomain.setChangedDate(new Timestamp(System.currentTimeMillis()));
 			bookingRepository.save(newBookingDomain);
-			BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(newBookingDomain);
+	 		BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(newBookingDomain);
 			// send mail to approver order #1
 			emailHelper.prepareMailAndSend(newBookingDomain, latestRevision, 1L);
 			return retrieveBookingDetails(bookingId);
@@ -272,7 +271,7 @@ public class BookingServiceImpl implements BookingService {
 
 		Long statusId = booking.getApprovalStatus().getApprovalStatusId();
 		BookingRevision latestRevision = bookingSaveHelper.getLatestRevision(booking);
-		if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(statusId)) {
+		if (ApprovalStatusConstant.APPROVAL_SENT_TO_HR.getApprovalStatusId().equals(statusId)) { 
 			emailHelper.prepareMailAndSendToHR(latestRevision);
 			return;
 		}

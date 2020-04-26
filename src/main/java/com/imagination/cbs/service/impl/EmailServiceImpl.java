@@ -61,7 +61,7 @@ public class EmailServiceImpl implements EmailService {
 	private ApprovalStatusDmRepository approvalStatusDmRepository;
 
 	@Override
-	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) {
+	public void sendEmailForBookingApproval(MailRequest request, BookingRevision bookingRevision, String templateName) { 
 
 		logger.info("MailRequest :: {} CURRENT STATUS :: {} BOOKING_ID :: {}", request,
 				bookingRevision.getApprovalStatus().getApprovalName(), bookingRevision.getBooking().getBookingId());

@@ -27,7 +27,7 @@ public class BookingSaveHelper {
 	@Autowired
 	private BookingRepository bookingRepository;
 
-	public Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) {
+	public Booking saveBooking(Booking booking, BookingRevision revision, Long nextStatus, CBSUser user) { 
 		Optional<ApprovalStatusDm> approvalStatus = approvalStatusDmRepository.findById(nextStatus);
 		ApprovalStatusDm nextApprovalStatus = null;
 		if (approvalStatus.isPresent()) {
@@ -47,7 +47,7 @@ public class BookingSaveHelper {
 		return booking;
 	}
 
-	public BookingRevision getLatestRevision(Booking booking) {
+	public BookingRevision getLatestRevision(Booking booking) { 
 
 		Optional<BookingRevision> max = booking.getBookingRevisions().stream()
 				.max(Comparator.comparing(BookingRevision::getRevisionNumber));

@@ -46,10 +46,9 @@ public class RegionOfficeControllerTest {
 	@MockBean
 	private RegionOfficeService regionOfficeService;
 	
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnAllRegions() throws Exception {
-
+	public void shouldReturnRegionDtoList() throws Exception {
 		List<RegionDto> listOfRegionDto = new ArrayList<RegionDto>();
 		listOfRegionDto.add(createRegionDto());
 
@@ -61,29 +60,26 @@ public class RegionOfficeControllerTest {
 		verify(regionOfficeService).getAllRegions();
 	}
 
-	@WithMockUser("/developer")
+	@WithMockUser("developer")
 	@Test
-	public void shouldReturnAllOfficesBasedOnRegion() throws Exception {
-
+	public void shouldReturnAllOfficesListBasedOnRegion() throws Exception {
 		List<OfficeDto> listOfficeDtos = new ArrayList<>();
 		listOfficeDtos.add(createOfficeDto());
 
-		long regionId = 2;
-		when(regionOfficeService.getAllOfficesInRegion(regionId)).thenReturn(listOfficeDtos);
+		when(regionOfficeService.getAllOfficesInRegion(2L)).thenReturn(listOfficeDtos);
 
-		this.mockMvc.perform(get("/regions/2/offices").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockMvc.perform(get("/regions/2/offices").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].officeName", comparesEqualTo("Melbourne")));
 
-		verify(regionOfficeService).getAllOfficesInRegion(regionId);
-
+		verify(regionOfficeService).getAllOfficesInRegion(2L);
 	}
 
 	public RegionDto createRegionDto() {
 		RegionDto regionDto = new RegionDto();
-		regionDto.setRegionId(new Long(1));
+		regionDto.setRegionId(2L);
 		regionDto.setRegionName("EMEA");
-		regionDto.setRegionDescription("Europe & Middle East");
-
+		regionDto.setRegionDescription("Europe & Middle East"); 
 		return regionDto;
 	}
 
@@ -92,7 +88,6 @@ public class RegionOfficeControllerTest {
 		officeDto.setOfficeId(new Long(8000));
 		officeDto.setOfficeName("Melbourne");
 		officeDto.setOfficeDescription("Melbourne");
-
 		return officeDto;
 	}
 

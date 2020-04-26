@@ -54,7 +54,7 @@ public class BookingController {
 	private DashBoardService dashBoardService;
 
 	@PostMapping(consumes = "application/json", produces = "application/json")
-	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) {
+	public ResponseEntity<BookingDto> addBookingDetails(@RequestBody BookingRequest booking) { 
 		BookingDto draftBooking = bookingServiceImpl.addBookingDetails(booking);
 		return new ResponseEntity<>(draftBooking, HttpStatus.CREATED);
 	}

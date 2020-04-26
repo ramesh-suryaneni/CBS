@@ -73,7 +73,8 @@ public class ContractorEmployeeSearchControllerTest {
 				Mockito.anyInt(), Mockito.anyString(), Mockito.anyString())).thenReturn(createPagedData());
 
 		mockMvc.perform(get("/contractor-employees").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
 				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
 
 		verify(contractorServiceImpl, times(1)).geContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");

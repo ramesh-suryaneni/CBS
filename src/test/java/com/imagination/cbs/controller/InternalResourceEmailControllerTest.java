@@ -1,8 +1,8 @@
 package com.imagination.cbs.controller;
 
+
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,56 +15,57 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imagination.cbs.config.TestConfig;
-import com.imagination.cbs.dto.JobDataDto;
-import com.imagination.cbs.dto.JobDetailDto;
+import com.imagination.cbs.dto.InternalResourceEmailDto;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
 import com.imagination.cbs.security.GoogleIDTokenValidationUtility;
-import com.imagination.cbs.service.MaconomyService;
+import com.imagination.cbs.service.EmailService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(MaconomyController.class)
+@WebMvcTest(InternalResourceEmailController.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class MaconomyControllerTest { 
+public class InternalResourceEmailControllerTest {
 
 	@MockBean
 	private GoogleIDTokenValidationUtility googleIDTokenValidationUtility;
-	
+
 	@MockBean
 	private GoogleAuthenticationEntryPoint googleAuthenticationEntryPoint;
-	
+
 	@MockBean
 	private RestTemplateBuilder restTemplateBuilder;
-	
+
 	@MockBean
-	private MaconomyService maconomyService;
+	private EmailService emailServiceImpl;
 	
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	ObjectMapper objectMapper;
 	
 	@WithMockUser("developer")
 	@Test
-	public void shouldReturnJobDetailsBasedOnJobNumber() throws Exception {
+	public void shouldSendEmailToInternalResource() throws Exception {
 		
-		when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails("6000",new JobDataDto(), "jobNumber", "")).thenReturn(createJobDataDto());
-				
-		this.mockMvc.perform(get("/macanomy?jobNumber=6000").accept(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk());
+		String jsonRequest = objectMapper.writeValueAsString(createInternalResourceEmailDto());
+		
+		this.mockMvc
+		.perform(post("/internal-resource-email").content(jsonRequest)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andReturn();
+
+		verify(emailServiceImpl).sendInternalResourceEmail(createInternalResourceEmailDto());
 	}
 	
-	private JobDataDto createJobDataDto() {
-		JobDataDto jobDataDto = new JobDataDto();
-		jobDataDto.setData(createJobDetailDto());
-		return jobDataDto;
-	}
-	
-	private JobDetailDto createJobDetailDto(){
-		JobDetailDto jobDetailDto = new JobDetailDto();
-		jobDetailDto.setJobname("SE");
-		jobDetailDto.setJobnumber("6000");
-		jobDetailDto.setText3("se");
-		
-		return jobDetailDto;
+	private InternalResourceEmailDto createInternalResourceEmailDto() {
+		InternalResourceEmailDto internalResourceEmailDto = new InternalResourceEmailDto();
+		internalResourceEmailDto.setJobName("11111");
+		internalResourceEmailDto.setJobName("Creator");
+		internalResourceEmailDto.setRole("2D");
+		return internalResourceEmailDto;
 	}
 
 }
