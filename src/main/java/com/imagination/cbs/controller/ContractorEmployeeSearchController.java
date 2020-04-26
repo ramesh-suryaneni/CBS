@@ -37,12 +37,12 @@ public class ContractorEmployeeSearchController {
 			@RequestParam(defaultValue = "ASC") String sortingOrder){
 	
 		if(!name.equals("")){
-			return contractorService.geContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingBy, sortingOrder);
+			return contractorService.getContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingBy, sortingOrder);
 		}
 		if(role!=0) {
-			return contractorService.geContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingBy, sortingOrder);			
+			return contractorService.getContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingBy, sortingOrder);			
 		}
-		return contractorService.geContractorEmployeeDetails(pageNo, pageSize, sortingBy, sortingOrder);
+		return contractorService.getContractorEmployeeDetails(pageNo, pageSize, sortingBy, sortingOrder);
 	}
 
 }
