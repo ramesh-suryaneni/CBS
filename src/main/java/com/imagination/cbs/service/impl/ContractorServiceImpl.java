@@ -81,7 +81,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetails(int pageNo, int pageSize, String sortingField,
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetails(int pageNo, int pageSize, String sortingField,
 			String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findAll(pageable);
@@ -90,7 +90,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize,
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize,
 			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId,
@@ -100,7 +100,7 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> geContractorEmployeeDetailsByRoleIdAndName(Long roleId,
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleIdAndName(Long roleId,
 			String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
 		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository
