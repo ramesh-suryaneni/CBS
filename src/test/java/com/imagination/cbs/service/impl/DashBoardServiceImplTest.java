@@ -74,7 +74,6 @@ public class DashBoardServiceImplTest {
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled("Pappu", "Draft", PageRequest.of(10, 100))).thenReturn(bookingRevisions);
 		when(tuple.get("status", String.class)).thenReturn("Draft");
-		when(tuple.get("completedAgreementPdf", String.class)).thenReturn("maginationcbs.z10.web.core.windows.net");
 		
 		Page<DashBoardBookingDto> actual = dashBoardServiceImpl.getDashBoardBookingsStatusDetails("Draft", 10, 100);
 		
