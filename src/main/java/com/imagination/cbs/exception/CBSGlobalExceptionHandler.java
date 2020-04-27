@@ -56,7 +56,7 @@ public class CBSGlobalExceptionHandler {
 	
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	@ExceptionHandler(CBSUnAuthorizedException.class)
-	public String handleCBSUnAuthorizedException(RuntimeException runtimeException){
+	public String handleCBSUnAuthorizedException(CBSUnAuthorizedException runtimeException){
 		return runtimeException.getMessage();
 	}
 	

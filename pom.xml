@@ -28,7 +28,8 @@
 		<sonar.sources>src/main/java</sonar.sources>
 		<sonar.exclusions>**/domain/*.java, **/dto/*.java,
 			**/config/SpringSecurityConfig.java,
-			**/cbs/ContractorBookingSystemApplication.java</sonar.exclusions>
+			**/cbs/ContractorBookingSystemApplication.java,
+			**/GoogleIDTokenValidationUtility.java</sonar.exclusions>
 		<sonar.tests>src/test/java</sonar.tests>
 	</properties>
 

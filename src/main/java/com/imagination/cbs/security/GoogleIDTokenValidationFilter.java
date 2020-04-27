@@ -47,8 +47,8 @@ public class GoogleIDTokenValidationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
         	}
             
-        }catch(Exception e) {
-        	LOGGER.error("Exception occured during token validation and loading an user: ",e);
+        }catch(Exception exception) {
+        	LOGGER.error("Exception occured during token validation and loading an user: ",exception);
         }
         
         chain.doFilter(request, response);

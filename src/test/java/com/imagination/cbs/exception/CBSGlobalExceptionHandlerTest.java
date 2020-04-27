@@ -71,7 +71,7 @@ public class CBSGlobalExceptionHandlerTest {
 	@Test
 	public void handleCBSUnAuthorizedExceptionWhenUseIsNotAuthorizedToApproveBooking() {
 		
-		String actual = cbsGlobalExceptionHandler.handleCBSUnAuthorizedException(new RuntimeException("Not Authorized to perform this operation; insufficient previllages"));
+		String actual = cbsGlobalExceptionHandler.handleCBSUnAuthorizedException(new CBSUnAuthorizedException("Not Authorized to perform this operation; insufficient previllages"));
 		
 		assertEquals("Not Authorized to perform this operation; insufficient previllages", actual);
 	}
