@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.imagination.cbs.dto.DashBoardBookingDto;
 import com.imagination.cbs.repository.BookingRevisionRepository;
@@ -93,10 +92,8 @@ public class DashBoardServiceImpl implements DashBoardService{
             bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
             bookingDashBoardDto.setBookingRevisionId(bookingRevision.get("bookingRevisionId", BigInteger.class));
             bookingDashBoardDto.setBookingCreater(bookingRevision.get("bookingCreater", String.class));
-            
-			if (!StringUtils.isEmpty(bookingRevision.get("completedAgreementPdf", String.class))) {
-				bookingDashBoardDto.setCompletedAgreementPdf(bookingRevision.get("completedAgreementPdf", String.class));
-				}
+            bookingDashBoardDto.setCompletedAgreementPdf(bookingRevision.get("completedAgreementPdf", String.class));
+				
             return bookingDashBoardDto;
             
             }).collect(Collectors.toList());

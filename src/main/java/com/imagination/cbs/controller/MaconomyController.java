@@ -3,6 +3,8 @@
  */
 package com.imagination.cbs.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ public class MaconomyController {
 	private MaconomyService maconomyService;
 	
 	@GetMapping()
-	public JobDataDto getJobDetails(@RequestParam String jobNumber){
+	public JobDataDto getJobDetails(@RequestParam String jobNumber) throws IOException{
 		
 		return maconomyService.getMaconomyJobNumberAndDepartmentsDetails(jobNumber, new JobDataDto(), "jobNumber", "");
 	}

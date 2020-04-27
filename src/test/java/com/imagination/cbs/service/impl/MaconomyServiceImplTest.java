@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class MaconomyServiceImplTest {
 	}
 	
 	@Test
-	public void shouldReturnDtoSentAsParameter() {
+	public void shouldReturnDtoSentAsParameter() throws IOException{
 
 		JobDataDto jobDataDto = createJobDataDto();
 		
@@ -70,7 +71,7 @@ public class MaconomyServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnMaconomyJobNumberDetails() throws JsonMappingException, JsonProcessingException {
+	public void shouldReturnMaconomyJobNumberDetails() throws JsonMappingException, JsonProcessingException , IOException{
 		
 		JobDataDto jobDataDto = createJobDataDto();
 		JsonNode jsonNode = createJsonNode("jobNumber");
@@ -91,7 +92,7 @@ public class MaconomyServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnDepartmentDetails() throws JsonMappingException, JsonProcessingException {
+	public void shouldReturnDepartmentDetails() throws JsonMappingException, JsonProcessingException, IOException {
 
 		ApproverTeamDto approverTeamDto = createApproverTeamDto();
 		JsonNode jsonNode = createJsonNode("Department");
@@ -114,7 +115,7 @@ public class MaconomyServiceImplTest {
 	}
 
 	@Test(expected = ResourceNotFoundException.class)
-	public void shouldThorwResourceNotFoundExceptionWhenRuntimeExceptionDuringMaconomyRestClientCall() {
+	public void shouldThorwResourceNotFoundExceptionWhenRuntimeExceptionDuringMaconomyRestClientCall() throws IOException {
 		
 		JobDataDto jobDataDto = createJobDataDto();
 		
@@ -126,7 +127,7 @@ public class MaconomyServiceImplTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void shouldThrowNullPoniterExceptionWhenResponseFromMaconomyRestClientIsNull() {
+	public void shouldThrowNullPoniterExceptionWhenResponseFromMaconomyRestClientIsNull() throws IOException {
 		
 		JobDataDto jobDataDto = createJobDataDto();
 		
@@ -138,7 +139,7 @@ public class MaconomyServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnDtoSentAsParameterAfterExtractingResponseCall() throws JsonMappingException, JsonProcessingException {
+	public void shouldReturnDtoSentAsParameterAfterExtractingResponseCall() throws JsonMappingException, JsonProcessingException, IOException {
 		
 		JobDataDto jobDataDto = createJobDataDto();
 		JsonNode jsonNode = createDummyJsonNode();
@@ -161,7 +162,7 @@ public class MaconomyServiceImplTest {
 	}
 	
 	@Test(expected = CBSApplicationException.class)
-	public void shouldThrowCBSApplicationExceptionWhenResponseBodyIdNull_extractResponse() {
+	public void shouldThrowCBSApplicationExceptionWhenResponseBodyIdNull_extractResponse() throws IOException {
 		
 		JobDataDto jobDataDto = createJobDataDto();
 		
@@ -175,7 +176,7 @@ public class MaconomyServiceImplTest {
 		maconomyServiceImpl.getMaconomyJobNumberAndDepartmentsDetails("1000", jobDataDto, "test", "testDepartment");
 	}
 	
-	@Test
+	@Test(expected = IOException.class)
 	public void shouldReturnSentDtoIOExceptionOccuredWhileReadingValueFromObjectMapper_extractResponse() throws Exception{
 		
 		ApproverTeamDto approverTeamDto = createApproverTeamDto();
@@ -188,14 +189,8 @@ public class MaconomyServiceImplTest {
 		when(maconomyRestClient.callRestServiceForGet(maconomyUrl,"username", "password")).thenReturn(responseEntity);
 		when(responseEntity.getBody()).thenReturn(jsonNode);
 		
-		ApproverTeamDto actual = maconomyServiceImpl.getMaconomyJobNumberAndDepartmentsDetails("1000", approverTeamDto, "Department", "testDepartment");
+		maconomyServiceImpl.getMaconomyJobNumberAndDepartmentsDetails("1000", approverTeamDto, "Department", "testDepartment");
 		
-		verify(configRepository).findBykeyNameStartingWith("MACONOMY");
-		verify(maconomyRestClient).callRestServiceForGet(maconomyUrl,"username", "password");
-		verify(responseEntity, times(2)).getBody();
-		
-		assertEquals("JobRevenueDepartment", actual.getData().getName());
-		assertEquals("TestRemark", actual.getData().getRemark3());
 	}
 	
 	private List<Config> getConfigList() {
