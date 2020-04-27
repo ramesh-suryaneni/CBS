@@ -1,5 +1,6 @@
 package com.imagination.cbs.controller;
 
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,9 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.server.ResponseStatusException;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
 import com.imagination.cbs.config.TestConfig;
 import com.imagination.cbs.dto.RoleDto;
 import com.imagination.cbs.security.GoogleAuthenticationEntryPoint;
