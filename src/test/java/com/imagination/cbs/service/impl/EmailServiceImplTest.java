@@ -69,116 +69,120 @@ public class EmailServiceImplTest {
 	private ApprovalStatusDmRepository approvalStatusDmRepository;
 
 	private Template template;
-
+	private MailRequest emailRequest;
+	private ApprovalStatusDm approvalStatusDm;
+	private BookingRevision bookingRevision;
+	private CBSUser cbsUser;
+	
 	@Before
 	public void init() {
 		template = mock(Template.class);
+		emailRequest = createMailRequest();
 	}
-	
+
 	@Test
-	public void shouldSendEmailForBookingApproval() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
+	public void sendEmailForBookingApproval_shouldGetApprovalRequestTeplate_fromConfiguration() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
 
-		MailRequest emailRequest = createMailRequest();
-		BookingRevision bookingRevision = createBookingRevision(false);
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalName("Akshay");
-		ReflectionTestUtils.setField(emailServiceImpl, "baseUrl", "https://imaginagtion.com/bookingSummary?bookingId={bookingId}&status={status}");
-		
-		when(config.getTemplate("email.approval_request.ftl")).thenReturn(template);
-		when(approvalStatusDmRepository.findById(201L)).thenReturn(Optional.of(approvalStatusDm));
-		
+		beforeSendEmailForBookingApprovalTests(false,false);
 		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
-
 		verify(config).getTemplate("email.approval_request.ftl");
+	}
+
+	@Test
+	public void sendEmailForBookingApproval_shouldFindApproverStatusDm_byId() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+
+		beforeSendEmailForBookingApprovalTests(false, false);
+		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
 		verify(approvalStatusDmRepository).findById(201L);
 	}
 
 	@Test
-	public void shouldSendEmailForBookingApprovalWithEmptyStringsWhenContentOfObjectsInBookingRevisionIsEmpty() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
+	public void sendEmailForBookingApproval_shouldSendEmailWithEmptyStrings_whenContentOfObjectsInBookingRevisionIsEmpty() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
 
-		MailRequest emailRequest = createMailRequest();
-		BookingRevision bookingRevision = createBookingRevision(true);
-		ReflectionTestUtils.setField(emailServiceImpl, "baseUrl", "https://imaginagtion.com/bookingSummary?bookingId={bookingId}&status={status}");
-		
-		when(config.getTemplate("email.approval_request.ftl")).thenReturn(template);
-		when(approvalStatusDmRepository.findById(201L)).thenReturn(Optional.empty());
-		
+		beforeSendEmailForBookingApprovalTests(true, true);
 		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
-
 		verify(config).getTemplate("email.approval_request.ftl");
+	}
+
+	@Test
+	public void sendEmailForBookingApproval_shouldSendEmailWithEmptyStrings_whenObjectsInBookingRevisionAreNull() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
+
+		beforeSendEmailForBookingApprovalTests(true, true);
+		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
 		verify(approvalStatusDmRepository).findById(201L);
 	}
 
 	@Test
-	public void shouldSendEmailForBookingApprovalWithEmptyStringsWhenObjectsInBookingRevisionAreNull() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, MessagingException {
+	public void sendEmailForBookingApproval_shouldLogExceptionMessage_occuredDuringSendingEmail() {
 
-		MailRequest emailRequest = createMailRequest();
-		BookingRevision bookingRevision = createBookingRevisionWithNullObjects();
+		final BookingRevision bookingRevision = createBookingRevisionWithNullObjects();
 		ReflectionTestUtils.setField(emailServiceImpl, "baseUrl", "https://imaginagtion.com/bookingSummary?bookingId={bookingId}&status={status}");
-		
-		when(config.getTemplate("email.approval_request.ftl")).thenReturn(template);
-		when(approvalStatusDmRepository.findById(201L)).thenReturn(Optional.empty());
-		
-		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
-
-		verify(config).getTemplate("email.approval_request.ftl");
-		verify(approvalStatusDmRepository).findById(201L);
-	}
-
-	@Test
-	public void shouldLogExceptionMessageOccuredDuringEmailSending_sendEmailForBookingApproval() {
-
-		MailRequest emailRequest = createMailRequest();
-		BookingRevision bookingRevision = createBookingRevisionWithNullObjects();
-		ReflectionTestUtils.setField(emailServiceImpl, "baseUrl", "https://imaginagtion.com/bookingSummary?bookingId={bookingId}&status={status}");
-		
 		emailServiceImpl.sendEmailForBookingApproval(emailRequest, bookingRevision, "approval_request");
 	}
 	
 	@Test
-	public void shouldSendContractorReceiptEmail() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+	public void sendContractReceipt_shouldSendContractorReceiptEmail_fromContractReceiptTemplate() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
 		
-		BookingRevision bookingRevision = createBookingRevisionForContractReceipt();
-		CBSUser cbsUser = new CBSUser("Akshay");
-		cbsUser.setEmail("akshay@imagination.com");
-		
-		when(config.getTemplate("email.contractreceipt.ftl")).thenReturn(template);
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		
+		beforeSendContractReceipt();
 		emailServiceImpl.sendContractReceipt(bookingRevision);
-		
 		verify(config).getTemplate("email.contractreceipt.ftl");
+	}
+
+	@Test
+	public void sendContractReceipt_shouldSendContractorReceiptEmail_withCBSUserDetails() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+		
+		beforeSendContractReceipt();
+		emailServiceImpl.sendContractReceipt(bookingRevision);
 		verify(loggedInUserService).getLoggedInUserDetails();
 	}
-	
+
 	@Test
-	public void shouldLogExceptionMessageOccuredDuringEmailSending_sendContractReceipt() {
+	public void sendContractReceipt_shouldLogExceptionMessage_occuredDuringSendingEmail() {
 		
-		BookingRevision bookingRevision = createBookingRevisionForContractReceipt();
-		
+		final BookingRevision bookingRevision = createBookingRevisionForContractReceipt();
 		emailServiceImpl.sendContractReceipt(bookingRevision);
 	}
 	
 	@Test
 	public void shouldSendInternalResourceEmail() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
 		
-		InternalResourceEmailDto internalResourceEmailDto = createInternalResourceEmailDto();
-		
+		final InternalResourceEmailDto internalResourceEmailDto = createInternalResourceEmailDto();
 		when(config.getTemplate("email.internalsource.ftl")).thenReturn(template);
-		
 		emailServiceImpl.sendInternalResourceEmail(internalResourceEmailDto);
-
 		verify(config).getTemplate("email.internalsource.ftl");
 	}
 	
 	@Test
-	public void shouldLogExceptionMessageOccuredDuringEmailSending_sendInternalResourceEmail() {
+	public void sendInternalResourceEmail_shouldLogExceptionMessage_occuredDuringSendingEmail() {
 		
-		InternalResourceEmailDto internalResourceEmailDto = createInternalResourceEmailDto();
-		
+		final InternalResourceEmailDto internalResourceEmailDto = createInternalResourceEmailDto();
 		emailServiceImpl.sendInternalResourceEmail(internalResourceEmailDto);
 	}
 	
+	private void beforeSendEmailForBookingApprovalTests(boolean isEmptyContent, boolean isEmptyApprovalStatus) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+		bookingRevision = createBookingRevision(isEmptyContent);
+		approvalStatusDm = new ApprovalStatusDm();
+		approvalStatusDm.setApprovalName("approver");
+		ReflectionTestUtils.setField(emailServiceImpl, "baseUrl", "https://imaginagtion.com/bookingSummary?bookingId={bookingId}&status={status}");
+
+		when(config.getTemplate("email.approval_request.ftl")).thenReturn(template);
+		if(isEmptyApprovalStatus) {
+			when(approvalStatusDmRepository.findById(201L)).thenReturn(Optional.empty());
+		}
+		else {
+			when(approvalStatusDmRepository.findById(201L)).thenReturn(Optional.of(approvalStatusDm));
+		}
+	}
+	
+	private void beforeSendContractReceipt() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+		bookingRevision = createBookingRevisionForContractReceipt();
+		cbsUser = new CBSUser("cbsUser");
+		cbsUser.setEmail("cbs.user@imagination.com");
+		
+		when(config.getTemplate("email.contractreceipt.ftl")).thenReturn(template);
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+	}
+
 	private MailRequest createMailRequest() {
 
 		MailRequest emailRequest = new MailRequest();
@@ -196,7 +200,7 @@ public class EmailServiceImplTest {
 		
 		ContractorEmployee contractEmployee = new ContractorEmployee(); 
 		if(!isEmptyContent) {
-			contractEmployee.setContractorEmployeeName("Akshay"); 
+			contractEmployee.setContractorEmployeeName("contractorEmployee"); 
 		}
 		bookingRevision.setContractEmployee(contractEmployee);
 
@@ -205,17 +209,11 @@ public class EmailServiceImplTest {
 			contractor.setContractorName("Imagination"); 
 		}
 		bookingRevision.setContractor(contractor);
-
-		RoleDm roleDm = new RoleDm();
-		roleDm.setRoleName("2D");
-		Discipline discipline = new Discipline();
-		discipline.setDisciplineName("Creative");
-		roleDm.setDiscipline(discipline);
-		bookingRevision.setRole(roleDm);
+		bookingRevision.setRole(createRoleDm());
 		
 		SupplierTypeDm supplierType = new SupplierTypeDm();
 		if(!isEmptyContent) {
-			supplierType.setName("Yash"); 
+			supplierType.setName("supplier"); 
 		}
 		bookingRevision.setSupplierType(supplierType);
 		
@@ -225,7 +223,7 @@ public class EmailServiceImplTest {
 		
 		OfficeDm officeDm = new OfficeDm();
 		if(!isEmptyContent) {
-			officeDm.setOfficeName("India"); 
+			officeDm.setOfficeName("NewOffice"); 
 		}
 		bookingRevision.setContractWorkLocation(officeDm);
 		
@@ -240,15 +238,8 @@ public class EmailServiceImplTest {
 			bookingRevision.setBookingWorkTasks(bookingWorkTasks);
 		}
 		
-		Booking booking = new Booking();
-		booking.setBookingId(101L);
-		booking.setChangedBy("Akshay");
-		bookingRevision.setBooking(booking);
-		
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalStatusId(201L);
-		approvalStatusDm.setApprovalName("Mitul");
-		bookingRevision.setApprovalStatus(approvalStatusDm);
+		bookingRevision.setBooking(createBoooking());
+		bookingRevision.setApprovalStatus(createApprovalStatusDm());
 
 		return bookingRevision;
 	}
@@ -257,36 +248,20 @@ public class EmailServiceImplTest {
 
 		BookingRevision bookingRevision = new BookingRevision();
 		
-		RoleDm roleDm = new RoleDm();
-		roleDm.setRoleName("2D");
-		Discipline discipline = new Discipline();
-		discipline.setDisciplineName("Creative");
-		roleDm.setDiscipline(discipline);
-		bookingRevision.setRole(roleDm);
-		
+		bookingRevision.setRole(createRoleDm());
 		bookingRevision.setSupplierType(new SupplierTypeDm());
 		
 		Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
 		bookingRevision.setContractedFromDate(timeStamp);
 		bookingRevision.setContractedToDate(timeStamp);
-		
 		bookingRevision.setContractWorkLocation(new OfficeDm());
-		
 		bookingRevision.setReasonForRecruiting(new ReasonsForRecruiting());
-		
-		Booking booking = new Booking();
-		booking.setBookingId(101L);
-		booking.setChangedBy("Akshay");
-		bookingRevision.setBooking(booking);
-		
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
-		approvalStatusDm.setApprovalStatusId(201L);
-		approvalStatusDm.setApprovalName("Mitul");
-		bookingRevision.setApprovalStatus(approvalStatusDm);
+		bookingRevision.setBooking(createBoooking());
+		bookingRevision.setApprovalStatus(createApprovalStatusDm());
 
 		return bookingRevision;
 	}
-	
+
 	private List<BookingWorkTask> getBookingWorkTasks(){
 		List<BookingWorkTask> bookingWorkTasks = new ArrayList<>();
 
@@ -300,10 +275,36 @@ public class EmailServiceImplTest {
 		
 		return bookingWorkTasks;
 	}
+
+	private RoleDm createRoleDm() {
+		
+		RoleDm roleDm = new RoleDm();
+		roleDm.setRoleName("2D");
+		Discipline discipline = new Discipline();
+		discipline.setDisciplineName("Creative");
+		roleDm.setDiscipline(discipline);
+		return roleDm;
+	}
+	
+	private Booking createBoooking() {
+
+		Booking booking = new Booking();
+		booking.setBookingId(101L);
+		booking.setChangedBy("changedByUser");
+		return booking;
+	}
+	
+	private ApprovalStatusDm createApprovalStatusDm() {
+		
+		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
+		approvalStatusDm.setApprovalStatusId(201L);
+		approvalStatusDm.setApprovalName("approver");
+		return approvalStatusDm;
+	}
 	
 	private BookingRevision createBookingRevisionForContractReceipt() {
 		BookingRevision bookingRevision = new BookingRevision();
-		bookingRevision.setChangedBy("Akshay");
+		bookingRevision.setChangedBy("changedByUser");
 		
 		Contractor contractor = new Contractor();
 		contractor.setEmail("contractor@imagination.com");
