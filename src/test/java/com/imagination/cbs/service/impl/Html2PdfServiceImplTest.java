@@ -49,13 +49,13 @@ public class Html2PdfServiceImplTest {
 	}
 	
 	@Test
-	public void shouldReturnNullByteArrayOutputStreamWhenExceptionOccured() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+	public void generateAgreementPdf_shouldReturnNullByteArrayOutputStream_whenExceptionOccured() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
 		
 		final BookingRevision latestBookingRevision = createBookingRevision(false);
 		
 		when(config.getTemplate("pdf.agreement.ftl")).thenReturn(template);
 		
-		ByteArrayOutputStream byteArrayOutputStream = html2PdfServiceImpl.generateAgreementPdf(latestBookingRevision);
+		final ByteArrayOutputStream byteArrayOutputStream = html2PdfServiceImpl.generateAgreementPdf(latestBookingRevision);
 		
 		verify(config).getTemplate("pdf.agreement.ftl");
 		
@@ -63,13 +63,13 @@ public class Html2PdfServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnNullByteArrayOutputStreamWhenExceptionOccuredWithEmptyValuesInBookingRevision() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+	public void generateAgreementPdf_shouldReturnNullByteArrayOutputStream_whenExceptionOccuredWithEmptyValuesInBookingRevision() throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
 		
 		final BookingRevision latestBookingRevision = createBookingRevision(true);
 		
 		when(config.getTemplate("pdf.agreement.ftl")).thenReturn(template);
 		
-		ByteArrayOutputStream byteArrayOutputStream = html2PdfServiceImpl.generateAgreementPdf(latestBookingRevision);
+		final ByteArrayOutputStream byteArrayOutputStream = html2PdfServiceImpl.generateAgreementPdf(latestBookingRevision);
 		
 		verify(config).getTemplate("pdf.agreement.ftl");
 		
@@ -79,32 +79,20 @@ public class Html2PdfServiceImplTest {
 	private BookingRevision createBookingRevision(boolean isEmpty) {
 		
 		BookingRevision bookingRevision = new BookingRevision();
+		RoleDm role = createRoleDm();
+		Booking booking = new Booking();
+		
+		booking.setChangedBy("changedByUser");
 		if(!isEmpty) {
 			bookingRevision.setContractAmountAftertax(new BigDecimal("1000")); 
-		}
-
-		Contractor contractor = createContractor();
-		if(!isEmpty) {
 			List<BookingWorkTask> bookingWorkTasks = getBookingWorkTasks();
 			bookingRevision.setBookingWorkTasks(bookingWorkTasks);
-		}
-		
-		RoleDm role = new RoleDm();
-		role.setRoleName("2D");
-		role.setInsideIr35("true");
-		if(isEmpty) {
 			role.setInsideIr35("false");
 		}
-		Discipline discipline = new Discipline();
-		discipline.setDisciplineName("Cerative");
-		role.setDiscipline(discipline);
-		
-		Booking booking = new Booking();
-		booking.setChangedBy("changedByUser");
-		
-		bookingRevision.setContractor(contractor);
+		bookingRevision.setContractor(createContractor());
 		bookingRevision.setRole(role);
 		bookingRevision.setBooking(booking);
+		
 		return bookingRevision;
 	}
 	
@@ -117,13 +105,15 @@ public class Html2PdfServiceImplTest {
 		contractor.setPostalCode("100-102");
 		contractor.setPostalDistrict("Disctrict");
 		contractor.setCountry("Country");
+		
 		return contractor;
 	}
 	
 	private List<BookingWorkTask> getBookingWorkTasks(){
+		
 		List<BookingWorkTask> bookingWorkTasks = new ArrayList<>();
-
 		BookingWorkTask bookingWorkTask1 = new BookingWorkTask();
+		
 		bookingWorkTask1.setTaskId(2001L);
 		bookingWorkTask1.setTaskName("TestTask");
 		bookingWorkTask1.setTaskDeliveryDate(new Date(System.currentTimeMillis()));
@@ -133,5 +123,16 @@ public class Html2PdfServiceImplTest {
 		bookingWorkTasks.add(bookingWorkTask1);
 		
 		return bookingWorkTasks;
+	}
+	
+	private RoleDm createRoleDm() {
+		RoleDm role = new RoleDm();
+		role.setRoleName("2D");
+		role.setInsideIr35("true");
+		Discipline discipline = new Discipline();
+		discipline.setDisciplineName("Cerative");
+		role.setDiscipline(discipline);
+
+		return role;
 	}
 }
