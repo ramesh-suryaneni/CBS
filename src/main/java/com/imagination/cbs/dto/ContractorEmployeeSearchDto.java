@@ -16,5 +16,7 @@ public class ContractorEmployeeSearchDto {
 	private String company;
 	private Integer noOfBookingsInPast;
 	private String recommandations;
+	private String currencyId;
+	private String currencyName;
 
 }

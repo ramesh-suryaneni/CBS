@@ -219,7 +219,9 @@ public class ContractorServiceImpl implements ContractorService {
 			contractorEmployeeDto.setContractorId(contractorEmployeeSearched.getContractorId());
 			contractorEmployeeDto.setCompany(contractorEmployeeSearched.getCompany());
 			contractorEmployeeDto.setNoOfBookingsInPast(contractorEmployeeSearched.getNoOfBookingsInPast());
-
+			contractorEmployeeDto.setCurrencyId(String.valueOf(contractorEmployeeSearched.getCurrencyId()));
+			contractorEmployeeDto.setCurrencyName(contractorEmployeeSearched.getCurrencyName());
+			
 			return contractorEmployeeDto;
 		});
 	}

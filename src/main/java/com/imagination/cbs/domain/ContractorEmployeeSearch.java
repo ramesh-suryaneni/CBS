@@ -37,6 +37,12 @@ public class ContractorEmployeeSearch {
 
 	@Column(name="no_of_bookings")
 	private Integer noOfBookingsInPast;
+	
+	@Column(name="currency_id")
+	private Long currencyId;
+
+	@Column(name="currency_name")
+	private String currencyName;
 
 	public Long getRowNo() {
 		return rowNo;
@@ -108,6 +114,22 @@ public class ContractorEmployeeSearch {
 
 	public void setNoOfBookingsInPast(Integer noOfBookingsInPast) {
 		this.noOfBookingsInPast = noOfBookingsInPast;
+	}
+
+	public Long getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public String getCurrencyName() {
+		return currencyName;
+	}
+
+	public void setCurrencyName(String currencyName) {
+		this.currencyName = currencyName;
 	}
 
 }
