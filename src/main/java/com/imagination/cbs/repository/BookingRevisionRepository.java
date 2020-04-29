@@ -84,9 +84,11 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " br.contracted_to_date as contractedToDate,br.changed_by as changedBy, bo.changed_by as bookingCreater, br.changed_date as changedDate,br.booking_revision_id"
 			+ " as bookingRevisionId,br.contractor_id as contractorId, asd.approval_name as status, rd.role_name as roleName, br.completed_agreement_pdf as completedAgreementPdf"
 			+ " from cbs.booking_revision br,"
-			+ " cbs.employee_mapping emp, cbs.booking bo,cbs.approval_status_dm asd ,cbs.role_dm rd	where bo.booking_id = br.booking_id"
-			+ " and bo.status_id = br.approval_status_id and br.approval_status_id = 1005 and asd.approval_status_id=br.approval_status_id"
-			+ " and rd.role_id = br.role_id	and emp.employee_id=:employeeId)select bookingRevesionTemp.*, con.contractor_name contractorName"
+			+ " cbs.employee_mapping emp, cbs.booking bo,cbs.approval_status_dm asd ,cbs.role_dm rd, cbs.employee_permissions per "
+			+ " where bo.booking_id = br.booking_id and bo.status_id = br.approval_status_id and br.approval_status_id = 1005 and "
+			+ " asd.approval_status_id=br.approval_status_id and rd.role_id = br.role_id "
+			+ " and emp.employee_id=:employeeId and per.employee_id in (select employee_id from cbs.employee_permissions where employee_id=:employeeId "
+			+ " and permission_id = 5))select bookingRevesionTemp.*, con.contractor_name contractorName"
 			+ " from bookingRevesionTemp left join cbs.contractor con on con.contractor_id = bookingRevesionTemp.contractorId order by "
 			+ " bookingRevesionTemp.changedDate desc", nativeQuery = true)
 			public List<Tuple> retrieveBookingRevisionForWaitingForHRApproval(@Param("employeeId") Long employeeId, Pageable pageable);
