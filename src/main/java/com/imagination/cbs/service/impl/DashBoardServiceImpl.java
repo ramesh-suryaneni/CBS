@@ -51,7 +51,7 @@ public class DashBoardServiceImpl implements DashBoardService{
 		} else {
 			bookingRevisions = bookingRevisionRepository.retrieveBookingRevisionForDraftOrCancelled(loggedInUser, status, PageRequest.of(pageNo, pageSize));
 		}
-        List<DashBoardBookingDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions);
+        List<DashBoardBookingDto> bookingDashBoardDtos = toPagedBookingDashBoardDtoFromTuple(bookingRevisions, false);
 
 		return new PageImpl<>(bookingDashBoardDtos, PageRequest.of(pageNo, pageSize), bookingDashBoardDtos.size());
 	}
@@ -61,20 +61,20 @@ public class DashBoardServiceImpl implements DashBoardService{
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByJobName = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByJobNumber(employeeId, pageable);
 		
-        List<DashBoardBookingDto> bookingDashboradDtosList = toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByJobName);
+        List<DashBoardBookingDto> bookingDashboradDtosList = toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByJobName, true);
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByEmployeeId = bookingRevisionRepository.retrieveBookingRevisionForWaitingForApprovalByEmployeeId(employeeId, pageable);
 		
 		List<Tuple> retrieveBookingRevisionForWaitingByHR = bookingRevisionRepository.retrieveBookingRevisionForWaitingForHRApproval(employeeId, pageable);
 		
-		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId));
-		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByHR));
+		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByEmployeeId, true));
+		bookingDashboradDtosList.addAll(toPagedBookingDashBoardDtoFromTuple(retrieveBookingRevisionForWaitingByHR, true));
 		
 		return new PageImpl<>(bookingDashboradDtosList.stream().distinct().collect(Collectors.toList()), pageable, bookingDashboradDtosList.size());
 		
 	}
 	
-	private List<DashBoardBookingDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions) {
+	private List<DashBoardBookingDto> toPagedBookingDashBoardDtoFromTuple(List<Tuple> bookingRevisions, Boolean isWaitingStatus) {
         
         return bookingRevisions.stream().filter(bookingRevision-> Objects.nonNull((bookingRevision.get("bookingId",BigInteger.class))))
             .map(bookingRevision -> {
@@ -92,8 +92,10 @@ public class DashBoardServiceImpl implements DashBoardService{
             bookingDashBoardDto.setBookingId(bookingRevision.get("bookingId", BigInteger.class));
             bookingDashBoardDto.setBookingRevisionId(bookingRevision.get("bookingRevisionId", BigInteger.class));
             bookingDashBoardDto.setBookingCreater(bookingRevision.get("bookingCreater", String.class));
+           
+            if(isWaitingStatus){
             bookingDashBoardDto.setCompletedAgreementPdf(bookingRevision.get("completedAgreementPdf", String.class));
-				
+            }	
             return bookingDashBoardDto;
             
             }).collect(Collectors.toList());
