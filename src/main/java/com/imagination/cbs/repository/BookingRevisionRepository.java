@@ -93,7 +93,7 @@ public interface BookingRevisionRepository extends JpaRepository<BookingRevision
 			+ " bookingRevesionTemp.changedDate desc", nativeQuery = true)
 			public List<Tuple> retrieveBookingRevisionForWaitingForHRApproval(@Param("employeeId") Long employeeId, Pageable pageable);
 		
-    Optional<BookingRevision> findByAgreementId(String agreementId);
+    Optional<BookingRevision> findTopByAgreementIdOrderByChangedDateAsc(String agreementId);
     
 	@Query("SELECT DISTINCT(br.jobname) FROM BookingRevision br where br.contractEmployee.contractorEmployeeId=:contractorEmployeeId and br.approvalStatus.approvalStatusId=:statusId")
 	List<String> findByContractEmployeeId(@Param("contractorEmployeeId") Long contractorEmployeeId, @Param("statusId") Long statusId);

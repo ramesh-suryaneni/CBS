@@ -232,7 +232,7 @@ public class BookingServiceImpl implements BookingService {
 	public void updateContract(String agreementId, String date) {
 
 		// update contract signed details to booking
-		BookingRevision bookingRevision = bookingRevisionRepository.findByAgreementId(agreementId)
+		BookingRevision bookingRevision = bookingRevisionRepository.findTopByAgreementIdOrderByChangedDateAsc(agreementId)
 				.orElseThrow(() -> new ResourceNotFoundException("Agreement Id Not Found: " + agreementId));
 
 		// download agreement from adobe

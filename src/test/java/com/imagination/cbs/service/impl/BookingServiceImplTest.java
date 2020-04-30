@@ -246,13 +246,13 @@ public class BookingServiceImplTest {
 		agreementName.add(bookingRevision.getJobNumber());
 		agreementName.add(bookingRevision.getJobname());
 		
-		when(bookingRevisionRepository.findByAgreementId("C-546")).thenReturn(Optional.of(bookingRevision));
+		when(bookingRevisionRepository.findTopByAgreementIdOrderByChangedDateAsc("C-546")).thenReturn(Optional.of(bookingRevision));
 		when(adobeSignService.downloadAgreement("C-546")).thenReturn(pdfInputStream);
 		when(azureStorageUtility.uploadFile(pdfInputStream,agreementName + ".pdf")).thenReturn(uri);
 		
 		bookingServiceImpl.updateContract("C-546", "22-04-2020");
 		
-		verify(bookingRevisionRepository).findByAgreementId("C-546");
+		verify(bookingRevisionRepository).findTopByAgreementIdOrderByChangedDateAsc("C-546");
 		verify(adobeSignService).downloadAgreement("C-546");
 		verify(azureStorageUtility).uploadFile(pdfInputStream,agreementName + ".pdf");
 		verify(bookingRevisionRepository).save(bookingRevision);
@@ -263,7 +263,7 @@ public class BookingServiceImplTest {
 	@Test(expected = ResourceNotFoundException.class)
 	public void shouldThrowResourceNotFoundExceptionWhenBookingRevisionNotPresentInDB_UpdateContract() throws URISyntaxException {
 		
-		when(bookingRevisionRepository.findByAgreementId("C-546")).thenReturn(Optional.empty());
+		when(bookingRevisionRepository.findTopByAgreementIdOrderByChangedDateAsc("C-546")).thenReturn(Optional.empty());
 		
 		bookingServiceImpl.updateContract("C-546", "22-04-2020");
 		
