@@ -90,21 +90,10 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize,
-			String sortingField, String sortingOrder) {
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByNameOrRoleName(String contractorEmployeeOrRoleName,
+			int pageNo, int pageSize, String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleId(roleId,
-				pageable);
-
-		return toContractorEmployeeDtoPage(contractorEmployeePage);
-	}
-
-	@Override
-	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleIdAndName(Long roleId,
-			String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder) {
-		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository
-				.findByRoleIdAndContractorEmployeeNameContains(roleId, contractorName, pageable);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameOrRoleNameContains(contractorEmployeeOrRoleName, contractorEmployeeOrRoleName, pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
 	}

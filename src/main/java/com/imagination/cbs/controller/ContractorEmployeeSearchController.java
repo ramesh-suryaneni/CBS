@@ -29,18 +29,14 @@ public class ContractorEmployeeSearchController {
 
 	@GetMapping()
 	public Page<ContractorEmployeeSearchDto> searchContractorEmployees(
-			@RequestParam (defaultValue = "0") Long role,
 			@RequestParam(defaultValue = "") String name,
 			@RequestParam(defaultValue = "0") Integer pageNo, 
             @RequestParam(defaultValue = "10") Integer pageSize,
 			@RequestParam(defaultValue = "roleId") String sortingBy,
 			@RequestParam(defaultValue = "ASC") String sortingOrder){
 	
-		if(!name.equals("")){
-			return contractorService.getContractorEmployeeDetailsByRoleIdAndName(role, name, pageNo, pageSize, sortingBy, sortingOrder);
-		}
-		if(role!=0) {
-			return contractorService.getContractorEmployeeDetailsByRoleId(role, pageNo, pageSize, sortingBy, sortingOrder);			
+		if(!name.equals("")) {
+			return contractorService.getContractorEmployeeDetailsByNameOrRoleName(name, pageNo, pageSize, sortingBy, sortingOrder);
 		}
 		return contractorService.getContractorEmployeeDetails(pageNo, pageSize, sortingBy, sortingOrder);
 	}
