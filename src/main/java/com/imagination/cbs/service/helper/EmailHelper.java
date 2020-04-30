@@ -60,7 +60,7 @@ public class EmailHelper {
 		MailRequest request = new MailRequest();
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + latestRevision.getBooking().getBookingId())
-				+ latestRevision.getJobname() + "-" + latestRevision.getChangedBy());
+				+ latestRevision.getJobname() + "-" + latestRevision.getBooking().getChangedBy());
 		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
 		emailService.sendEmailForBookingApproval(request, latestRevision,
 				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
@@ -80,7 +80,7 @@ public class EmailHelper {
 		MailRequest request = new MailRequest();
 		request.setMailTo(toEmail);
 		request.setSubject(APPROVE_SUBJECT_LINE.replace("#", "#" + booking.getBookingId()) + latestRevision.getJobname()
-				+ "-" + latestRevision.getChangedBy());
+				+ "-" + latestRevision.getBooking().getChangedBy());
 		request.setMailFrom(EmailConstants.FROM_EMAIL.getConstantString());
 		emailService.sendEmailForBookingApproval(request, latestRevision,
 				EmailConstants.BOOKING_REQUEST_TEMPLATE.getConstantString());
