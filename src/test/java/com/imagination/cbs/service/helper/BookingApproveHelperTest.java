@@ -44,12 +44,14 @@ public class BookingApproveHelperTest {
 
 	@Mock
 	private EmailHelper emailHelper;
+
+	private Team approverTeam;
 	
 	@Test
 	public void shouldPrepareEmailAndSendTO_HR_WhenBookingCanBeOverride() {
 		final Booking booking = createBooking();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm();
-		final Team approverTeam = createTeam();
+		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1004L);
+		final Team approverTeam = createTeam(1003l);
 		final CBSUser cbsUser = createCBSUser();
 		final BookingRevision bookingRevision = createBookingRevision();
 		bookingRevision.setApprovalStatus(approvalStatus);
@@ -76,8 +78,8 @@ public class BookingApproveHelperTest {
 	@Test
 	public void shouldPrepareEmailAndSent_TO_HR_WhenBookingCannotBeOverride() {
 		final Booking booking = createBooking();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm();
-		final Team approverTeam = createTeam();
+		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1004L);
+		final Team approverTeam = createTeam(1003l);
 		final CBSUser cbsUser = createCBSUser();
 		final Approver approver =createApprover();
 		final BookingRevision bookingRevision = createBookingRevision();
@@ -108,8 +110,8 @@ public class BookingApproveHelperTest {
 		
 		final Booking booking = createBooking();
 		final CBSUser cbsUser = createCBSUser();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm();
-		final Team approverTeam = createTeam();
+		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1004L);
+		final Team approverTeam = createTeam(1003l);
 		final Approver approver =createApprover();
 		final BookingRevision bookingRevision = createBookingRevision();
 		bookingRevision.setApprovalStatus(approvalStatus);
@@ -132,14 +134,89 @@ public class BookingApproveHelperTest {
 		
 		final Booking booking = createBooking();
 		final CBSUser cbsUser = createCBSUser();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm();
-		approvalStatus.setApprovalStatusId(1001L);
+		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1001L);
+		//approvalStatus.setApprovalStatusId(1001L);
 		final BookingRevision bookingRevision = createBookingRevision();
 		bookingRevision.setApprovalStatus(approvalStatus);
 		
 		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
 		
 		bookingApproveHelper.approve(booking, cbsUser);
+		
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
+		final Booking booking = createBooking();
+		final CBSUser cbsUser = createCBSUser();
+		beforeApprove(booking, 1002L, 1002L, 1L);
+
+		bookingApproveHelper.approve(booking, cbsUser);
+
+		verify(bookingSaveHelper).getLatestRevision(booking);
+		verify(approverRepository).findAllByTeam(approverTeam);
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(1L)); 
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
+		final Booking booking = createBooking();
+		final CBSUser cbsUser = createCBSUser();
+		beforeApprove(booking, 1002L, 1002L, 3L);
+
+		bookingApproveHelper.approve(booking, cbsUser);
+
+		verify(bookingSaveHelper).getLatestRevision(booking);
+		verify(approverRepository).findAllByTeam(approverTeam);
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(1L)); 
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
+		final Booking booking = createBooking();
+		final CBSUser cbsUser = createCBSUser();
+		beforeApprove(booking, 1003L, 1003L, 2L);
+
+		bookingApproveHelper.approve(booking, cbsUser);
+
+		verify(bookingSaveHelper).getLatestRevision(booking);
+		verify(approverRepository).findAllByTeam(approverTeam);
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(2L)); 
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
+		final Booking booking = createBooking();
+		final CBSUser cbsUser = createCBSUser();
+		beforeApprove(booking, 1003L, 1003L, 3L);
+
+		bookingApproveHelper.approve(booking, cbsUser);
+
+		verify(bookingSaveHelper).getLatestRevision(booking);
+		verify(approverRepository).findAllByTeam(approverTeam);
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(2L)); 
+	}
+
+	private void beforeApprove(Booking booking, Long approvalStatusId, Long teamId, Long approverOrder) {
+		final BookingRevision bookingRevision = createBookingRevisionWithApprovalStatus(approvalStatusId);
+		approverTeam = createTeam(teamId);
+		bookingRevision.setTeam(approverTeam);
+		Long userApproverOrder = 0L;
+		if(approvalStatusId == 1002L) {
+			userApproverOrder = 1L;
+		}else if(approvalStatusId == 1003L) {
+			userApproverOrder = 2L;
+		}else if(approvalStatusId == 1004L) {
+			userApproverOrder = 3L;
+		}
+		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
+		when(approverRepository.findAllByTeam(approverTeam)).thenReturn(createApproverList(approverOrder));
+		when(approverOverridesRepository.findByEmployeeIdAndJobNumber(1002L,"100204205-02")).thenReturn(null);
+		when(approverRepository.findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(userApproverOrder))).thenReturn(new Approver()); 
 		
 	}
 	
@@ -151,17 +228,17 @@ public class BookingApproveHelperTest {
 	}
 	private Booking createBooking() {
 		Booking booking = new Booking();
-		booking.setApprovalStatus(createApprovalStatusDm());
+		booking.setApprovalStatus(createApprovalStatusDm(1004L));
 		booking.setBookingDescription("Test Data");
 		booking.setBookingId(1910L);
 		booking.setChangedBy("nafisa.ujloomwale");
 		booking.setBookingDescription("Test Data");
 		return booking;
 	}
-	private ApprovalStatusDm createApprovalStatusDm() {
+	private ApprovalStatusDm createApprovalStatusDm(Long approvalStatusId) {
 		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
 		approvalStatusDm.setApprovalName("Sent To HR");
-		approvalStatusDm.setApprovalStatusId(1004L);
+		approvalStatusDm.setApprovalStatusId(approvalStatusId);
 		return approvalStatusDm;
 	}
 	private BookingRevision createBookingRevision() {
@@ -176,10 +253,10 @@ public class BookingApproveHelperTest {
 		bookingRevision.setInsideIr35("true");
 		return bookingRevision;
 	}
-	private Team createTeam(){
+	private Team createTeam(Long teamId){
 		Team team = new Team();
 		team.setChangedBy("david.harman");
-		team.setTeamId(1003l);
+		team.setTeamId(teamId);
 		team.setTeamName("ADM");
 		return team;
 	}
@@ -193,4 +270,19 @@ public class BookingApproveHelperTest {
 		approver.setApproverId(1001L);
 		return approver;
 	}
+	private BookingRevision createBookingRevisionWithApprovalStatus(Long approvalStatusId) {//, Long teamId) {
+		BookingRevision bookingRevision = createBookingRevision();
+		bookingRevision.setApprovalStatus(createApprovalStatusDm(approvalStatusId));
+		
+		return bookingRevision;
+	}
+	private List<Approver> createApproverList(Long approverOrder){
+		List<Approver> approvers = new ArrayList<>();
+		Approver approver = new Approver();
+		approver.setApproverOrder(approverOrder);
+		approvers.add(approver);
+		return approvers;
+	}
+
+	
 }
