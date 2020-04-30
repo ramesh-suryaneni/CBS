@@ -3,15 +3,18 @@ package com.imagination.cbs.service.helper;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
 import com.imagination.cbs.domain.BookingRevision;
@@ -91,6 +94,31 @@ public class BookingHrApproveHelperTest {
 		when(loggedInUserService.isCurrentUserInHRRole()).thenReturn(true);
 		
 		bookingHrApproveHelper.hrApprove(booking);
+	}
+	
+	@Test
+	public void shouldThrowExceptionWhileGeneratingPDF_HRApprove() {
+		
+		Booking booking = createBooking();
+		BookingRevision bookingRevision = createBookingRevision();
+		CBSUser cbsUser = createCBSUser();
+		
+		when(loggedInUserService.isCurrentUserInHRRole()).thenReturn(true);
+		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
+		when(html2PdfService.generateAgreementPdf(bookingRevision)).thenThrow(IllegalStateException.class);
+		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
+		when(bookingSaveHelper.saveBooking(booking, bookingRevision, 1006L,cbsUser)).thenReturn(booking);
+		
+		bookingHrApproveHelper.hrApprove(booking);
+		
+		verify(loggedInUserService).isCurrentUserInHRRole();
+		verify(bookingSaveHelper).getLatestRevision(booking);
+		verify(html2PdfService).generateAgreementPdf(bookingRevision);		
+		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
+		//verify(adobeSignService).uploadAndCreateAgreement(Mockito.any(InputStream.class),Mockito.eq("service.pdf"));
+		verify(loggedInUserService).getLoggedInUserDetails();
+		verify(bookingSaveHelper).saveBooking(booking, bookingRevision, 1006L,cbsUser);
+		
 	}
 	private Booking createBooking() {
 		Booking booking = new Booking();
