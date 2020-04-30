@@ -1,7 +1,6 @@
 package com.imagination.cbs.service.helper;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,29 +18,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.imagination.cbs.constant.MaconomyConstant;
-import com.imagination.cbs.domain.ApprovalStatusDm;
 import com.imagination.cbs.domain.Booking;
-import com.imagination.cbs.domain.BookingRevision;
-import com.imagination.cbs.domain.Contractor;
-import com.imagination.cbs.domain.ContractorEmployee;
-import com.imagination.cbs.domain.ContractorWorkSite;
-import com.imagination.cbs.domain.CurrencyDm;
 import com.imagination.cbs.domain.OfficeDm;
 import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.domain.Region;
 import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.domain.SiteOptions;
-import com.imagination.cbs.domain.SupplierTypeDm;
 import com.imagination.cbs.domain.Team;
-import com.imagination.cbs.dto.ApproverTeamDetailDto;
-import com.imagination.cbs.dto.ApproverTeamDto;
 import com.imagination.cbs.dto.BookingRequest;
-import com.imagination.cbs.dto.JobDataDto;
-import com.imagination.cbs.dto.JobDetailDto;
+import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
+import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.mapper.BookingMapper;
 import com.imagination.cbs.repository.ContractorEmployeeRepository;
 import com.imagination.cbs.repository.ContractorRepository;
@@ -56,7 +44,6 @@ import com.imagination.cbs.repository.TeamRepository;
 import com.imagination.cbs.security.CBSUser;
 import com.imagination.cbs.service.LoggedInUserService;
 import com.imagination.cbs.service.MaconomyService;
-import com.imagination.cbs.util.CBSDateUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateBookingHelperTest {
@@ -105,26 +92,20 @@ public class CreateBookingHelperTest {
 
 	
 	@Before
-	public void setUp() {
-		final Region region = new Region();
-		region.setRegionId(5555L);
-		final ReasonsForRecruiting recruiting  = new ReasonsForRecruiting();
-		recruiting.setReasonId(3333L);
-		final OfficeDm office = new OfficeDm();
-		office.setOfficeId(12345L);
-		final SiteOptions siteOptions = new SiteOptions();
-		siteOptions.setId(6666L); 
-		final CBSUser user = new CBSUser("Pappu");
-		final Booking booking = new Booking();
-		final BookingRequest bookingRequest = createBookingRequest();
-		bookingRequest.setSiteOptions(Arrays.asList("6666"));
+	public void setUp() throws Exception {
 		
-		 when(loggedInUserService.getLoggedInUserDetails()).thenReturn(user);
-		 when(bookingMapper.toBookingDomainFromBookingDto(Mockito.any(BookingRequest.class))).thenReturn(booking); 
-		 when(officeRepository.findById(12345L)).thenReturn(Optional.of(office)); //2times
-		 when(recruitingRepository.findById(3333L)).thenReturn(Optional.of(recruiting));
-		 when(regionRepository.findById(5555L)).thenReturn(Optional.of(region));//2
-		 when(siteOptionsRepository.findById(6666L)).thenReturn(Optional.of(siteOptions)); 
+		 when(loggedInUserService.getLoggedInUserDetails()).thenReturn( new CBSUser("Pappu"));
+		 when(roleRepository.findById(4326L)).thenReturn(Optional.of(new RoleDm()));
+		 when(bookingMapper.toBookingDomainFromBookingDto(Mockito.any(BookingRequest.class))).thenReturn(new Booking());  
+		 when(officeRepository.findById(12345L)).thenReturn(Optional.of(new OfficeDm())); 
+		 when(recruitingRepository.findById(3333L)).thenReturn(Optional.of(new ReasonsForRecruiting()));
+		 when(regionRepository.findById(5555L)).thenReturn(Optional.of(new Region()));
+		 when(siteOptionsRepository.findById(6666L)).thenReturn(Optional.of(new SiteOptions())); 
+		/* when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(
+				 Mockito.eq("1111"), Mockito.any(JobDataDto.class),Mockito.eq("jobs/data;jobnumber="),Mockito.eq(""))).thenReturn(jobDataDto); */
+		 /*when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(Mockito.eq(""),
+						Mockito.any(ApproverTeamDto.class), Mockito.eq("Department"), Mockito.eq("2D"))).thenReturn(Mockito.any(ApproverTeamDto.class));
+		 */	 
 	}
 
 	@Test
@@ -171,6 +152,16 @@ public class CreateBookingHelperTest {
 		assertEquals(new Long(12345), actual.getBookingRevisions().get(0).getCommisioningOffice().getOfficeId());
 	}
 	
+	@Test(expected = CBSApplicationException.class)
+	public void shouldThrowCBSApplicationExceptionWhwnStatusIsTrue() {
+		final BookingRequest bookingRequest = createBookingRequest();
+		RoleDm roleDm = new RoleDm();	
+		
+		when(roleRepository.findById(4326L)).thenReturn(Optional.of(roleDm)); 
+	
+		createBookingHelper.populateBooking(bookingRequest, 5L,true);
+	}
+	
 	@Test
 	public void shouldCall_findByIdFromRecruitingRepository(){
 		final BookingRequest bookingRequest = createBookingRequest();
@@ -189,6 +180,7 @@ public class CreateBookingHelperTest {
 	@Test
 	public void shouldCall_findByIdFromRegionRepository() {
 		final BookingRequest bookingRequest = createBookingRequest();
+		bookingRequest.setEmployerTaxPercent("");
 		final Region region = new Region();
 		region.setRegionId(5555L);
 		
@@ -217,7 +209,18 @@ public class CreateBookingHelperTest {
 	}
 	
 	private BookingRequest createBookingRequest(){
-		
+		WorkDaysDto work = new WorkDaysDto();
+		work.setMonthName("June");
+		work.setMonthWorkingDays("23");
+		WorkTasksDto task = new WorkTasksDto();
+		task.setTaskDeliveryDate("29/4/20");
+		task.setTaskDateRate("74");
+		task.setTaskTotalDays("32");
+		task.setTaskTotalAmount("453");
+		List< WorkDaysDto> listDays = new ArrayList<>();
+		List< WorkTasksDto> listTask = new ArrayList<>();
+		listDays.add(work);
+		listTask.add(task);
 		BookingRequest bookingRequest = new BookingRequest();
 		bookingRequest.setCommOffRegion("5555");
 		bookingRequest.setContractorWorkRegion("5555");
@@ -227,10 +230,15 @@ public class CreateBookingHelperTest {
 		bookingRequest.setContractEmployeeId("5004");
 		bookingRequest.setContractorId("6002");
 		bookingRequest.setContractWorkLocation("12345");
+		bookingRequest.setContractorTotalAvailableDays("30");
+		bookingRequest.setContractorTotalWorkingDays("28");
+		bookingRequest.setContractAmountAftertax("82");
+		bookingRequest.setContractAmountBeforetax("54");
+		bookingRequest.setEmployerTaxPercent("67");
 		bookingRequest.setCurrencyId("103");
 		bookingRequest.setInsideIr35("true");
 		bookingRequest.setJobDeptName("2D");
-		bookingRequest.setJobNumber("1111l");
+		bookingRequest.setJobNumber("1111");
 		bookingRequest.setRate("154");
 		bookingRequest.setReasonForRecruiting("3333");
 		bookingRequest.setRoleId("4326");
@@ -238,6 +246,9 @@ public class CreateBookingHelperTest {
 		bookingRequest.setSiteOptions(Arrays.asList("6666"));
 		bookingRequest.setContractedToDate("29/04/2020");
 		bookingRequest.setContractedFromDate("29/04/2020");
+		bookingRequest.setWorkDays(listDays);
+		bookingRequest.setWorkTasks(listTask);
+		bookingRequest.setSiteOptions(Arrays.asList("6666"));
 		return bookingRequest;
 	}
 
