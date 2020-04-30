@@ -68,50 +68,21 @@ public class ContractorEmployeeSearchControllerTest {
 
 	@WithMockUser("/developer")
 	@Test
-	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleId() throws Exception {
+	public void shouldReturnPageResponseOfContractorEmployeeDtoByNameOrRoleName() throws Exception {
 
 		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
 		
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC")).thenReturn(contractorEmployeeSearchDto);
-
-		mockMvc.perform(get("/contractor-employees").param("role", "1000").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
-				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
-
-		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleId(1000L, 0, 10, "roleId", "ASC");
-	}
-
-	@WithMockUser("/developer")
-	@Test
-	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleIdAndName() throws Exception {
-
-		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
-		
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId", "ASC"))
+		when(contractorServiceImpl.getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 10, "roleId", "ASC"))
 						.thenReturn(contractorEmployeeSearchDto);
 
-		mockMvc.perform(get("/contractor-employees").param("name", "Al").param("role", "1000")
+		mockMvc.perform(get("/contractor-employees").param("name", "Al")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
 
-		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Al", 0, 10, "roleId", "ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 10, "roleId", "ASC");
 	}
 
-	@WithMockUser("/developer")
-	@Test
-	public void shouldReturnEmptyPageResponseOfContractorEmployeeDtoIfContractorNameIsNotPresentInDB()
-			throws Exception {
-
-		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,"roleId", "ASC")).thenReturn(
-						new PageImpl<>(new ArrayList<ContractorEmployeeSearchDto>(), PageRequest.of(0, 10), 0));
-
-		mockMvc.perform(get("/contractor-employees").param("name", "Test").param("role", "1000")
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.content").isEmpty());
-
-		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleIdAndName(1000L, "Test", 0, 10,"roleId", "ASC");
-	}
-
+	
 	private Page<ContractorEmployeeSearchDto> createPagedData() {
 		
 		List<ContractorEmployeeSearchDto> contractorEmployeeSearchDtoList = new ArrayList<>();

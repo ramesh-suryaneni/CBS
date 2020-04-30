@@ -93,31 +93,16 @@ public class ContractorServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnPaginatedContractorEmployeeDetailsByRoleId() {
+	public void shouldReturnPaginatedContractorEmployeeDetailsByNameOrRoleName() {
 
-		when(contractorEmployeeSearchRepository.findByRoleId(1000L, PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
-				.thenReturn(createContractorEmployeePagedData());
-		
-		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.getContractorEmployeeDetailsByRoleId(1000L, 0, 5, "roleId", "DESC");
-
-		verify(contractorEmployeeSearchRepository).findByRoleId(1000L,
-				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
-		
-		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
-	}
-
-	@Test
-	public void shouldReturnPaginatedContractorEmployeeDetailsByName() {
-
-		when(contractorEmployeeSearchRepository.findByRoleIdAndContractorEmployeeNameContains(1000L, "Alex", 
-				PageRequest.of(0, 5, Sort.by(Direction.ASC, "dayRate")))).thenReturn(createContractorEmployeeSearchPagedDataForName());
+		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameOrRoleNameContains("Al", "Al", 
+				PageRequest.of(0, 5, Sort.by(Direction.DESC, "dayRate")))).thenReturn(createContractorEmployeeSearchPagedDataForName());
 
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.getContractorEmployeeDetailsByRoleIdAndName(1000L, "Alex", 0, 5, "dayRate", "ASC");
+				.getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 5, "dayRate", "DESC");
 
-		verify(contractorEmployeeSearchRepository).findByRoleIdAndContractorEmployeeNameContains(1000L,
-				"Alex", PageRequest.of(0, 5, Sort.by(Direction.ASC, "dayRate")));
+		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameOrRoleNameContains("Al",
+				"Al", PageRequest.of(0, 5, Sort.by(Direction.DESC, "dayRate")));
 		
 		assertEquals("Alex", contractorEmployeeDto.getContent().get(0).getContractorEmployeeName());
 	}

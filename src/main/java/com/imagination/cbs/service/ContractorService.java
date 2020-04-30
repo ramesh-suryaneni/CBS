@@ -17,9 +17,7 @@ public interface ContractorService {
 	
 	Page<ContractorEmployeeSearchDto> getContractorEmployeeDetails(int pageNo, int pageSize, String sortingField, String sortingOrder);
 	
-	Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleId(Long roleId, int pageNo, int pageSize, String sortingField, String sortingOrder);
-	
-	Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleIdAndName(Long roleId, String contractorName, int pageNo, int pageSize, String sortingField, String sortingOrder);
+	Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByNameOrRoleName(String contractorEmployeeOrRoleName, int pageNo, int pageSize, String sortingField, String sortingOrder);
 
 	ContractorDto getContractorByContractorId(Long id);
 	
