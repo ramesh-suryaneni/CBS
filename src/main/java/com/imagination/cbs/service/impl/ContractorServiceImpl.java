@@ -90,10 +90,29 @@ public class ContractorServiceImpl implements ContractorService {
 	}
 
 	@Override
-	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByNameOrRoleName(String contractorEmployeeOrRoleName,
-			int pageNo, int pageSize, String sortingField, String sortingOrder) {
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleName(String roleName, int pageNo, int pageSize,
+			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameOrRoleNameContains(contractorEmployeeOrRoleName, contractorEmployeeOrRoleName, pageable);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleContains(roleName,
+				pageable);
+
+		return toContractorEmployeeDtoPage(contractorEmployeePage);
+	}
+
+	@Override
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByName(String contractorEmployeeName, int pageNo, int pageSize,
+			String sortingField, String sortingOrder) {
+		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameContains(contractorEmployeeName,
+				pageable);
+
+		return toContractorEmployeeDtoPage(contractorEmployeePage);
+	}
+
+	@Override
+	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByNameAndRoleName(String contractorEmployeeName, String roleName, int pageNo, int pageSize, String sortingField, String sortingOrder) {
+		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameAndRoleName(contractorEmployeeName, roleName, pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
 	}

@@ -93,16 +93,46 @@ public class ContractorServiceImplTest {
 	}
 
 	@Test
-	public void shouldReturnPaginatedContractorEmployeeDetailsByNameOrRoleName() {
+	public void shouldReturnPaginatedContractorEmployeeDetailsByRoleName() {
 
-		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameOrRoleNameContains("Al", "Al", 
+		when(contractorEmployeeSearchRepository.findByRoleContains("2D", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
+				.thenReturn(createContractorEmployeePagedData());
+		
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
+				.getContractorEmployeeDetailsByRoleName("2D", 0, 5, "roleId", "DESC");
+
+		verify(contractorEmployeeSearchRepository).findByRoleContains("2D",
+				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
+		
+		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
+	}
+	
+	@Test
+	public void shouldReturnPaginatedContractorEmployeeDetailsByName() {
+
+		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameContains("Al", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
+				.thenReturn(createContractorEmployeePagedData());
+		
+		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
+				.getContractorEmployeeDetailsByName("Al", 0, 5, "roleId", "DESC");
+
+		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameContains("Al",
+				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
+		
+		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
+	}
+	
+	@Test
+	public void shouldReturnPaginatedContractorEmployeeDetailsByNameAndRoleName() {
+
+		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameAndRoleName("Al", "2D", 
 				PageRequest.of(0, 5, Sort.by(Direction.DESC, "dayRate")))).thenReturn(createContractorEmployeeSearchPagedDataForName());
 
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
-				.getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 5, "dayRate", "DESC");
+				.getContractorEmployeeDetailsByNameAndRoleName("Al", "2D", 0, 5, "dayRate", "DESC");
 
-		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameOrRoleNameContains("Al",
-				"Al", PageRequest.of(0, 5, Sort.by(Direction.DESC, "dayRate")));
+		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameAndRoleName("Al",
+				"2D", PageRequest.of(0, 5, Sort.by(Direction.DESC, "dayRate")));
 		
 		assertEquals("Alex", contractorEmployeeDto.getContent().get(0).getContractorEmployeeName());
 	}

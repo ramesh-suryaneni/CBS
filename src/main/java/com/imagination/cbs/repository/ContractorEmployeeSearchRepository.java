@@ -12,6 +12,10 @@ import com.imagination.cbs.domain.ContractorEmployeeSearch;
 @Repository("contractorEmployeeSearchRepository")
 public interface ContractorEmployeeSearchRepository extends JpaRepository<ContractorEmployeeSearch, Long>{
 
-	@Query("SELECT ce FROM ContractorEmployeeSearch ce WHERE ce.contractorEmployeeName LIKE %:contractorEmpName% OR ce.role LIKE %:roleName%")
-	Page<ContractorEmployeeSearch> findByContractorEmployeeNameOrRoleNameContains(@Param("contractorEmpName") String contractorEmpName, @Param("roleName") String roleName, Pageable pageable);
+	Page<ContractorEmployeeSearch> findByRoleContains(String roleName, Pageable pageable);
+
+	Page<ContractorEmployeeSearch> findByContractorEmployeeNameContains(String contractorEmployeeName, Pageable pageable);
+
+	@Query("SELECT ce FROM ContractorEmployeeSearch ce WHERE ce.contractorEmployeeName LIKE %:contractorEmpName% AND ce.role LIKE %:roleName%")
+	Page<ContractorEmployeeSearch> findByContractorEmployeeNameAndRoleName(@Param("contractorEmpName") String contractorEmpName, @Param("roleName") String roleName, Pageable pageable);
 }

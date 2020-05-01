@@ -68,18 +68,48 @@ public class ContractorEmployeeSearchControllerTest {
 
 	@WithMockUser("/developer")
 	@Test
-	public void shouldReturnPageResponseOfContractorEmployeeDtoByNameOrRoleName() throws Exception {
+	public void shouldReturnPageResponseOfContractorEmployeeDtoByRoleName() throws Exception {
 
 		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
 		
-		when(contractorServiceImpl.getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 10, "roleId", "ASC"))
+		when(contractorServiceImpl.getContractorEmployeeDetailsByRoleName("2D", 0, 10, "roleId", "ASC")).thenReturn(contractorEmployeeSearchDto);
+
+		mockMvc.perform(get("/contractor-employees").param("role", "2D").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
+
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByRoleName("2D", 0, 10, "roleId", "ASC");
+	}
+
+	@WithMockUser("/developer")
+	@Test
+	public void shouldReturnPageResponseOfContractorEmployeeDtoByName() throws Exception {
+
+		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
+		
+		when(contractorServiceImpl.getContractorEmployeeDetailsByName("Al", 0, 10, "roleId", "ASC")).thenReturn(contractorEmployeeSearchDto);
+
+		mockMvc.perform(get("/contractor-employees").param("name", "Al").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"))
+				.andExpect(jsonPath("$.content[1].contractorEmployeeName").value("Albert"));
+
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByName("Al", 0, 10, "roleId", "ASC");
+	}
+
+	@WithMockUser("/developer")
+	@Test
+	public void shouldReturnPageResponseOfContractorEmployeeDtoByNameAndRoleName() throws Exception {
+
+		Page<ContractorEmployeeSearchDto> contractorEmployeeSearchDto = createPagedData();
+		
+		when(contractorServiceImpl.getContractorEmployeeDetailsByNameAndRoleName("Al", "2D", 0, 10, "roleId", "ASC"))
 						.thenReturn(contractorEmployeeSearchDto);
 
-		mockMvc.perform(get("/contractor-employees").param("name", "Al")
+		mockMvc.perform(get("/contractor-employees").param("name", "Al").param("role", "2D")
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.content[0].contractorEmployeeName").value("Alex"));
 
-		verify(contractorServiceImpl).getContractorEmployeeDetailsByNameOrRoleName("Al", 0, 10, "roleId", "ASC");
+		verify(contractorServiceImpl).getContractorEmployeeDetailsByNameAndRoleName("Al", "2D", 0, 10, "roleId", "ASC");
 	}
 
 	
