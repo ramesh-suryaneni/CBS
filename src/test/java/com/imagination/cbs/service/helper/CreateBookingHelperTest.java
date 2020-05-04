@@ -25,7 +25,6 @@ import com.imagination.cbs.domain.ReasonsForRecruiting;
 import com.imagination.cbs.domain.Region;
 import com.imagination.cbs.domain.RoleDm;
 import com.imagination.cbs.domain.SiteOptions;
-import com.imagination.cbs.domain.Team;
 import com.imagination.cbs.dto.BookingRequest;
 import com.imagination.cbs.dto.WorkDaysDto;
 import com.imagination.cbs.dto.WorkTasksDto;
@@ -101,11 +100,7 @@ public class CreateBookingHelperTest {
 		 when(recruitingRepository.findById(3333L)).thenReturn(Optional.of(new ReasonsForRecruiting()));
 		 when(regionRepository.findById(5555L)).thenReturn(Optional.of(new Region()));
 		 when(siteOptionsRepository.findById(6666L)).thenReturn(Optional.of(new SiteOptions())); 
-		/* when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(
-				 Mockito.eq("1111"), Mockito.any(JobDataDto.class),Mockito.eq("jobs/data;jobnumber="),Mockito.eq(""))).thenReturn(jobDataDto); */
-		 /*when(maconomyService.getMaconomyJobNumberAndDepartmentsDetails(Mockito.eq(""),
-						Mockito.any(ApproverTeamDto.class), Mockito.eq("Department"), Mockito.eq("2D"))).thenReturn(Mockito.any(ApproverTeamDto.class));
-		 */	 
+		 
 	}
 
 	@Test
@@ -171,7 +166,7 @@ public class CreateBookingHelperTest {
 		when(recruitingRepository.findById(3333L)).thenReturn(Optional.of(recruiting));
 		
 		Booking actual =  createBookingHelper.populateBooking(bookingRequest, 5L,false);
-		
+		 
 		verify(recruitingRepository).findById(3333L);
 		
 		assertEquals(new Long(3333), actual.getBookingRevisions().get(0).getReasonForRecruiting().getReasonId());
@@ -208,19 +203,26 @@ public class CreateBookingHelperTest {
 		assertEquals(new Long(6666), actual.getBookingRevisions().get(0).getContractorWorkSites().get(0).getSiteOptions().getId());
 	}
 	
-	private BookingRequest createBookingRequest(){
+	private List<WorkDaysDto> createWorkDaysList(){
 		WorkDaysDto work = new WorkDaysDto();
 		work.setMonthName("June");
 		work.setMonthWorkingDays("23");
+		List< WorkDaysDto> listDays = new ArrayList<>();
+		listDays.add(work);
+		return listDays;
+	}
+	private List<WorkTasksDto> createWorkTaskDto(){
 		WorkTasksDto task = new WorkTasksDto();
 		task.setTaskDeliveryDate("29/4/20");
 		task.setTaskDateRate("74");
 		task.setTaskTotalDays("32");
 		task.setTaskTotalAmount("453");
-		List< WorkDaysDto> listDays = new ArrayList<>();
 		List< WorkTasksDto> listTask = new ArrayList<>();
-		listDays.add(work);
 		listTask.add(task);
+		return listTask;
+	}
+	private BookingRequest createBookingRequest(){
+		
 		BookingRequest bookingRequest = new BookingRequest();
 		bookingRequest.setCommOffRegion("5555");
 		bookingRequest.setContractorWorkRegion("5555");
@@ -246,8 +248,8 @@ public class CreateBookingHelperTest {
 		bookingRequest.setSiteOptions(Arrays.asList("6666"));
 		bookingRequest.setContractedToDate("29/04/2020");
 		bookingRequest.setContractedFromDate("29/04/2020");
-		bookingRequest.setWorkDays(listDays);
-		bookingRequest.setWorkTasks(listTask);
+		bookingRequest.setWorkDays(createWorkDaysList());
+		bookingRequest.setWorkTasks(createWorkTaskDto());
 		bookingRequest.setSiteOptions(Arrays.asList("6666"));
 		return bookingRequest;
 	}
