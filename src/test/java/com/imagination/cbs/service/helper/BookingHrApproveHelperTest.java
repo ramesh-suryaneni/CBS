@@ -107,6 +107,13 @@ public class BookingHrApproveHelperTest {
 		
 		bookingHrApproveHelper.hrApprove(booking);
 	}
+	@Test
+	public void shouldThrowExceptionWhileGeneratingPDF_HRApprove() throws IOException {
+		
+		setUp();
+		when(html2PdfService.generateAgreementPdf(bookingRevision)).thenThrow(IllegalStateException.class);
+		bookingHrApproveHelper.hrApprove(booking);
+	}
 	
 	private Booking booking;
 	private BookingRevision bookingRevision;
