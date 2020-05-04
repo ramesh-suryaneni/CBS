@@ -93,7 +93,7 @@ public class ContractorServiceImpl implements ContractorService {
 	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByRoleName(String roleName, int pageNo, int pageSize,
 			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleContains(roleName,
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByRoleContainingIgnoreCase(roleName,
 				pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);
@@ -103,7 +103,7 @@ public class ContractorServiceImpl implements ContractorService {
 	public Page<ContractorEmployeeSearchDto> getContractorEmployeeDetailsByName(String contractorEmployeeName, int pageNo, int pageSize,
 			String sortingField, String sortingOrder) {
 		Pageable pageable = createPageable(pageNo, pageSize, sortingField, sortingOrder);
-		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameContains(contractorEmployeeName,
+		Page<ContractorEmployeeSearch> contractorEmployeePage = contractorEmployeeSearchRepository.findByContractorEmployeeNameContainingIgnoreCase(contractorEmployeeName,
 				pageable);
 
 		return toContractorEmployeeDtoPage(contractorEmployeePage);

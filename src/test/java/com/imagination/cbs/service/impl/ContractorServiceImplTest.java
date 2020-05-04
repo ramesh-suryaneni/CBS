@@ -95,13 +95,13 @@ public class ContractorServiceImplTest {
 	@Test
 	public void shouldReturnPaginatedContractorEmployeeDetailsByRoleName() {
 
-		when(contractorEmployeeSearchRepository.findByRoleContains("2D", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
+		when(contractorEmployeeSearchRepository.findByRoleContainingIgnoreCase("2D", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
 				.thenReturn(createContractorEmployeePagedData());
 		
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
 				.getContractorEmployeeDetailsByRoleName("2D", 0, 5, "roleId", "DESC");
 
-		verify(contractorEmployeeSearchRepository).findByRoleContains("2D",
+		verify(contractorEmployeeSearchRepository).findByRoleContainingIgnoreCase("2D",
 				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
 		
 		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
@@ -110,13 +110,13 @@ public class ContractorServiceImplTest {
 	@Test
 	public void shouldReturnPaginatedContractorEmployeeDetailsByName() {
 
-		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameContains("Al", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
+		when(contractorEmployeeSearchRepository.findByContractorEmployeeNameContainingIgnoreCase("Al", PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId"))))
 				.thenReturn(createContractorEmployeePagedData());
 		
 		Page<ContractorEmployeeSearchDto> contractorEmployeeDto = contractorServiceImpl
 				.getContractorEmployeeDetailsByName("Al", 0, 5, "roleId", "DESC");
 
-		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameContains("Al",
+		verify(contractorEmployeeSearchRepository).findByContractorEmployeeNameContainingIgnoreCase("Al",
 				PageRequest.of(0, 5, Sort.by(Direction.DESC, "roleId")));
 		
 		assertEquals("2D", contractorEmployeeDto.getContent().get(0).getRole());
