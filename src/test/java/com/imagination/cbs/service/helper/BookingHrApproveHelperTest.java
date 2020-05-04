@@ -47,40 +47,52 @@ public class BookingHrApproveHelperTest {
 	private EmailHelper emailHelper;
 	
 	@Test
-	public void shouldPrepareMailAndSendToHrWithBookingRevisionDetailsWhenUserIsAuthorized() throws IOException {
-		Booking booking = createBooking();
-		BookingRevision bookingRevision = createBookingRevision();
-		byte b[] = {20,10,30,5};
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		byteArrayOutputStream.write(b);
-		CBSUser cbsUser = createCBSUser();
-		
-		when(loggedInUserService.isCurrentUserInHRRole()).thenReturn(true);
-		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
-		when(html2PdfService.generateAgreementPdf(bookingRevision)).thenReturn(byteArrayOutputStream);
-		when(adobeSignService.uploadAndCreateAgreement((Mockito.any(InputStream.class)),Mockito.eq("service.pdf"))).thenReturn("CBS-111");
-		when(adobeSignService.sendAgreement("CBS-111", bookingRevision)).thenReturn("C-546");
-		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
-		when(bookingSaveHelper.saveBooking(booking, bookingRevision, 1006L,cbsUser)).thenReturn(booking);
-		
+	public void shouldCall_isCurrentUserInHRRole() throws IOException {
+		setUp();
 		bookingHrApproveHelper.hrApprove(booking);
-		
 		verify(loggedInUserService).isCurrentUserInHRRole();
-		verify(bookingSaveHelper).getLatestRevision(booking);
-		verify(html2PdfService).generateAgreementPdf(bookingRevision);		
-		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
-		verify(adobeSignService).uploadAndCreateAgreement(Mockito.any(InputStream.class),Mockito.eq("service.pdf"));
+	}
+	
+	@Test
+	public void shouldCall_getLoggedInUserDetails() throws IOException {
+		setUp();
+		bookingHrApproveHelper.hrApprove(booking);
 		verify(loggedInUserService).getLoggedInUserDetails();
+	}
+	
+	@Test
+	public void shouldCall_generateAgreementPdf() throws IOException {
+		setUp();
+		bookingHrApproveHelper.hrApprove(booking);
+		verify(html2PdfService).generateAgreementPdf(bookingRevision);
+	}
+	
+	@Test
+	public void shouldCall_uploadAndCreateAgreement() throws IOException {
+		setUp();
+		bookingHrApproveHelper.hrApprove(booking);
+		verify(adobeSignService).uploadAndCreateAgreement(Mockito.any(InputStream.class),Mockito.eq("service.pdf"));
+	}
+	
+	@Test
+	public void shouldCall_saveBooking() throws IOException {
+		setUp();
+		bookingHrApproveHelper.hrApprove(booking);
 		verify(bookingSaveHelper).saveBooking(booking, bookingRevision, 1006L,cbsUser);
 	}
-
+	
+	@Test
+	public void shouldCall_prepareMailAndSendToHR() throws IOException {
+		setUp();
+		bookingHrApproveHelper.hrApprove(booking);
+		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
+	}
+	
 	@Test(expected = CBSUnAuthorizedException.class )
 	public void shouldThrowCBSUnAuthorizedExceptionWhenUserIsUnAuthorized() {
 		
 		when(loggedInUserService.isCurrentUserInHRRole()).thenReturn(false);
-		
-		bookingHrApproveHelper.hrApprove(createBooking());
-		
+		bookingHrApproveHelper.hrApprove(createBooking());	
 	}
 	
 	@Test(expected = CBSApplicationException.class )
@@ -96,29 +108,26 @@ public class BookingHrApproveHelperTest {
 		bookingHrApproveHelper.hrApprove(booking);
 	}
 	
-	@Test
-	public void shouldThrowExceptionWhileGeneratingPDF_HRApprove() {
+	private Booking booking;
+	private BookingRevision bookingRevision;
+	private CBSUser cbsUser;
+	
+	private void setUp() throws IOException {
 		
-		Booking booking = createBooking();
-		BookingRevision bookingRevision = createBookingRevision();
-		CBSUser cbsUser = createCBSUser();
+		booking = createBooking();
+		bookingRevision = createBookingRevision();
+		byte b[] = {20,10,30,5}; 
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		byteArrayOutputStream.write(b);
+		 cbsUser = createCBSUser();
 		
 		when(loggedInUserService.isCurrentUserInHRRole()).thenReturn(true);
 		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
-		when(html2PdfService.generateAgreementPdf(bookingRevision)).thenThrow(IllegalStateException.class);
+		when(html2PdfService.generateAgreementPdf(bookingRevision)).thenReturn(byteArrayOutputStream);
+		when(adobeSignService.uploadAndCreateAgreement((Mockito.any(InputStream.class)),Mockito.eq("service.pdf"))).thenReturn("CBS-111");
+		when(adobeSignService.sendAgreement("CBS-111", bookingRevision)).thenReturn("C-546");
 		when(loggedInUserService.getLoggedInUserDetails()).thenReturn(cbsUser);
 		when(bookingSaveHelper.saveBooking(booking, bookingRevision, 1006L,cbsUser)).thenReturn(booking);
-		
-		bookingHrApproveHelper.hrApprove(booking);
-		
-		verify(loggedInUserService).isCurrentUserInHRRole();
-		verify(bookingSaveHelper).getLatestRevision(booking);
-		verify(html2PdfService).generateAgreementPdf(bookingRevision);		
-		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
-		//verify(adobeSignService).uploadAndCreateAgreement(Mockito.any(InputStream.class),Mockito.eq("service.pdf"));
-		verify(loggedInUserService).getLoggedInUserDetails();
-		verify(bookingSaveHelper).saveBooking(booking, bookingRevision, 1006L,cbsUser);
-		
 	}
 	private Booking createBooking() {
 		Booking booking = new Booking();
