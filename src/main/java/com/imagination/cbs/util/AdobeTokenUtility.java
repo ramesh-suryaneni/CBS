@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,11 +49,10 @@ import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeSignService;
 
-import lombok.extern.slf4j.Slf4j;
+@Component("adobeTokenUtility")
+public class AdobeTokenUtility {
 
-@Component("adobeUtility")
-@Slf4j
-public class AdobeUtility {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CBSDateUtils.class);
 
 	@Autowired
 	private ConfigRepository configRepository;
@@ -74,7 +75,7 @@ public class AdobeUtility {
 
 			if (!isMapKeyValueEmptyOrNull(keys, ADOBE_ACCESS_TOKEN)) {
 
-				if (AdobeUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
+				if (CBSDateUtils.isExpired(keys.get(ADOBE_ACCESS_TOKEN_EXP_TIME).getKeyValue())) {
 
 					oauthAccessToken = keys.get(ADOBE_ACCESS_TOKEN).getKeyValue();
 
@@ -92,19 +93,19 @@ public class AdobeUtility {
 
 				if (!isMapKeyValueEmptyOrNull(keys, ADOBE_REFRESH_TOKEN)) {
 					oauthRefreshToken = keys.get(ADOBE_REFRESH_TOKEN).getKeyValue();
-					oauthUri = keys.get(ADOBE_OAUTH_BASE_URL).getKeyValue();
 				}
 
+				oauthUri = keys.get(ADOBE_OAUTH_BASE_URL).getKeyValue();
 				oauthAccessToken = getNewAccessToken(oauthRefreshToken, oauthUri).getAccessToken();
 
 			}
 
-			log.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
+			LOGGER.debug("BEARER TOKEN:::: {}", BEARER + oauthAccessToken);
 
 			return BEARER + oauthAccessToken;
 
 		} catch (RuntimeException runtimeException) {
-
+			
 			throw new CBSApplicationException("Adobe Keys not found inside Config table");
 
 		}
@@ -115,7 +116,7 @@ public class AdobeUtility {
 		String servicesBaseUrl = "";
 		Map<String, Config> keyValue = getAdobeKeyDetails(ADOBE_API_BASE_URI);
 
-		log.info("servicesBaseUrl= {}", keyValue);
+		LOGGER.info("servicesBaseUrl= {}", keyValue);
 
 		if (!CollectionUtils.isEmpty(keyValue)) {
 
@@ -135,7 +136,7 @@ public class AdobeUtility {
 			res = restTemplate.exchange(servicesBaseUrl, HttpMethod.GET, httpEntity, JsonNode.class);
 
 			servicesBaseUrl = res.getBody().path("apiAccessPoint").asText() + "api/rest/v6";
-			log.info("ApiAccessPoint BaseUris:::{}", servicesBaseUrl);
+			LOGGER.info("ApiAccessPoint BaseUris:::{}", servicesBaseUrl);
 
 			return servicesBaseUrl;
 		}
@@ -143,7 +144,7 @@ public class AdobeUtility {
 
 	private AdobeOAuthDto getOauthAccessTokenFromRefreshToken(String oAuthRefreshToken, String oAutBaseUri) {
 
-		log.debug("oAuthToken::Refresh:: {} oAutBaseUri::{}", oAuthRefreshToken, oAutBaseUri);
+		LOGGER.debug("oAuthToken::Refresh:: {} oAutBaseUri::{}", oAuthRefreshToken, oAutBaseUri);
 		JsonNode response = null;
 		AdobeOAuthDto adobeOAuthDto = new AdobeOAuthDto();
 
@@ -159,12 +160,12 @@ public class AdobeUtility {
 
 			response = restTemplate.exchange(uri, HttpMethod.POST, httpEntity, JsonNode.class).getBody();
 			adobeOAuthDto = convertJsonToObj(response);
-			log.info("Get access token using aefresh token::: {}", adobeOAuthDto);
+			LOGGER.info("Get access token using aefresh token::: {}", adobeOAuthDto);
 
 			adobeOAuthDto.setRefreshToken(oAuthRefreshToken);
 
 		} catch (Exception e) {
-			log.info("Exception refresh token:::{}", e);
+			LOGGER.info("Exception refresh token:::{}", e);
 		}
 		return adobeOAuthDto;
 	}
@@ -178,10 +179,10 @@ public class AdobeUtility {
 			adobeOAuthDto.setRefreshToken(res.path(REFRESH_TOKEN).asText());
 			adobeOAuthDto.setTokenType(res.path(TOKEN_TYPE).asText());
 			adobeOAuthDto.setExpiresIn(res.path(EXPIRES_IN).asInt());
-			log.info("JsonNode to AdobeoAuth:: {}", adobeOAuthDto);
+			LOGGER.info("JsonNode to AdobeoAuth:: {}", adobeOAuthDto);
 
 		} catch (Exception e) {
-			log.info("Exception inside convertJsonToObj():: {}" + e);
+			LOGGER.info("Exception inside convertJsonToObj():: {}" + e);
 		}
 
 		return adobeOAuthDto;
@@ -189,7 +190,7 @@ public class AdobeUtility {
 
 	private AdobeOAuthDto getNewAccessToken(String oauthRefreshToken, String oAuthBaseUri) {
 
-		log.info("AdobeOAuth:::OAuthRefreshToken::{} oAuthBaseUri::{}", oauthRefreshToken, oAuthBaseUri);
+		LOGGER.info("AdobeOAuth:::OAuthRefreshToken::{} oAuthBaseUri::{}", oauthRefreshToken, oAuthBaseUri);
 
 		ResponseEntity<JsonNode> results = null;
 		AdobeOAuthDto adobeOAuthDto = null;
@@ -205,17 +206,17 @@ public class AdobeUtility {
 			if (oauthRefreshToken.isEmpty()) {
 
 				results = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
-				log.info("AdobeOAuth:::results: {}", results);
+				LOGGER.info("AdobeOAuth:::results: {}", results);
 				adobeOAuthDto = convertJsonToObj(results.getBody());
-				log.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
+				LOGGER.info("AdobeOAuth:::statusCode: {} result: :{}", results.getStatusCode(), results);
 
 			} else {
 				adobeOAuthDto = getOauthAccessTokenFromRefreshToken(oauthRefreshToken, oAuthBaseUri);
-				log.info("Get Access Token Used by Refresh Token :::{}", adobeOAuthDto);
+				LOGGER.info("Get Access Token Used by Refresh Token :::{}", adobeOAuthDto);
 			}
 
 		} catch (RuntimeException runtimeException) {
-			log.info("Exception insdie the:::{}", runtimeException);
+			LOGGER.info("Exception insdie the:::{}", runtimeException);
 			throw new CBSApplicationException(runtimeException.getLocalizedMessage());
 		}
 
@@ -237,7 +238,7 @@ public class AdobeUtility {
 			body.add(CLIENT_SECRET, adobeKeys.get(ADOBE_CLIENT_SECRET).getKeyValue());
 			body.add(GRANT_TYPE, REFRESH_TOKEN);
 
-			log.info("Refresh Token Body ::: {} ", body);
+			LOGGER.info("Refresh Token Body ::: {} ", body);
 			return body;
 
 		}
@@ -258,7 +259,7 @@ public class AdobeUtility {
 			body.add(REDIRECT_URI, adobeKeys.get(ADOBE_REDIRECT_URL).getKeyValue());
 			body.add(GRANT_TYPE, ADOBE_GRANT_TYPE);
 
-			log.info("Access Token Body:::{}", body);
+			LOGGER.info("Access Token Body:::{}", body);
 
 			return body;
 
@@ -268,7 +269,7 @@ public class AdobeUtility {
 
 	private Map<String, Config> getAdobeKeyDetails(String keyName) {
 
-		log.info("keyName:::{}", keyName);
+		LOGGER.info("keyName:::{}", keyName);
 
 		Map<String, Config> map = null;
 		List<Config> keysList = null;
@@ -292,7 +293,7 @@ public class AdobeUtility {
 			return true;
 
 		Config config = (Config) map.get(key);
-		log.info("Config object config= {} key= {}" + config);
+		LOGGER.info("Config object config= {} key= {}" + config);
 
 		return (config == null || config.getKeyValue().isEmpty());
 

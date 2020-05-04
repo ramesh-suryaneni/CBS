@@ -1,5 +1,5 @@
 package com.imagination.cbs.util;
-
+/*
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,10 +34,10 @@ import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeSignService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AdobeUtilityTest {
+public class AdobeTokenUtilityTest {
 
 	@InjectMocks
-	private AdobeUtility adobeUtility;
+	private AdobeTokenUtility adobeUtility;
 	
 	@Mock
 	private ConfigRepository configRepository;
@@ -285,3 +285,4 @@ public class AdobeUtilityTest {
 	}
 
 }
+*/

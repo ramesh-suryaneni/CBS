@@ -5,6 +5,7 @@ import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_ACCESS_TOKEN_EXP_TIME;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_API_BASE_URI;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_AUTH_CODE;
+import static com.imagination.cbs.util.AdobeConstant.ADOBE_OAUTH_BASE_URL;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_REFRESH_TOKEN;
 import static com.imagination.cbs.util.AdobeConstant.ADOBE_TOKEN_TYPE;
 import static com.imagination.cbs.util.AdobeConstant.AGREEMENTS_COMBINEDDOCUMENT;
@@ -14,6 +15,7 @@ import static com.imagination.cbs.util.AdobeConstant.FILEINFOS;
 import static com.imagination.cbs.util.AdobeConstant.ID;
 import static com.imagination.cbs.util.AdobeConstant.MEMBERINFOS;
 import static com.imagination.cbs.util.AdobeConstant.NAME;
+import static com.imagination.cbs.util.AdobeConstant.OAUTH_CODE_ACCESS_ENDPOINT;
 import static com.imagination.cbs.util.AdobeConstant.ORDER;
 import static com.imagination.cbs.util.AdobeConstant.PARTICIPANTSETSINFO;
 import static com.imagination.cbs.util.AdobeConstant.ROLE;
@@ -26,6 +28,7 @@ import static com.imagination.cbs.util.AdobeConstant.TRANSIENT_DOCUMENT_ID;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,8 +64,9 @@ import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
 import com.imagination.cbs.service.AdobeSignService;
-import com.imagination.cbs.util.AdobeUtility;
-import com.imagination.cbs.util.AdobeUtils;
+import com.imagination.cbs.util.AdobeConstant;
+import com.imagination.cbs.util.AdobeTokenUtility;
+import com.imagination.cbs.util.CBSDateUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +84,7 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 	private Environment env;
 
 	@Autowired
-	private AdobeUtility adobeUtility;
+	private AdobeTokenUtility adobeTokenUtility;
 
 	public InputStream downloadAgreement(String agreementId) {
 
@@ -89,14 +93,14 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 		try {
 
-			String accessToken = adobeUtility.getOauthAccessToken();
+			String accessToken = adobeTokenUtility.getOauthAccessToken();
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.AUTHORIZATION, accessToken);
 
 			HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-			String url = adobeUtility.getBaseURIForRestAPI(accessToken) + AGREEMENTS_COMBINEDDOCUMENT;
+			String url = adobeTokenUtility.getBaseURIForRestAPI(accessToken) + AGREEMENTS_COMBINEDDOCUMENT;
 
 			UriComponents uriComponents = UriComponentsBuilder.fromUriString(url).build();
 			uriComponents = uriComponents.expand(Collections.singletonMap("agreementId", agreementId));
@@ -125,11 +129,13 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		try {
 			Config c1 = configRepository.findByKeyName(ADOBE_ACCESS_TOKEN).map(c -> {
 				c.setKeyValue(oAuth.getAccessToken());
+				c.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				return configRepository.save(c);
 			}).orElseGet(() -> {
 				Config con = new Config();
 				con.setKeyName(ADOBE_ACCESS_TOKEN);
 				con.setKeyValue(oAuth.getAccessToken());
+				con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				con.setKeyDescription("Adobe access token");
 				return configRepository.save(con);
 			});
@@ -137,11 +143,13 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			Config c2 = configRepository.findByKeyName(ADOBE_REFRESH_TOKEN).map(c -> {
 				c.setKeyValue(oAuth.getRefreshToken());
+				c.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				return configRepository.save(c);
 			}).orElseGet(() -> {
 				Config con = new Config();
 				con.setKeyName(ADOBE_REFRESH_TOKEN);
 				con.setKeyValue(oAuth.getRefreshToken());
+				con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				con.setKeyDescription("Adobe refresh token");
 				return configRepository.save(con);
 			});
@@ -149,23 +157,27 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			Config c3 = configRepository.findByKeyName(ADOBE_TOKEN_TYPE).map(c -> {
 				c.setKeyValue(oAuth.getTokenType());
+				c.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				return configRepository.save(c);
 			}).orElseGet(() -> {
 				Config con = new Config();
 				con.setKeyName(ADOBE_TOKEN_TYPE);
 				con.setKeyValue(oAuth.getTokenType());
+				con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				con.setKeyDescription("Adobe access token type");
 				return configRepository.save(con);
 			});
 			result.put("ADOBE_TOKEN_TYPE", c3);
 
 			Config c4 = configRepository.findByKeyName(ADOBE_ACCESS_TOKEN_EXP_TIME).map(c -> {
-				c.setKeyValue(AdobeUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				c.setKeyValue(CBSDateUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				c.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				return configRepository.save(c);
 			}).orElseGet(() -> {
 				Config con = new Config();
 				con.setKeyName(ADOBE_ACCESS_TOKEN_EXP_TIME);
-				con.setKeyValue(AdobeUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				con.setKeyValue(CBSDateUtils.getCurrentDateTime(oAuth.getExpiresIn()));
+				con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 				con.setKeyDescription("Adobe access token expired in next one hours");
 				return configRepository.save(con);
 			});
@@ -187,19 +199,19 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 			ResponseEntity<JsonNode> result = null;
 			LinkedMultiValueMap<String, Object> body = null;
 
-			String accessToken = adobeUtility.getOauthAccessToken();
-			String transientDocUrl = adobeUtility.getBaseURIForRestAPI(accessToken) + TRANSIENT_DOCUMENTS_ENDPOINT;
+			String accessToken = adobeTokenUtility.getOauthAccessToken();
+			String transientDocUrl = adobeTokenUtility.getBaseURIForRestAPI(accessToken) + TRANSIENT_DOCUMENTS_ENDPOINT;
 
 			log.info("transientDocUrl={} fileName={}", transientDocUrl, fileName);
 
 			body = new LinkedMultiValueMap<>();
-			body.add(AdobeUtils.HttpHeaderField.FILE.toString(), new InputStreamResource(inputStream));
-			body.add(AdobeUtils.HttpHeaderField.FILE_NAME.toString(), fileName);
-			body.add(AdobeUtils.HttpHeaderField.MIME_TYPE.toString(), MediaType.APPLICATION_PDF_VALUE);
+			body.add(AdobeConstant.HttpHeaderField.FILE.toString(), new InputStreamResource(inputStream));
+			body.add(AdobeConstant.HttpHeaderField.FILE_NAME.toString(), fileName);
+			body.add(AdobeConstant.HttpHeaderField.MIME_TYPE.toString(), MediaType.APPLICATION_PDF_VALUE);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE);
-			headers.add(AdobeUtils.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
+			headers.add(AdobeConstant.HttpHeaderField.AUTHORIZATION.toString(), accessToken);
 
 			HttpEntity<?> entity = new HttpEntity<>(body, headers);
 
@@ -223,8 +235,8 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 
 			ResponseEntity<JsonNode> response = null;
 			HttpHeaders header = null;
-			String accessToken = adobeUtility.getOauthAccessToken();
-			String agreementsApiUrl = adobeUtility.getBaseURIForRestAPI(accessToken) + AGREEMENTS_ENDPOINT;
+			String accessToken = adobeTokenUtility.getOauthAccessToken();
+			String agreementsApiUrl = adobeTokenUtility.getBaseURIForRestAPI(accessToken) + AGREEMENTS_ENDPOINT;
 			String requestBody = createAgrrementRequestBody(transientDocId, bookingRevision);
 
 			header = new HttpHeaders();
@@ -251,11 +263,14 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		if (config.isPresent()) {
 			Config con = config.get();
 			con.setKeyValue(authcode);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 			configRepository.save(con);
 		} else {
 			Config con = new Config();
 			con.setKeyName(ADOBE_AUTH_CODE);
 			con.setKeyValue(authcode);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 			configRepository.save(con);
 		}
 
@@ -263,11 +278,29 @@ public class AdobeSignServiceImpl implements AdobeSignService {
 		if (configApiAccessPoint.isPresent()) {
 			Config con = configApiAccessPoint.get();
 			con.setKeyValue(apiAccessPoint + ACCESS_POINT);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
 			configRepository.save(con);
 		} else {
 			Config con = new Config();
 			con.setKeyName(ADOBE_API_BASE_URI);
 			con.setKeyValue(apiAccessPoint + ACCESS_POINT);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			con.setKeyDescription("Adobe API access base uri");
+			configRepository.save(con);
+		}
+
+		Optional<Config> configAdobeOauthBaseUrl = configRepository.findByKeyName(ADOBE_OAUTH_BASE_URL);
+		if (configAdobeOauthBaseUrl.isPresent()) {
+			Config con = configAdobeOauthBaseUrl.get();
+			con.setKeyValue(apiAccessPoint + OAUTH_CODE_ACCESS_ENDPOINT);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			configRepository.save(con);
+		} else {
+			Config con = new Config();
+			con.setKeyName(ADOBE_OAUTH_BASE_URL);
+			con.setKeyValue(apiAccessPoint + OAUTH_CODE_ACCESS_ENDPOINT);
+			con.setChangedDate(new Timestamp(System.currentTimeMillis()));
+			con.setKeyDescription("Adobe OAuth code base uri");
 			configRepository.save(con);
 		}
 	}

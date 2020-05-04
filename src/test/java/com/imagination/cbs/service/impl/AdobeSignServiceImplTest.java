@@ -33,7 +33,7 @@ import com.imagination.cbs.dto.AdobeOAuthDto;
 import com.imagination.cbs.exception.CBSApplicationException;
 import com.imagination.cbs.exception.ResourceNotFoundException;
 import com.imagination.cbs.repository.ConfigRepository;
-import com.imagination.cbs.util.AdobeUtility;
+import com.imagination.cbs.util.AdobeTokenUtility;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdobeSignServiceImplTest {
@@ -48,7 +48,7 @@ public class AdobeSignServiceImplTest {
 	@Mock
 	private Environment environment;
 	@Mock
-	private AdobeUtility adobeUtility;
+	private AdobeTokenUtility adobeUtility;
 	@Mock
 	private ResponseEntity<JsonNode> res;
 	
@@ -249,7 +249,7 @@ public class AdobeSignServiceImplTest {
 	
 		verify(configRepository).findByKeyName("ADOBE_AUTH_CODE");
 		verify(configRepository).findByKeyName("ADOBE_API_BASE_URI");
-		verify(configRepository, times(2)).save(Mockito.any());
+		verify(configRepository, times(3)).save(Mockito.any());
 	}
 
 	@Test
@@ -266,7 +266,7 @@ public class AdobeSignServiceImplTest {
 		
 		verify(configRepository).findByKeyName("ADOBE_AUTH_CODE");
 		verify(configRepository).findByKeyName("ADOBE_API_BASE_URI");
-		verify(configRepository, times(2)).save(Mockito.any());
+		verify(configRepository, times(3)).save(Mockito.any());
 	}
 
 	private void beforeSaveOrUpdateAdobeKeysTestCases(boolean isEmptyOptional) throws Exception {
