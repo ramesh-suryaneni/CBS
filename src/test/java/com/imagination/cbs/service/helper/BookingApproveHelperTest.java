@@ -46,63 +46,111 @@ public class BookingApproveHelperTest {
 	private EmailHelper emailHelper;
 
 	private Team approverTeam;
+
+	private Booking booking;
+	private ApprovalStatusDm approvalStatus;
+	private CBSUser cbsUser;
+	private BookingRevision bookingRevision;
 	
 	@Test
-	public void shouldPrepareEmailAndSendTO_HR_WhenBookingCanBeOverride() {
-		final Booking booking = createBooking();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1004L);
-		final Team approverTeam = createTeam(1003l);
-		final CBSUser cbsUser = createCBSUser();
-		final BookingRevision bookingRevision = createBookingRevision();
-		bookingRevision.setApprovalStatus(approvalStatus);
-		bookingRevision.setTeam(approverTeam);
-		final List<Approver> approverList = new ArrayList<>();
-		approverList.add(createApprover());
+	public void approve_shouldGetLatestBookingRevision_whenBookingCanBeOverride() {
 		
-		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
-		when(approverRepository.findAllByTeam(bookingRevision.getTeam())).thenReturn(approverList); 
-		when(approverOverridesRepository
-					.findByEmployeeIdAndJobNumber(1002L, "100204205-02")).thenReturn(createApproverOverrides());
-		when(bookingSaveHelper.saveBooking(booking, bookingRevision,
-				1005L, cbsUser)).thenReturn(booking);
-		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride();
 		bookingApproveHelper.approve(booking, cbsUser);
 		
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+	
+	@Test
+	public void approve_shouldGetAllApproversByTeam_whenBookingCanBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
 		verify(approverRepository).findAllByTeam(approverTeam);
-		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L, "100204205-02"); 
-		verify(bookingSaveHelper).saveBooking(booking, bookingRevision,1005L, cbsUser);
-		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
 	}
 
 	@Test
-	public void shouldPrepareEmailAndSent_TO_HR_WhenBookingCannotBeOverride() {
-		final Booking booking = createBooking();
-		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1004L);
-		final Team approverTeam = createTeam(1003l);
-		final CBSUser cbsUser = createCBSUser();
-		final Approver approver =createApprover();
-		final BookingRevision bookingRevision = createBookingRevision();
-		bookingRevision.setApprovalStatus(approvalStatus);
-		bookingRevision.setTeam(approverTeam);
-		final List<Approver> approverList = new ArrayList<>();
-		approverList.add(approver);
+	public void approve_shouldFindByEmployeeIdAndJobNumber_whenBookingCanBeOverride() {
 		
-		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
-		when(approverRepository.findAllByTeam(bookingRevision.getTeam())).thenReturn(approverList); 
-		when(approverOverridesRepository.findByEmployeeIdAndJobNumber(1002L,"100204205-02")).thenReturn(null);
-		when(approverRepository.findByTeamAndEmployeeAndApproverOrder
-				(any(Team.class),any(EmployeeMapping.class),eq(3L))).thenReturn(approver); 
-		when(bookingSaveHelper.saveBooking(booking, bookingRevision,1005L, cbsUser)).thenReturn(booking);
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L, "100204205-02"); 
+	}
 
+
+	@Test
+	public void approve_shouldSaveBooking_whenBookingCanBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(bookingSaveHelper).saveBooking(booking, bookingRevision,1005L, cbsUser);
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSendTO_HR_whenBookingCanBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
+	}
+
+	
+	@Test
+	public void approve_shouldGetLatestBookingRevision_whenBookingCannotBeOverride() {
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
 		bookingApproveHelper.approve(booking, cbsUser);
 		
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+
+	@Test
+	public void approve_shouldGetAllApproversByTeam_whenBookingCannotBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
 		verify(approverRepository).findAllByTeam(approverTeam);
-		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L, "100204205-02");
+	}
+
+	@Test
+	public void approve_shouldFindByEmployeeIdAndJobNumber_whenBookingCannotBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L, "100204205-02"); 
+	}
+
+	@Test
+	public void approve_shouldFindByEmployeeIdAndApproverOrder_whenBookingCannotBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
 		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder
-				(any(Team.class),any(EmployeeMapping.class),eq(3L));
-		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);  
+		(any(Team.class),any(EmployeeMapping.class),eq(3L));
+	}
+
+	@Test
+	public void approve_shouldSaveBooking_whenBookingCannotBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(bookingSaveHelper).saveBooking(booking, bookingRevision,1005L, cbsUser);
+	}
+
+	@Test
+	public void approve_shouldPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride() {
+		
+		beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride();
+		bookingApproveHelper.approve(booking, cbsUser);
+		
+		verify(emailHelper).prepareMailAndSendToHR(bookingRevision);
 	}
  
 	@Test(expected = CBSUnAuthorizedException.class)
@@ -135,7 +183,6 @@ public class BookingApproveHelperTest {
 		final Booking booking = createBooking();
 		final CBSUser cbsUser = createCBSUser();
 		final ApprovalStatusDm approvalStatus = createApprovalStatusDm(1001L);
-		//approvalStatus.setApprovalStatusId(1001L);
 		final BookingRevision bookingRevision = createBookingRevision();
 		bookingRevision.setApprovalStatus(approvalStatus);
 		
@@ -146,62 +193,190 @@ public class BookingApproveHelperTest {
 	}
 
 	@Test
-	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
-		final Booking booking = createBooking();
-		final CBSUser cbsUser = createCBSUser();
-		beforeApprove(booking, 1002L, 1002L, 1L);
-
+	public void approve_shouldGetLatestRevision_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
+		
+		beforeApprove(1002L, 1002L, 1L);
 		bookingApproveHelper.approve(booking, cbsUser);
 
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+
+	@Test
+	public void approve_shouldFindAllApproversByTeam_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
+
+		beforeApprove(1002L, 1002L, 1L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findAllByTeam(approverTeam);
+	}
+
+	@Test
+	public void approve_shouldFindApproversOverrideByEmployeeIdAndJobNumber_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
+
+		beforeApprove(1002L, 1002L, 1L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+	}
+
+	@Test
+	public void approve_shouldFindByTeamAndEmployeeAndApproverOrder_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs1() {
+
+		beforeApprove(1002L, 1002L, 1L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(1L)); 
 	}
 
 	@Test
-	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
-		final Booking booking = createBooking();
-		final CBSUser cbsUser = createCBSUser();
-		beforeApprove(booking, 1002L, 1002L, 3L);
-
+	public void approve_shouldGetLatestRevision_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
+		
+		beforeApprove(1002L, 1002L, 3L);
 		bookingApproveHelper.approve(booking, cbsUser);
 
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+
+	@Test
+	public void approve_shouldFindAllApproversByTeam_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
+
+		beforeApprove(1002L, 1002L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findAllByTeam(approverTeam);
+	}
+
+	@Test
+	public void approve_shouldFindApproversOverrideByEmployeeIdAndJobNumber_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
+
+		beforeApprove(1002L, 1002L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+	}
+
+	@Test
+	public void approve_shouldFindByTeamAndEmployeeAndApproverOrder_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval1AndApproverOrderIs2Or3() {
+
+		beforeApprove(1002L, 1002L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(1L)); 
 	}
 
 	@Test
-	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
-		final Booking booking = createBooking();
-		final CBSUser cbsUser = createCBSUser();
-		beforeApprove(booking, 1003L, 1003L, 2L);
-
+	public void approve_shouldGetLatestRevision_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
+		
+		beforeApprove(1003L, 1003L, 2L);
 		bookingApproveHelper.approve(booking, cbsUser);
 
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+
+	@Test
+	public void approve_shouldFindAllApproversByTeam_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
+
+		beforeApprove(1003L, 1003L, 2L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findAllByTeam(approverTeam);
+	}
+
+	@Test
+	public void approve_shouldFindApproversOverrideByEmployeeIdAndJobNumber_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
+
+		beforeApprove(1003L, 1003L, 2L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+	}
+
+	@Test
+	public void approve_shouldFindByTeamAndEmployeeAndApproverOrder_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs2() {
+
+		beforeApprove(1003L, 1003L, 2L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(2L)); 
 	}
 
 	@Test
-	public void approve_shouldPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
-		final Booking booking = createBooking();
-		final CBSUser cbsUser = createCBSUser();
-		beforeApprove(booking, 1003L, 1003L, 3L);
-
+	public void approve_shouldGetLatestRevision_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
+		
+		beforeApprove(1003L, 1003L, 3L);
 		bookingApproveHelper.approve(booking, cbsUser);
 
 		verify(bookingSaveHelper).getLatestRevision(booking);
+	}
+
+	@Test
+	public void approve_shouldFindAllApproversByTeam_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
+
+		beforeApprove(1003L, 1003L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findAllByTeam(approverTeam);
+	}
+
+	@Test
+	public void approve_shouldFindApproversOverrideByEmployeeIdAndJobNumber_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
+
+		beforeApprove(1003L, 1003L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverOverridesRepository).findByEmployeeIdAndJobNumber(1002L,"100204205-02");
+	}
+
+	@Test
+	public void approve_shouldFindByTeamAndEmployeeAndApproverOrder_forPrepareEmailAndSentToNextApprover_whenCurrentStatusIsWaitingForApproval2AndApproverOrderIs3() {
+
+		beforeApprove(1003L, 1003L, 3L);
+		bookingApproveHelper.approve(booking, cbsUser);
+
 		verify(approverRepository).findByTeamAndEmployeeAndApproverOrder(any(Team.class),any(EmployeeMapping.class),eq(2L)); 
 	}
 
-	private void beforeApprove(Booking booking, Long approvalStatusId, Long teamId, Long approverOrder) {
+	private void createData() {
+		booking = createBooking();
+		approvalStatus = createApprovalStatusDm(1004L);
+		approverTeam = createTeam(1003l);
+		cbsUser = createCBSUser();
+		bookingRevision = createBookingRevision();
+		bookingRevision.setApprovalStatus(approvalStatus);
+		bookingRevision.setTeam(approverTeam);
+
+	}
+	
+	private void beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCanBeOverride() {
+		createData();
+		final List<Approver> approverList = new ArrayList<>();
+		approverList.add(createApprover());
+		
+		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
+		when(approverRepository.findAllByTeam(bookingRevision.getTeam())).thenReturn(approverList); 
+		when(approverOverridesRepository
+					.findByEmployeeIdAndJobNumber(1002L, "100204205-02")).thenReturn(createApproverOverrides());
+		when(bookingSaveHelper.saveBooking(booking, bookingRevision,
+				1005L, cbsUser)).thenReturn(booking);
+	}
+
+	private void beforeApproveForPrepareEmailAndSendTO_HR_whenBookingCannotBeOverride() {
+		createData();
+		final Approver approver =createApprover();
+		final List<Approver> approverList = new ArrayList<>();
+		approverList.add(approver);
+		
+		when(bookingSaveHelper.getLatestRevision(booking)).thenReturn(bookingRevision);
+		when(approverRepository.findAllByTeam(bookingRevision.getTeam())).thenReturn(approverList); 
+		when(approverOverridesRepository.findByEmployeeIdAndJobNumber(1002L,"100204205-02")).thenReturn(null);
+		when(approverRepository.findByTeamAndEmployeeAndApproverOrder
+				(any(Team.class),any(EmployeeMapping.class),eq(3L))).thenReturn(approver); 
+		when(bookingSaveHelper.saveBooking(booking, bookingRevision,1005L, cbsUser)).thenReturn(booking);
+	}
+	
+	private void beforeApprove(Long approvalStatusId, Long teamId, Long approverOrder) {
+		booking = createBooking();
+		cbsUser = createCBSUser();
 		final BookingRevision bookingRevision = createBookingRevisionWithApprovalStatus(approvalStatusId);
 		approverTeam = createTeam(teamId);
 		bookingRevision.setTeam(approverTeam);
