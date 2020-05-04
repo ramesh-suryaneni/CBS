@@ -36,7 +36,7 @@ public class BookingSaveHelperTest {
 	@Test
 	public void shouldReturnBookingAfterSave_SaveBooking() {
 		CBSUser cbsUser = createCBSUser();
-		Optional<ApprovalStatusDm> OptapprovalStatus = Optional.of(createApprovalStatusDm());
+		Optional<ApprovalStatusDm> OptapprovalStatus = Optional.of(createApprovalStatusDm()); 
 		BookingRevision bookingRevision = createBookingRevision();
 		Booking booking = createBooking();
 		
@@ -55,23 +55,21 @@ public class BookingSaveHelperTest {
 	public void shouldReturnMaxBookingRevisionWhenPresentInDB_getLatestRevision() {
 		Booking booking = createBooking();
 		booking.getBookingRevisions().get(0).setRevisionNumber(5L);
+		
 		BookingRevision actual = bookingSaveHelper.getLatestRevision(booking);
+		
 		assertEquals(new Long(5), actual.getRevisionNumber());		
 	}
 	@Test
 	public void shouldReturnNewBookingRevisionWhenNotPresentInDB_getLatestRevision() {
 		Booking booking = new Booking();
-		booking.getBookingRevisions();
-		BookingRevision bookingRevision = createBookingRevision();
-		bookingRevision.setRevisionNumber(1L);
-		List<BookingRevision> listOfRev = new ArrayList<>();
-		listOfRev.add(bookingRevision);
-		booking.setBookingRevisions(listOfRev);
-		 BookingRevision  actual = bookingSaveHelper.getLatestRevision(booking);
-		assertEquals(new Long(1), actual.getRevisionNumber());		
+	
+		BookingRevision  actual = bookingSaveHelper.getLatestRevision(booking);
+		 
+		assertEquals(null, actual.getRevisionNumber());		
 	}
 	private ApprovalStatusDm createApprovalStatusDm() {
-		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm();
+		ApprovalStatusDm approvalStatusDm = new ApprovalStatusDm(); 
 		approvalStatusDm.setApprovalName("Canclelled");
 		approvalStatusDm.setApprovalStatusId(1010L);
 		return approvalStatusDm;
